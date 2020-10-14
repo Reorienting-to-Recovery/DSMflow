@@ -39,5 +39,4 @@ This CALSIM II run was used as the basis of comparison for other potential opera
 [More information on CALSIM II](http://baydeltaoffice.water.ca.gov/modeling/hydrology/CalSim/index.cfm)    
 [CALSIM II Schematic](https://s3-us-west-2.amazonaws.com/cvpiaflow-r-package/BST_CALSIMII_schematic_040110.jpg)  
 
-<style>.logo{margin-top: 40px;}</style>
-<div class = 'logo'>Data Assembled and Maintained by <a href = "http://www.flowwest.com/" target = "_blank"> <img src="man/figures/TransLogoTreb.png" width="150px"/></div>
+<div style="margin-top: 40px;">Data Assembled and Maintained by <a href = "http://www.flowwest.com/" target = "_blank"> <img src="man/figures/TransLogoTreb.png" width="150px"/></div>
