@@ -1,0 +1,53 @@
+title: DSMflow
+url: https://cvpia-osc.github.io/DSMflow/
+template:
+  params:
+    bootswatch: yeti
+
+home:
+  links:
+  - text: Fish and Wildlife Service's CVPIA website
+    href: https://www.fws.gov/lodi/anadromous_fish_restoration/afrp_index.htm
+  - text: Bureau of Reclamation's CVPIA website
+    href: https://www.usbr.gov/mp/cvpia/
+
+reference:
+- title: CALSIM II Data Sets
+  desc: Flow related data sets used by the CVPIA Population Models
+  contents:
+  - flows_cfs
+  - bypass_flows
+  - delta_flows
+  - delta_inflow
+  - delta_proportion_diverted
+  - delta_total_diverted
+  - total_diverted
+  - proportion_diverted
+  - proportion_flow_bypasses
+  - proportion_flow_natal
+  - upper_sacramento_flows
+  - mean_flow
+  - delta_cross_channel_closed
+  - proportion_pulse_flows
+  - freeport_flow
+  - vernalis_flow
+  - stockton_flow
+  - cvp_exports
+  - swp_exports
+- title: Helpers
+  desc: Functions and datasets for convenience
+  contents:
+  - watershed_ordering
+  - cfs_to_cms
+  - create_model_array
+
+navbar:
+  type: default
+  left:
+  - text: 'Reference'
+    href: reference/index.html
+  - text: 'News'
+    href: news/index.html
+  right:
+  - icon: fa-github fa-lg
+    href: https://github.com/cvpia-osc/DSMflow
