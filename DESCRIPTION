@@ -8,7 +8,7 @@ Authors@R: c(
     person("Mike", "Urkov", email = "mike.urkov@gmail.com", role = "aut"))
 Description: This data package contains modeled flows and diversions for each of the watersheds 
     within the CVPIA salmon life cycle model.
-License: MIT + file LICENSE
+License: CC0
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1
