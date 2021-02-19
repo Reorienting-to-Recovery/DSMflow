@@ -501,6 +501,8 @@ usethis::use_data(proportion_flow_bypasses, overwrite = TRUE)
 
 library(DSMflow)
 library(tibble)
+
+# Baseline data uses the same flows as Mike Wright data except in tidy format
 baseline_data <- read_csv("data-raw/delta-dsm-calsim/FullObsJul18_NoNotch_Base_DV_filtered.csv")
 
 # freeport flow
