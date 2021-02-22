@@ -1,3 +1,8 @@
+library(tidyverse)
+library(lubridate)
+library(stringr)
+library(devtools)
+
 # Explore Calsim node C126, C128, and C129
 wilkins_slough_nodes <- c("C126", "C128", "C129")
 
@@ -6,7 +11,7 @@ freeport_node <- "C400"
 
 # Read in nodes
 column_names <- read_csv('data-raw/MikeWrightCalSimOct2017/C1_C169.csv', skip = 1) %>% names()
-temp_flow_data <- read_csv('data-raw/MikeWrightCalSimOct2017/C1_C169.csv', skip = 7, col_names = col_nm)
+temp_flow_data <- read_csv('data-raw/MikeWrightCalSimOct2017/C1_C169.csv', skip = 7, col_names = column_names)
 
 wilkins_cleaned_nodes <- temp_flow_data %>%
   select(date = X2, wilkins_slough_nodes) %>%
@@ -21,6 +26,8 @@ wilkins_cleaned_nodes %>%
   ggplot(aes(x = date, y = flow, fill = spill)) +
   geom_col(position = 'dodge') +
   theme_minimal()
+
+write_rds(wilkins_cleaned_nodes, 'data-raw/MikeWrightCalSimOct2017/wilkins_node.rds')
 
 # Compare to freeport
 # Baseline data contains same calsim data as Wright (just in tidy format)

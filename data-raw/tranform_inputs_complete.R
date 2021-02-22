@@ -505,6 +505,26 @@ library(tibble)
 # Baseline data uses the same flows as Mike Wright data except in tidy format
 baseline_data <- read_csv("data-raw/delta-dsm-calsim/FullObsJul18_NoNotch_Base_DV_filtered.csv")
 
+# Adds wilkins flow node to replace freeport flow
+# I used node C128 for wilkins(all are very similar but this one was in the middle)
+read_rds("data-raw/MikeWrightCalSimOct2017/wilkins_node.rds")
+wilkins_flow <- wilkins_cleaned_nodes %>%
+  select(date, "C128") %>%
+  filter(year(date) >= 1980, year(date) <= 1999) %>%
+  transmute(
+    year = year(date),
+    month = month(date),
+    wilklinsQcfs = C128,
+    wilkinsQcms = cfs_to_cms(C128))  %>%
+  select(year, month, wilkinsQcms) %>%
+  spread(year, wilkinsQcms) %>%
+  select(-month) %>%
+  as.matrix()
+
+rownames(wilkins_flow) <- month.abb
+
+usethis::use_data(wilkins_flow, overwrite = TRUE)
+
 # freeport flow
 freeport_node <- c("C400")
 
