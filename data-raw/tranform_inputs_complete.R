@@ -502,14 +502,12 @@ usethis::use_data(proportion_flow_bypasses, overwrite = TRUE)
 library(DSMflow)
 library(tibble)
 
-# Baseline data uses the same flows as Mike Wright data except in tidy format
-baseline_data <- read_csv("data-raw/delta-dsm-calsim/FullObsJul18_NoNotch_Base_DV_filtered.csv")
-
 # Adds wilkins flow node to replace freeport flow
-# I used node C128 for wilkins(all are very similar but this one was in the middle)
-wilkins_node <- read_rds("data-raw/MikeWrightCalSimOct2017/wilkins_node.rds")
-wilkins_flow <- wilkins_node %>%
-  select(date, "C128") %>%
+# I used node C128 for wilkins(all 3 potential wilkins nodes very similar)
+wilkins_node <- c("C128")
+
+wilkins_flow <- calsim %>%
+  select(date, wilkins_node) %>%
   filter(year(date) >= 1980, year(date) <= 1999) %>%
   transmute(
     year = year(date),
@@ -522,22 +520,20 @@ wilkins_flow <- wilkins_node %>%
   as.matrix()
 
 rownames(wilkins_flow) <- month.abb
-
 usethis::use_data(wilkins_flow, overwrite = TRUE)
 
 # freeport flow
 freeport_node <- c("C400")
 
-freeport_flow <- baseline_data %>%
+freeport_flow <- calsim %>%
+  select(date, freeport_node) %>%
   filter(
-    year(Date_Time) >= 1980, year(Date_Time) <= 1999,
-    Variable == freeport_node) %>%
+    year(date) >= 1980, year(date) <= 1999) %>%
   transmute(
-    date = Date_Time,
-    year = year(Date_Time),
-    month = month(Date_Time),
-    freeportQcfs = Value,
-    freeportQcms = cfs_to_cms(Value)
+    year = year(date),
+    month = month(date),
+    freeportQcfs = C400,
+    freeportQcms = cfs_to_cms(C400)
   ) %>%
   select(year, month, freeportQcms) %>%
   spread(year, freeportQcms) %>%
@@ -545,22 +541,21 @@ freeport_flow <- baseline_data %>%
   as.matrix()
 
 rownames(freeport_flow) <- month.abb
-
 usethis::use_data(freeport_flow, overwrite = TRUE)
 
 # vernalis flow
 vernalis_node <- "C639"
 
-vernalis_flow <- baseline_data %>%
+vernalis_flow <- calsim  %>%
+  select(date, vernalis_node) %>%
   filter(
-    year(Date_Time) >= 1980, year(Date_Time) <= 1999,
+    year(date) >= 1980, year(date) <= 1999,
     Variable == vernalis_node) %>%
   transmute(
-    date = Date_Time,
-    year = year(Date_Time),
-    month = month(Date_Time),
-    vernalisQcfs = Value,
-    vernalisQcms = cfs_to_cms(Value)
+    year = year(date),
+    month = month(date),
+    vernalisQcfs = C639,
+    vernalisQcms = cfs_to_cms(C639)
   ) %>%
   select(year, month, vernalisQcms) %>%
   spread(year, vernalisQcms) %>%
