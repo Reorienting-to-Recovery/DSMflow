@@ -507,8 +507,8 @@ baseline_data <- read_csv("data-raw/delta-dsm-calsim/FullObsJul18_NoNotch_Base_D
 
 # Adds wilkins flow node to replace freeport flow
 # I used node C128 for wilkins(all are very similar but this one was in the middle)
-read_rds("data-raw/MikeWrightCalSimOct2017/wilkins_node.rds")
-wilkins_flow <- wilkins_cleaned_nodes %>%
+wilkins_node <- read_rds("data-raw/MikeWrightCalSimOct2017/wilkins_node.rds")
+wilkins_flow <- wilkins_node %>%
   select(date, "C128") %>%
   filter(year(date) >= 1980, year(date) <= 1999) %>%
   transmute(
