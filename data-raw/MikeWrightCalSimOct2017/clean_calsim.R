@@ -18,9 +18,9 @@ div_nodes <- c(cvpia_nodes$cal_sim_diversion_nodes[!need_split], div_split)
 diversion_nodes <- div_nodes[!is.na(div_nodes)] %>% str_trim('both') %>% str_replace(',', '')
 
 
-delta_nodes <- c('C400', 'C157', 'C401B', 'C504', 'C508', 'C644', 'D403A', 'D403B', 'D403C',
-                 'D403D', 'D404', 'D418', 'D419', 'D412', 'D410', 'D413', 'D409B', 'D416',
-                 'D408_OR', 'D408_VC')
+delta_nodes <- c('C400', 'C157', 'C401B', 'C417A', 'C504', 'C508', 'C639', 'C644', 'D403A',
+                 'D403B', 'D403C', 'D403D', 'D404', 'D418', 'D419', 'D412', 'D410', 'D413',
+                 'D409B', 'D416', 'D408_OR', 'D408_VC')
 
 combined_flow_nodes <- c('C11305', 'C11301')
 
@@ -44,10 +44,10 @@ pick_columns <- function(file, nodes) {
 }
 
 file_names <- list.files('data-raw/MikeWrightCalSimOct2017/', '*.csv')[-5]
-
-cvpia_calsim <- map_dfc(file_names, pick_columns, all_nodes) %>%
-  select(-date1, -date2, -date3, -date4, -date5, -date6)
-
+# cvpia_calsim <- map_dfc(file_names, pick_columns, all_nodes) %>%
+#   select(-date1, -date2, -date3, -date4, -date5, -date6)
+cvpia_calsim <- map(file_names, pick_columns, all_nodes) %>%
+  reduce(full_join, by = 'date')
 
 write_rds(cvpia_calsim, 'data-raw/MikeWrightCalSimOct2017/cvpia_calsim.rds')
 

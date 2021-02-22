@@ -549,8 +549,7 @@ vernalis_node <- "C639"
 vernalis_flow <- calsim  %>%
   select(date, vernalis_node) %>%
   filter(
-    year(date) >= 1980, year(date) <= 1999,
-    Variable == vernalis_node) %>%
+    year(date) >= 1980, year(date) <= 1999) %>%
   transmute(
     year = year(date),
     month = month(date),
@@ -570,16 +569,15 @@ usethis::use_data(vernalis_flow, overwrite = TRUE)
 
 stockton_node <- "C417A"
 
-stockton_flow <- baseline_data %>%
+stockton_flow <- calsim %>%
+  select(date, stockton_node) %>%
   filter(
-    year(Date_Time) >= 1980, year(Date_Time) <= 1999,
-    Variable == stockton_node) %>%
+    year(date) >= 1980, year(date) <= 1999) %>%
   transmute(
-    date = Date_Time,
-    year = year(Date_Time),
-    month = month(Date_Time),
-    stocktonQcfs = Value,
-    stocktonQcms = cfs_to_cms(Value)
+    year = year(date),
+    month = month(date),
+    stocktonQcfs = C417A,
+    stocktonQcms = cfs_to_cms(C417A)
   ) %>%
   select(year, month, stocktonQcms) %>%
   spread(year, stocktonQcms) %>%
@@ -590,6 +588,8 @@ rownames(stockton_flow) <- month.abb
 
 usethis::use_data(stockton_flow, overwrite = TRUE)
 
+# Load basline data for exports *Erin will replace with Wright data once I know which nodes
+baseline_data <- read_csv("data-raw/delta-dsm-calsim/FullObsJul18_NoNotch_Base_DV_filtered.csv")
 # cvp exports
 cvp_exports_node <- "DEL_CVP_TOTAL"
 
