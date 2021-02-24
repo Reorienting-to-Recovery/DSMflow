@@ -369,6 +369,21 @@
 #'
 "proportion_flow_bypasses"
 
+#' If gates are overtopped at teh Sutter and Yolo Bypasses
+#' @description A monthly TRUE or FALSE value to describe if the gates are overtopped to the bypasses
+#' (years 1980-2000) for use with the CVPIA SIT Salmon Population Model to
+#' apportion fish onto the bypasses.
+#' @format a 12 by 21 by 2 array (month, year, bypass):
+#'
+#' [ , , 1] = Sutter Bypass represented with CALSIM II nodes (D117 + D124 + D125 + D126)/C116
+#'
+#' [ , , 2] = Yolo Bypass represented with CALSIM II nodes D160/C134
+#'
+#' @source
+#' \itemize{
+#'   \item \strong{Data Wrangling:} Erin Cain  \email{ecain@@flowwest.com}
+#' }
+"gates_overtopped"
 
 # Delta -----
 #' Delta Cross Channel Operations
