@@ -495,8 +495,25 @@ proportion_flow_bypasses[ , , 2] <- bypass_prop_flow[13:24, ]
 
 usethis::use_data(proportion_flow_bypasses, overwrite = TRUE)
 
+# Adds gates_overtopped
+bypass_overtopped <- read_csv("data-raw/delta_cross_channel_gates/bypass_overtopped.csv")
+bypass_overtopped <- bypass_overtopped %>%
+  mutate(year = year(date),
+         month = month(date)) %>%
+  filter(between(year, 1980, 2000)) %>%
+  select(-date) %>%
+  gather(bypass, overtopped, -month, -year) %>%
+  spread(year, overtopped) %>%
+  arrange(bypass, month)  %>%
+  select(-month, -bypass) %>%
+  as.matrix()
 
+gates_overtopped <- array(NA, dim = c(12, 21, 2))
+dimnames(gates_overtopped) <- list(month.abb[1:12], 1980:2000, c('Sutter Bypass', 'Yolo Bypass'))
+gates_overtopped[ , , 1] <- bypass_overtopped[1:12, ]
+gates_overtopped[ , , 2] <- bypass_overtopped[13:24, ]
 
+usethis::use_data(gates_overtopped, overwrite = TRUE)
 # Delta Routing Flows ---------------------
 
 library(DSMflow)
