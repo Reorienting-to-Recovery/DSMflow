@@ -504,16 +504,16 @@ library(tibble)
 
 # Adds wilkins flow node to replace freeport flow
 # I used node C128 for wilkins(all 3 potential wilkins nodes very similar)
-wilkins_node <- c("C128")
+wilkins_node <- c("C126")
 
 wilkins_flow <- calsim %>%
   select(date, wilkins_node) %>%
-  filter(year(date) >= 1980, year(date) <= 1999) %>%
+  filter(year(date) >= 1980, year(date) <= 2000) %>%
   transmute(
     year = year(date),
     month = month(date),
-    wilklinsQcfs = C128,
-    wilkinsQcms = cfs_to_cms(C128))  %>%
+    wilklinsQcfs = C126,
+    wilkinsQcms = cfs_to_cms(C126))  %>%
   select(year, month, wilkinsQcms) %>%
   spread(year, wilkinsQcms) %>%
   select(-month) %>%
