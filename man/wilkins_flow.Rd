@@ -11,7 +11,7 @@ A matrix with months (1-12) as rows and years (1980-1999) as columns
 wilkins_flow
 }
 \description{
-flow in cms at Wilkins (C128)
+flow in cms at Wilkins (C126)
 }
 \details{
 The flows here are obtained from a CALSIM run designed for the structured
