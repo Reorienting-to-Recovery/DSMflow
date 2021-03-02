@@ -21,11 +21,13 @@ wilkins_cleaned_nodes <- temp_flow_data %>%
 # Visualize wilkins nodes to decide which one makes the most sense to use
 
 wilkins_cleaned_nodes %>%
-  gather(spill, flow, -date) %>%
-  filter(year(date) >= 1980, year(date) < 2000) %>%
-  ggplot(aes(x = date, y = flow, fill = spill)) +
+  gather(node, flow, -date) %>%
+  filter(year(date) >= 1990, year(date) < 1996) %>%
+  ggplot(aes(x = date, y = flow, fill = node)) +
   geom_col(position = 'dodge') +
-  theme_minimal()
+  theme_minimal() +
+  ggtitle("Wilkins Calsim Node Choices")
+
 
 write_rds(wilkins_cleaned_nodes, 'data-raw/MikeWrightCalSimOct2017/wilkins_node.rds')
 
@@ -41,15 +43,27 @@ freeport_node <- baseline_data %>%
 
 # Graphical comparison of wilkins vs freeport nodes shows freeport C400 has much higher flows than wilkins C126, C128, C129
 wilkins_vs_freeport_nodes <- wilkins_cleaned_nodes %>%
+  filter(year(date) > 1990 & year(date) < 1996) %>%
   left_join(freeport_node, by = c("date" = "Date_Time")) %>%
   rename("C400" = Value)  %>%
-  gather(spill, flow, -date) %>%
+  gather(node, flow, -date) %>%
   filter(year(date) >= 1980, year(date) < 2000) %>%
-  ggplot(aes(x = date, y = flow, fill = spill)) +
+  ggplot(aes(x = date, y = flow, fill = node)) +
   geom_col(position = 'dodge') +
-  theme_minimal()
+  theme_minimal() +
+  ggtitle("Wilkins(C126, C128, C129) and Freeport(C400) Calsim Node Choices")
 wilkins_vs_freeport_nodes
 
+wilkins_vs_freeport_nodes <- wilkins_cleaned_nodes %>%
+  left_join(freeport_node, by = c("date" = "Date_Time")) %>%
+  rename("C400" = Value)  %>%
+  gather(node, flow, -date) %>%
+  filter(year(date) >= 1980, year(date) < 2000) %>%
+  ggplot(aes(x = date, y = flow, colour = node)) +
+  geom_line(size = 1) +
+  theme_minimal() +
+  ggtitle("Wilkins(C126, C128, C129) and Freeport(C400) Calsim Node Choices")
+wilkins_vs_freeport_nodes
 # Create matrix with wilkins flow node to replace freeport_flows
 # I used node C128 for wilkins(all are very similar but this one was in the middle)
 wilkins_flow <- wilkins_cleaned_nodes %>%
