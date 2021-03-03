@@ -420,7 +420,7 @@ usethis::use_data(delta_flows, overwrite = TRUE)
 # delta inflows
 # Replaces Dlt.inf
 inflow <- delta_flows %>%
-  filter(year(date) >= 1980, year(date) <= 1999) %>%
+  filter(year(date) >= 1980, year(date) <= 2000) %>%
   mutate(n_dlt_inflow_cms = DSMflow::cfs_to_cms(n_dlt_inflow_cfs),
          s_dlt_inflow_cms = DSMflow::cfs_to_cms(s_dlt_inflow_cfs)) %>%
   select(date, n_dlt_inflow_cms, s_dlt_inflow_cms) %>%
@@ -428,11 +428,11 @@ inflow <- delta_flows %>%
   spread(date, inflow) %>%
   select(-delta)
 
-delta_inflow <- array(NA, dim = c(12, 20, 2))
+delta_inflow <- array(NA, dim = c(12, 21, 2))
 delta_inflow[ , , 1] <- as.matrix(inflow[1, ])
 delta_inflow[ , , 2] <- as.matrix(inflow[2, ])
 
-dimnames(delta_inflow) <- list(month.abb[1:12], 1980:1999, c('North Delta', 'South Delta'))
+dimnames(delta_inflow) <- list(month.abb[1:12], 1980:2000, c('North Delta', 'South Delta'))
 
 usethis::use_data(delta_inflow, overwrite = TRUE)
 
@@ -495,8 +495,25 @@ proportion_flow_bypasses[ , , 2] <- bypass_prop_flow[13:24, ]
 
 usethis::use_data(proportion_flow_bypasses, overwrite = TRUE)
 
+# Adds gates_overtopped
+bypass_overtopped <- read_csv("data-raw/delta_cross_channel_gates/bypass_overtopped.csv")
+bypass_overtopped <- bypass_overtopped %>%
+  mutate(year = year(date),
+         month = month(date)) %>%
+  filter(between(year, 1980, 2000)) %>%
+  select(-date) %>%
+  gather(bypass, overtopped, -month, -year) %>%
+  spread(year, overtopped) %>%
+  arrange(bypass, month)  %>%
+  select(-month, -bypass) %>%
+  as.matrix()
 
+gates_overtopped <- array(NA, dim = c(12, 21, 2))
+dimnames(gates_overtopped) <- list(month.abb[1:12], 1980:2000, c('Sutter Bypass', 'Yolo Bypass'))
+gates_overtopped[ , , 1] <- bypass_overtopped[1:12, ]
+gates_overtopped[ , , 2] <- bypass_overtopped[13:24, ]
 
+usethis::use_data(gates_overtopped, overwrite = TRUE)
 # Delta Routing Flows ---------------------
 
 library(DSMflow)
@@ -528,7 +545,7 @@ freeport_node <- c("C400")
 freeport_flow <- calsim %>%
   select(date, freeport_node) %>%
   filter(
-    year(date) >= 1980, year(date) <= 1999) %>%
+    year(date) >= 1980, year(date) <= 2000) %>%
   transmute(
     year = year(date),
     month = month(date),
@@ -549,7 +566,7 @@ vernalis_node <- "C639"
 vernalis_flow <- calsim  %>%
   select(date, vernalis_node) %>%
   filter(
-    year(date) >= 1980, year(date) <= 1999) %>%
+    year(date) >= 1980, year(date) <= 2000) %>%
   transmute(
     year = year(date),
     month = month(date),
@@ -572,7 +589,7 @@ stockton_node <- "C417A"
 stockton_flow <- calsim %>%
   select(date, stockton_node) %>%
   filter(
-    year(date) >= 1980, year(date) <= 1999) %>%
+    year(date) >= 1980, year(date) <= 2000) %>%
   transmute(
     year = year(date),
     month = month(date),
@@ -595,7 +612,7 @@ cvp_exports_node <- "DEL_CVP_TOTAL"
 
 cvp_exports <- baseline_data %>%
   filter(
-    year(Date_Time) >= 1980, year(Date_Time) <= 1999,
+    year(Date_Time) >= 1980, year(Date_Time) <= 2000,
     Variable == cvp_exports_node) %>%
   transmute(
     date = Date_Time,
@@ -618,7 +635,7 @@ swp_exports_node <- "DEL_SWP_TOTAL"
 
 swp_exports <- baseline_data %>%
   filter(
-    year(Date_Time) >= 1980, year(Date_Time) <= 1999,
+    year(Date_Time) >= 1980, year(Date_Time) <= 2000,
     Variable == swp_exports_node) %>%
   transmute(
     date = Date_Time,
