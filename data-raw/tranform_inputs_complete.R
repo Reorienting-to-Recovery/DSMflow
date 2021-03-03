@@ -420,7 +420,7 @@ usethis::use_data(delta_flows, overwrite = TRUE)
 # delta inflows
 # Replaces Dlt.inf
 inflow <- delta_flows %>%
-  filter(year(date) >= 1980, year(date) <= 1999) %>%
+  filter(year(date) >= 1980, year(date) <= 2000) %>%
   mutate(n_dlt_inflow_cms = DSMflow::cfs_to_cms(n_dlt_inflow_cfs),
          s_dlt_inflow_cms = DSMflow::cfs_to_cms(s_dlt_inflow_cfs)) %>%
   select(date, n_dlt_inflow_cms, s_dlt_inflow_cms) %>%
@@ -428,11 +428,11 @@ inflow <- delta_flows %>%
   spread(date, inflow) %>%
   select(-delta)
 
-delta_inflow <- array(NA, dim = c(12, 20, 2))
+delta_inflow <- array(NA, dim = c(12, 21, 2))
 delta_inflow[ , , 1] <- as.matrix(inflow[1, ])
 delta_inflow[ , , 2] <- as.matrix(inflow[2, ])
 
-dimnames(delta_inflow) <- list(month.abb[1:12], 1980:1999, c('North Delta', 'South Delta'))
+dimnames(delta_inflow) <- list(month.abb[1:12], 1980:2000, c('North Delta', 'South Delta'))
 
 usethis::use_data(delta_inflow, overwrite = TRUE)
 
@@ -525,7 +525,7 @@ freeport_node <- c("C400")
 
 freeport_flow <- baseline_data %>%
   filter(
-    year(Date_Time) >= 1980, year(Date_Time) <= 1999,
+    year(Date_Time) >= 1980, year(Date_Time) <= 2000,
     Variable == freeport_node) %>%
   transmute(
     date = Date_Time,
@@ -548,7 +548,7 @@ vernalis_node <- "C639"
 
 vernalis_flow <- baseline_data %>%
   filter(
-    year(Date_Time) >= 1980, year(Date_Time) <= 1999,
+    year(Date_Time) >= 1980, year(Date_Time) <= 2000,
     Variable == vernalis_node) %>%
   transmute(
     date = Date_Time,
@@ -572,7 +572,7 @@ stockton_node <- "C417A"
 
 stockton_flow <- baseline_data %>%
   filter(
-    year(Date_Time) >= 1980, year(Date_Time) <= 1999,
+    year(Date_Time) >= 1980, year(Date_Time) <= 2000,
     Variable == stockton_node) %>%
   transmute(
     date = Date_Time,
@@ -595,7 +595,7 @@ cvp_exports_node <- "DEL_CVP_TOTAL"
 
 cvp_exports <- baseline_data %>%
   filter(
-    year(Date_Time) >= 1980, year(Date_Time) <= 1999,
+    year(Date_Time) >= 1980, year(Date_Time) <= 2000,
     Variable == cvp_exports_node) %>%
   transmute(
     date = Date_Time,
@@ -618,7 +618,7 @@ swp_exports_node <- "DEL_SWP_TOTAL"
 
 swp_exports <- baseline_data %>%
   filter(
-    year(Date_Time) >= 1980, year(Date_Time) <= 1999,
+    year(Date_Time) >= 1980, year(Date_Time) <= 2000,
     Variable == swp_exports_node) %>%
   transmute(
     date = Date_Time,
