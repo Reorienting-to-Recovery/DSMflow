@@ -520,7 +520,7 @@ library(DSMflow)
 library(tibble)
 
 # Adds wilkins flow node to replace freeport flow
-# I used node C128 for wilkins(all 3 potential wilkins nodes very similar)
+# I used node C129 for wilkins(Cyril recomended C129)
 wilkins_node <- c("C129")
 
 wilkins_flow <- calsim %>%
