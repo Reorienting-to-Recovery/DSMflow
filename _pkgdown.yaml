@@ -42,12 +42,17 @@ reference:
   - create_model_array
 
 navbar:
+  structure:
+    left:  [home, reference, news]
+    right: [github]
   type: default
   left:
   - text: 'Reference'
     href: reference/index.html
   - text: 'News'
     href: news/index.html
-  right:
-  - icon: fa-github fa-lg
-    href: https://github.com/cvpia-osc/DSMflow
+
+repo:
+ url:
+  home: https://github.com/CVPIA-OSC/DSMflow
+  issue: https://github.com/CVPIA-OSC/DSMflow/issues/
