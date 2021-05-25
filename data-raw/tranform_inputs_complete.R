@@ -520,7 +520,7 @@ library(DSMflow)
 library(tibble)
 
 # Adds wilkins flow node to replace freeport flow
-# I used node C129 for wilkins(Cyril recomended C129)
+# I used node C129 for wilkins(Cyril recommended C129)
 wilkins_node <- c("C129")
 
 wilkins_flow <- calsim %>%
@@ -605,21 +605,18 @@ rownames(stockton_flow) <- month.abb
 
 usethis::use_data(stockton_flow, overwrite = TRUE)
 
-# Load basline data for exports *Erin will replace with Wright data once I know which nodes
-baseline_data <- read_csv("data-raw/delta-dsm-calsim/FullObsJul18_NoNotch_Base_DV_filtered.csv")
-# cvp exports
-cvp_exports_node <- "DEL_CVP_TOTAL"
 
-cvp_exports <- baseline_data %>%
+# cvp exports
+cvp_exports <- calsim %>%
+  select(date, DEL_CVP_TOTAL) %>%
   filter(
-    year(Date_Time) >= 1980, year(Date_Time) <= 2000,
-    Variable == cvp_exports_node) %>%
+    year(date) >= 1980, year(date) <= 2000) %>%
   transmute(
-    date = Date_Time,
-    year = year(Date_Time),
-    month = month(Date_Time),
-    cvpExportsQcfs = Value,
-    cvpExportsQcms = cfs_to_cms(Value)
+    date = date,
+    year = year(date),
+    month = month(date),
+    cvpExportsQcfs = DEL_CVP_TOTAL,
+    cvpExportsQcms = cfs_to_cms(DEL_CVP_TOTAL)
   ) %>%
   select(year, month, cvpExportsQcms) %>%
   spread(year, cvpExportsQcms) %>%
@@ -631,18 +628,17 @@ rownames(cvp_exports) <- month.abb
 usethis::use_data(cvp_exports, overwrite = TRUE)
 
 # swp exports
-swp_exports_node <- "DEL_SWP_TOTAL"
 
-swp_exports <- baseline_data %>%
+swp_exports <- calsim %>%
+  select(date, DEL_SWP_TOTAL) %>%
   filter(
-    year(Date_Time) >= 1980, year(Date_Time) <= 2000,
-    Variable == swp_exports_node) %>%
+    year(date) >= 1980, year(date) <= 2000) %>%
   transmute(
-    date = Date_Time,
-    year = year(Date_Time),
-    month = month(Date_Time),
-    swpExportsQcfs = Value,
-    swpExportsQcms = cfs_to_cms(Value)
+    date = date,
+    year = year(date),
+    month = month(date),
+    swpExportsQcfs = DEL_SWP_TOTAL,
+    swpExportsQcms = cfs_to_cms(DEL_SWP_TOTAL)
   ) %>%
   select(year, month, swpExportsQcms) %>%
   spread(year, swpExportsQcms) %>%
