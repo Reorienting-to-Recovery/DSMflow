@@ -7,14 +7,21 @@
 \format{
 A matrix with months (1-12) as rows and years (1980-1999) as columns
 }
+\source{
+\itemize{
+  \item \strong{Data Wrangling:} Sadie Gill  \email{sgill@flowwest.com}
+  \item \strong{CALSIM Model Output:} Michael Wright \email{mwright@usbr.gov}
+}
+}
 \usage{
 stockton_flow
 }
 \description{
-flow in cms at Stockton (C417A)
+flow in cms at Stockton (CALSIM node C417A)
 }
 \details{
-The flows here are obtained from a CALSIM run designed for the structured
-decision making in the delta. The name of the scenario is: Full Obs No Notch Baseline.
+\code{vernalis_flow} was calculated using a 'FLOW-CHANNEL' node from CALSIM II.
+
+\href{https://s3-us-west-2.amazonaws.com/cvpiaflow-r-package/BST_CALSIMII_schematic_040110.jpg}{CALSIM II schematic}
 }
 \keyword{datasets}

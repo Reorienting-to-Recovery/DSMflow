@@ -518,21 +518,39 @@ usethis::use_data(gates_overtopped, overwrite = TRUE)
 
 library(DSMflow)
 library(tibble)
-baseline_data <- read_csv("data-raw/delta-dsm-calsim/FullObsJul18_NoNotch_Base_DV_filtered.csv")
+
+# Adds wilkins flow node to replace freeport flow
+# I used node C129 for wilkins(Cyril recommended C129)
+wilkins_node <- c("C129")
+
+wilkins_flow <- calsim %>%
+  select(date, wilkins_node) %>%
+  filter(year(date) >= 1980, year(date) <= 2000) %>%
+  transmute(
+    year = year(date),
+    month = month(date),
+    wilklinsQcfs = C129,
+    wilkinsQcms = cfs_to_cms(C129))  %>%
+  select(year, month, wilkinsQcms) %>%
+  spread(year, wilkinsQcms) %>%
+  select(-month) %>%
+  as.matrix()
+
+rownames(wilkins_flow) <- month.abb
+usethis::use_data(wilkins_flow, overwrite = TRUE)
 
 # freeport flow
 freeport_node <- c("C400")
 
-freeport_flow <- baseline_data %>%
+freeport_flow <- calsim %>%
+  select(date, freeport_node) %>%
   filter(
-    year(Date_Time) >= 1980, year(Date_Time) <= 2000,
-    Variable == freeport_node) %>%
+    year(date) >= 1980, year(date) <= 2000) %>%
   transmute(
-    date = Date_Time,
-    year = year(Date_Time),
-    month = month(Date_Time),
-    freeportQcfs = Value,
-    freeportQcms = cfs_to_cms(Value)
+    year = year(date),
+    month = month(date),
+    freeportQcfs = C400,
+    freeportQcms = cfs_to_cms(C400)
   ) %>%
   select(year, month, freeportQcms) %>%
   spread(year, freeportQcms) %>%
@@ -540,22 +558,20 @@ freeport_flow <- baseline_data %>%
   as.matrix()
 
 rownames(freeport_flow) <- month.abb
-
 usethis::use_data(freeport_flow, overwrite = TRUE)
 
 # vernalis flow
 vernalis_node <- "C639"
 
-vernalis_flow <- baseline_data %>%
+vernalis_flow <- calsim  %>%
+  select(date, vernalis_node) %>%
   filter(
-    year(Date_Time) >= 1980, year(Date_Time) <= 2000,
-    Variable == vernalis_node) %>%
+    year(date) >= 1980, year(date) <= 2000) %>%
   transmute(
-    date = Date_Time,
-    year = year(Date_Time),
-    month = month(Date_Time),
-    vernalisQcfs = Value,
-    vernalisQcms = cfs_to_cms(Value)
+    year = year(date),
+    month = month(date),
+    vernalisQcfs = C639,
+    vernalisQcms = cfs_to_cms(C639)
   ) %>%
   select(year, month, vernalisQcms) %>%
   spread(year, vernalisQcms) %>%
@@ -570,16 +586,15 @@ usethis::use_data(vernalis_flow, overwrite = TRUE)
 
 stockton_node <- "C417A"
 
-stockton_flow <- baseline_data %>%
+stockton_flow <- calsim %>%
+  select(date, stockton_node) %>%
   filter(
-    year(Date_Time) >= 1980, year(Date_Time) <= 2000,
-    Variable == stockton_node) %>%
+    year(date) >= 1980, year(date) <= 2000) %>%
   transmute(
-    date = Date_Time,
-    year = year(Date_Time),
-    month = month(Date_Time),
-    stocktonQcfs = Value,
-    stocktonQcms = cfs_to_cms(Value)
+    year = year(date),
+    month = month(date),
+    stocktonQcfs = C417A,
+    stocktonQcms = cfs_to_cms(C417A)
   ) %>%
   select(year, month, stocktonQcms) %>%
   spread(year, stocktonQcms) %>%
@@ -590,19 +605,18 @@ rownames(stockton_flow) <- month.abb
 
 usethis::use_data(stockton_flow, overwrite = TRUE)
 
-# cvp exports
-cvp_exports_node <- "DEL_CVP_TOTAL"
 
-cvp_exports <- baseline_data %>%
+# cvp exports
+cvp_exports <- calsim %>%
+  select(date, DEL_CVP_TOTAL) %>%
   filter(
-    year(Date_Time) >= 1980, year(Date_Time) <= 2000,
-    Variable == cvp_exports_node) %>%
+    year(date) >= 1980, year(date) <= 2000) %>%
   transmute(
-    date = Date_Time,
-    year = year(Date_Time),
-    month = month(Date_Time),
-    cvpExportsQcfs = Value,
-    cvpExportsQcms = cfs_to_cms(Value)
+    date = date,
+    year = year(date),
+    month = month(date),
+    cvpExportsQcfs = DEL_CVP_TOTAL,
+    cvpExportsQcms = cfs_to_cms(DEL_CVP_TOTAL)
   ) %>%
   select(year, month, cvpExportsQcms) %>%
   spread(year, cvpExportsQcms) %>%
@@ -614,18 +628,17 @@ rownames(cvp_exports) <- month.abb
 usethis::use_data(cvp_exports, overwrite = TRUE)
 
 # swp exports
-swp_exports_node <- "DEL_SWP_TOTAL"
 
-swp_exports <- baseline_data %>%
+swp_exports <- calsim %>%
+  select(date, DEL_SWP_TOTAL) %>%
   filter(
-    year(Date_Time) >= 1980, year(Date_Time) <= 2000,
-    Variable == swp_exports_node) %>%
+    year(date) >= 1980, year(date) <= 2000) %>%
   transmute(
-    date = Date_Time,
-    year = year(Date_Time),
-    month = month(Date_Time),
-    swpExportsQcfs = Value,
-    swpExportsQcms = cfs_to_cms(Value)
+    date = date,
+    year = year(date),
+    month = month(date),
+    swpExportsQcfs = DEL_SWP_TOTAL,
+    swpExportsQcms = cfs_to_cms(DEL_SWP_TOTAL)
   ) %>%
   select(year, month, swpExportsQcms) %>%
   spread(year, swpExportsQcms) %>%
