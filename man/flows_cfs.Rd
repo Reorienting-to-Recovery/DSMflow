@@ -58,7 +58,7 @@ use with the CVPIA SIT Salmon Population Model to develop habitat inputs.
 The flow is represented using 'FLOW-CHANNEL' and 'FLOW-DELIVERY' nodes from CALSIM II.
 The nodes and calculation for each watershed are outlined above.
 
-The Sutter and Yolo Bypasses' flows are stored in a seperate dataset
+The Sutter and Yolo Bypasses' flows are stored in a separate dataset
 \code{\link{bypass_flows}} to enable the habitat segmentation in the bypasses
 according to weir locations.
 

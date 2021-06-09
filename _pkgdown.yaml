@@ -28,10 +28,12 @@ reference:
   - upper_sacramento_flows
   - mean_flow
   - delta_cross_channel_closed
+  - gates_overtopped
   - proportion_pulse_flows
   - freeport_flow
   - vernalis_flow
   - stockton_flow
+  - wilkins_flow
   - cvp_exports
   - swp_exports
 - title: Helpers
