@@ -1,11 +1,12 @@
 Package: DSMflow
 Type: Package
 Title: Modeled Flow Data for the CVPIA SIT Model
-Version: 0.0.1
+Version: 1.0
 Authors@R: c(
     person("Sadie", "Gill", email = "sgill@flowwest.com", role = c("aut", "cre")), 
     person("Mark", "Tompkins", email = "mtompkins@flowwest.com", role = "aut"),
-    person("Mike", "Urkov", email = "mike.urkov@gmail.com", role = "aut"))
+    person("Emanuel", "Rodriguez", email = "erodriguez@flowwest.com", role = "aut"), 
+    person("Erin", "Cain", email = "ecain@flowwest.com", role = "aut"))
 Description: This data package contains modeled flows and diversions for each of the watersheds 
     within the CVPIA salmon life cycle model.
 License: CC0
