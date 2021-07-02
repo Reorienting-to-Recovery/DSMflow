@@ -12,7 +12,8 @@ remotes::install_github("CVPIA-OSC/DSMFlow")
 ```
 
 #### Usage
-This package provides flow related datasets to the [`chinookDSM `](https://flowwest.github.io/cvpiaModels/) package.
+This package provides flow related datasets to the [`fallRunDSM,`](https://github.com/CVPIA-OSC/fallRunDSM)
+[`springRunDSM,`](https://github.com/CVPIA-OSC/springRunDSM) [`winterRunDSM,`](https://github.com/CVPIA-OSC/winterRunDSM) and [`latefallRunDSM`](https://github.com/CVPIA-OSC/latefallRunDSM) packages.
 
 ``` r
 # datasets within the package
