@@ -128,7 +128,7 @@ div_calsim <- calsim[, node_columns]
 
 # total diverted------------------------------------
 temp_diver <- div_calsim %>%
-  mutate(`Upper Sacramento River` = D104 / C104,
+  mutate(`Upper Sacramento River` = D104,
          `Antelope Creek` = ifelse(C11307 == 0, 0, (C11307 / (C11307 + C11308 + C11309) * D11305)),
          `Battle Creek` = NA,
          `Bear Creek` = NA,
