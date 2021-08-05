@@ -78,7 +78,7 @@
 "mean_flow"
 
 #' Total Flow Diverted
-#' @description A dataset containing the diverted flow in cfs within watersheds for
+#' @description A dataset containing the diverted flow in cms within watersheds for
 #' use with the CVPIA SIT Salmon Population Model.
 #'
 #' @format a 31 by 12 by 21 array [watershed, month, year (1980-2000)]

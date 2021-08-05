@@ -18,7 +18,7 @@ a 31 by 12 by 21 array [watershed, month, year (1980-2000)]
 total_diverted
 }
 \description{
-A dataset containing the diverted flow in cfs within watersheds for
+A dataset containing the diverted flow in cms within watersheds for
 use with the CVPIA SIT Salmon Population Model.
 }
 \details{
