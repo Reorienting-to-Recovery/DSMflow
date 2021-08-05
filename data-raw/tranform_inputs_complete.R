@@ -173,6 +173,7 @@ total_diverted <- temp_diver %>%
   select(date:`Cosumnes River`, `Mokelumne River`, `Merced River`:`San Joaquin River`) %>%
   filter(year(date) >= 1980, year(date) <= 2000) %>%
   gather(watershed, tot_diver, -date) %>%
+  mutate(tot_diver = DSMflow::cfs_to_cms(tot_diver)) %>%
   spread(date, tot_diver) %>%
   left_join(DSMflow::watershed_ordering) %>%
   mutate_all(~replace_na(., 0)) %>%
