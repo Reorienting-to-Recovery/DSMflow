@@ -1,0 +1,69 @@
+---
+title: "Explore Flow"
+author: "Erin Cain"
+date: "8/6/2021"
+output: 
+  html_document:
+    toc_depth: 2
+    theme: flatly
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      fig.width=15, fig.height=8)
+library(tidyverse)
+library(ggplot2)
+library(lubridate)
+```
+
+## Watershed Flow (cfs)
+
+```{r}
+flow <- DSMflow::flows_cfs %>%
+  gather( watershed, cfs, -date) %>%
+  filter(!(watershed %in% c('Sutter Bypass', 'Yolo Bypass'))) 
+
+for (w in DSMflow::watershed_ordering %>% pull(watershed)){
+  watershed <- flow %>% 
+    filter(watershed == w) %>% 
+    summarise(watershed = w, 
+              mean_flow = mean(cfs), 
+              min_flow = min(cfs), 
+              max_flow = max(cfs))
+  
+  plot <- flow %>% 
+    filter(watershed == w) %>% 
+    ggplot(aes(date, cfs)) +
+    geom_line(color = 'blue') +
+    labs(title = w)
+  print(plot)
+  print(watershed)
+} 
+```
+
+## Proportion Diverted / Total Diverted
+```{r}
+total_diverted <- DSMflow::total_diverted
+proportion_diverted <- DSMflow::proportion_diverted
+
+diversions <- expand_grid(
+  watershed = factor(DSMscenario::watershed_labels, 
+                     levels = DSMscenario::watershed_labels),
+  month = 1:12,
+  year = 1980:2000) %>%
+  arrange(year, month, watershed) %>%
+  mutate(total_diverted = as.vector(total_diverted),
+         proportion_diverted = as.vector(proportion_diverted))
+
+diversions %>% 
+  transmute(watershed, date = ymd(paste(year, month, 1)), total_diverted, proportion_diverted) %>% 
+  filter(!(watershed %in% c('Sutter Bypass', 'Yolo Bypass'))) %>% 
+  gather(version, cfs, -watershed, -date)  %>% 
+  ggplot(aes(date, cfs, color = version)) +
+  geom_line() +
+  facet_wrap(~watershed, scales = 'free')
+
+
+```
+
