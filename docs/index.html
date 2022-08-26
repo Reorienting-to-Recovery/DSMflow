@@ -20,6 +20,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -32,7 +34,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">DSMflow</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0</span>
       </span>
     </div>
 
@@ -47,7 +49,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/CVPIA-OSC/DSMflow">
+  <a href="https://github.com/CVPIA-OSC/DSMflow" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -66,54 +68,49 @@
   <div class="contents col-md-9">
 
 <p><img src="reference/figures/cvpia_logo.jpg" align="right" width="40%"></p>
-<div id="modeled-flow-data-for-the-cvpia-sit-model" class="section level3">
-<h3 class="hasAnchor">
-<a href="#modeled-flow-data-for-the-cvpia-sit-model" class="anchor"></a>Modeled Flow Data for the CVPIA SIT Model</h3>
+<div class="section level3">
+<h3 id="modeled-flow-data-for-the-cvpia-sit-model">Modeled Flow Data for the CVPIA SIT Model<a class="anchor" aria-label="anchor" href="#modeled-flow-data-for-the-cvpia-sit-model"></a>
+</h3>
 <p><em>This data package contains modeled flow and diversion data for each of the watersheds within the CVPIA SIT Salmon Life Cycle Model.</em></p>
-<div id="installation" class="section level4">
-<h4 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h4>
+<div class="section level4">
+<h4 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h4>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># install.packages("remotes")</span>
-<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"CVPIA-OSC/DSMFlow"</span><span class="op">)</span></code></pre></div>
+<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"CVPIA-OSC/DSMFlow"</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="usage" class="section level4">
-<h4 class="hasAnchor">
-<a href="#usage" class="anchor"></a>Usage</h4>
-<p>This package provides flow related datasets to the <a href="https://github.com/CVPIA-OSC/fallRunDSM"><code>fallRunDSM,</code></a> <a href="https://github.com/CVPIA-OSC/springRunDSM"><code>springRunDSM,</code></a> <a href="https://github.com/CVPIA-OSC/winterRunDSM"><code>winterRunDSM,</code></a> and <a href="https://github.com/CVPIA-OSC/latefallRunDSM"><code>latefallRunDSM</code></a> packages.</p>
+<div class="section level4">
+<h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
+</h4>
+<p>This package provides flow related datasets to the <a href="https://github.com/CVPIA-OSC/fallRunDSM" class="external-link"><code>fallRunDSM,</code></a> <a href="https://github.com/CVPIA-OSC/springRunDSM" class="external-link"><code>springRunDSM,</code></a> <a href="https://github.com/CVPIA-OSC/winterRunDSM" class="external-link"><code>winterRunDSM,</code></a> and <a href="https://github.com/CVPIA-OSC/latefallRunDSM" class="external-link"><code>latefallRunDSM</code></a> packages.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># datasets within the package</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span>package <span class="op">=</span> <span class="st">'DSMflow'</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span>package <span class="op">=</span> <span class="st">'DSMflow'</span><span class="op">)</span>
 
 <span class="co"># explore CALSIM II modeled flow mapped to CVPIA tributaries metadata</span>
 <span class="op">?</span><span class="fu">DSMflow</span><span class="fu">::</span><span class="va"><a href="reference/flows_cfs.html">flows_cfs</a></span></code></pre></div>
 </div>
-<div id="about-the-models" class="section level4">
-<h4 class="hasAnchor">
-<a href="#about-the-models" class="anchor"></a>About the Models</h4>
+<div class="section level4">
+<h4 id="about-the-models">About the Models<a class="anchor" aria-label="anchor" href="#about-the-models"></a>
+</h4>
 <p>Output from the CALSIM II operational model is used to generate hydrologic inputs for the CVPIA Decision Support Model (DSM). CALSIM II is the model used to simulate California State Water Project (SWP) / Central Valley Project (CVP) operations. CALSIM II was developed in the Water Resource Integrated Modeling System (WRIMS model engine or WRIMS), a generalized water resources modeling system for evaluating operational alternatives of large, complex river basins.</p>
-<p>The 2017 DSM uses the existing conditions simulation from the <a href="http://baydeltaoffice.water.ca.gov/modeling/hydrology/CalSim/Downloads/CalSimDownloads/CalSim-IIStudies/SWPReliability2009/index.cfm">2009 CalSim-II Draft SWP Delivery Reliability Studies 2009</a>. The CALSIM II run is a Reclamation product used to replicate current operations for comparison with proposed adjustments under an ongoing Endangered Species Act consultation with the National Marine Fisheries Service.</p>
-<p>A current NMFS Biological Opinion concluded that, as proposed, CVP and SWP operations were likely to jeopardize the continued existence of four federally- listed anadromous fish species:</p>
-<ul>
-<li>Sacramento River winter-run Chinook salmon<br>
-</li>
-<li>Central Valley spring-run Chinook salmon<br>
-</li>
-<li>California Central Valley steelhead<br>
-</li>
-<li>Southern distinct population segment of the North American green sturgeon</li>
-</ul>
+<p>The 2017 DSM uses the existing conditions simulation from the 2009 CalSim-II Draft SWP Delivery Reliability Studies 2009. The CALSIM II run is a Reclamation product used to replicate current operations for comparison with proposed adjustments under an ongoing Endangered Species Act consultation with the National Marine Fisheries Service.</p>
+<p>A current NMFS Biological Opinion concluded that, as proposed, CVP and SWP operations were likely to jeopardize the continued existence of four federally- listed anadromous fish species:<br>
+- Sacramento River winter-run Chinook salmon<br>
+- Central Valley spring-run Chinook salmon<br>
+- California Central Valley steelhead<br>
+- Southern distinct population segment of the North American green sturgeon</p>
 <p>This CALSIM II run was used as the basis of comparison for other potential operations that could offset impacts to listed species.</p>
-<p><a href="https://water.ca.gov/Library/Modeling-and-Analysis/Central-Valley-models-and-tools/CalSim-2">More information on CALSIM II</a><br><a href="https://s3-us-west-2.amazonaws.com/cvpiaflow-r-package/BST_CALSIMII_schematic_040110.jpg">CALSIM II Schematic</a></p>
+<p><a href="https://water.ca.gov/Library/Modeling-and-Analysis/Central-Valley-models-and-tools/CalSim-II" class="external-link">More information on CALSIM II</a><br><a href="https://s3-us-west-2.amazonaws.com/cvpiaflow-r-package/BST_CALSIMII_schematic_040110.jpg" class="external-link">CALSIM II Schematic</a></p>
 </div>
 </div>
-<div id="dependencies" class="section level3">
-<h3 class="hasAnchor">
-<a href="#dependencies" class="anchor"></a>Dependencies</h3>
-<p>The <code>DSMFlow</code> package provides data for several other packages within the <a href="https://github.com/CVPIA-OSC">CVPIA Open Science Collaborative</a>. These relationships are visualized in the dependency graph below.</p>
+<div class="section level3">
+<h3 id="dependencies">Dependencies<a class="anchor" aria-label="anchor" href="#dependencies"></a>
+</h3>
+<p>The <code>DSMFlow</code> package provides data for several other packages within the <a href="https://github.com/CVPIA-OSC" class="external-link">CVPIA Open Science Collaborative</a>. These relationships are visualized in the dependency graph below.</p>
 <p><img src="reference/figures/dependencyChain.svg" width="100%"></p>
 <div style="margin-top: 40px;">
-Data Assembled and Maintained by <a href="http://www.flowwest.com/" target="_blank"> <img src="reference/figures/TransLogoTreb.png" width="150px"></a>
+<p>Data Assembled and Maintained by <a href="http://www.flowwest.com/" target="_blank" class="external-link"> <img src="reference/figures/TransLogoTreb.png" width="150px"></a></p>
 </div>
 </div>
 
@@ -121,25 +118,32 @@ Data Assembled and Maintained by <a href="http://www.flowwest.com/" target="_bla
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Browse source code at <br><a href="https://github.com/CVPIA-OSC/DSMflow">https://​github.com/​CVPIA-OSC/​DSMflow</a>
-</li>
-<li>Fish and Wildlife Service's CVPIA website at <br><a href="https://www.fws.gov/lodi/anadromous_fish_restoration">https://​www.fws.gov/​lodi/​anadromous_fish_restoration</a>
-</li>
-<li>Bureau of Reclamation's CVPIA website at <br><a href="https://www.usbr.gov/mp/cvpia/">https://​www.usbr.gov/​mp/​cvpia/​</a>
-</li>
+<li><a href="https://github.com/CVPIA-OSC/DSMflow" class="external-link">Browse source code</a></li>
+<li><a href="https://www.fws.gov/lodi/anadromous_fish_restoration" class="external-link">Fish and Wildlife Service's CVPIA website</a></li>
+<li><a href="https://www.usbr.gov/mp/cvpia/" class="external-link">Bureau of Reclamation's CVPIA website</a></li>
 </ul>
 </div>
+
 <div class="license">
-<h2>License</h2>
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li><a href="LICENSE.html">Full license</a></li>
 <li><small>CC0</small></li>
 </ul>
 </div>
+
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
+<ul class="list-unstyled">
+<li><a href="authors.html#citation">Citing DSMflow</a></li>
+</ul>
+</div>
+
 <div class="developers">
-<h2>Developers</h2>
+<h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>Sadie Gill <br><small class="roles"> Author, maintainer </small>  </li>
 <li>Mark Tompkins <br><small class="roles"> Author </small>  </li>
@@ -148,16 +152,20 @@ Data Assembled and Maintained by <a href="http://www.flowwest.com/" target="_bla
 </ul>
 </div>
 
+
+
   </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by Sadie Gill, Mark Tompkins, Emanuel Rodriguez, Erin Cain.</p>
+  <p></p>
+<p>Developed by Sadie Gill, Mark Tompkins, Emanuel Rodriguez, Erin Cain.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer>
@@ -165,6 +173,8 @@ Data Assembled and Maintained by <a href="http://www.flowwest.com/" target="_bla
 
   
 
+
+  
 
   </body>
 </html>
