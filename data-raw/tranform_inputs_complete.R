@@ -62,9 +62,9 @@ generate_flow_cfs <- function(calsim_data, nodes){
 }
 
 # Original (2008 - 2009 BiOp) ------------------------------------------------
-calsim <- read_rds('data-raw/calsim_2008_2009/MikeWrightCalSimOct2017/cvpia_calsim.rds')
+calsim_2008_2009 <- read_rds('data-raw/calsim_2008_2009/MikeWrightCalSimOct2017/cvpia_calsim.rds')
 
-flow_2008_2009 <- generate_flow_cfs(calsim_data = calsim, nodes = habitat_node)
+flow_2008_2009 <- generate_flow_cfs(calsim_data = calsim_2008_2009, nodes = habitat_node)
 
 # testing Moke flows from exteranl model to calsim II - C503 vs 04-501
 # moke_test <- read_excel('data-raw/calsim_2008_2009/EBMUDSIM/CVPIA_SIT_Data_RequestEBMUDSIMOutput_ExCond.xlsx', sheet = 'Tableau Clean-up') %>%
@@ -89,7 +89,7 @@ flow_2008_2009 <- generate_flow_cfs(calsim_data = calsim, nodes = habitat_node)
 # #looks great
 
 # bring in Moke flow from other model run
-  moke <- read_excel('data-raw/calsim_2008_2009/EBMUDSIM/CVPIA_SIT_Data_RequestEBMUDSIMOutput_ExCond.xlsx',
+moke <- read_excel('data-raw/calsim_2008_2009/EBMUDSIM/CVPIA_SIT_Data_RequestEBMUDSIMOutput_ExCond.xlsx',
                    sheet = 'Tableau Clean-up') %>%
   mutate(date = as_date(Date), `Mokelumne River` = C91) %>%
   select(date, `Mokelumne River`)
@@ -106,7 +106,7 @@ calsim_2019_biop_itp <- read_rds('data-raw/calsim_2019_BiOp_ITP/biop_cvpia_calsi
 flow_cfs_2019_biop_itp <- generate_flow_cfs(calsim_data = calsim_2019_biop_itp, nodes = habitat_node)
 
 # create flow_cfs with both 2008-2009 biop and 2018-2019 biop/itp
-flow_cfs <- list(biop_2008_2009 = flows_cfs_2008_2009,
+flows_cfs <- list(biop_2008_2009 = flows_cfs_2008_2009,
                  biop_itp_2018_2019 = flow_cfs_2019_biop_itp # missing moke
 )
 
@@ -114,18 +114,29 @@ flow_cfs <- list(biop_2008_2009 = flows_cfs_2008_2009,
 usethis::use_data(flows_cfs, overwrite = TRUE)
 
 # bypasses habitat flow --------------------------------------------------------
-bypass_flows <- calsim %>%
-  select(date,
-         sutter1 = D117,
-         sutter2 = C135,
-         sutter3 = C136A,
-         sutter4 = C137,
-         yolo1 = D160,
-         yolo2 = C157) %>%
-  mutate(sutter2 = sutter2 + sutter1,
-         sutter3 = sutter3 + sutter2,
-         sutter4 = sutter4 + sutter3,
-         yolo2 = yolo2 + yolo1)
+generate_bypass_flows <- function(calsim_run) {
+  bypass_flows <- calsim_run %>%
+    select(date,
+           sutter1 = D117,
+           sutter2 = C135,
+           sutter3 = C136A,
+           sutter4 = C137,
+           yolo1 = D160,
+           yolo2 = C157) %>%
+    mutate(sutter2 = sutter2 + sutter1,
+           sutter3 = sutter3 + sutter2,
+           sutter4 = sutter4 + sutter3,
+           yolo2 = yolo2 + yolo1)
+  return(bypass_flows)
+}
+
+bypass_2008_2009 <-  generate_bypass_flows(calsim_run = calsim_2008_2009)
+bypass_2019_biop_itp <- generate_bypass_flows(calsim_run = calsim_2019_biop_itp)
+
+# create bypass flows with both 2008-2009 biop and 2018-2019 biop/itp
+bypass_flows <- list(biop_2008_2009 = bypass_2008_2009,
+                     biop_itp_2018_2019 = bypass_2019_biop_itp # missing moke
+)
 
 usethis::use_data(bypass_flows, overwrite = TRUE)
 
