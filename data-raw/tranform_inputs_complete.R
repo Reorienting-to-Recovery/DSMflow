@@ -12,8 +12,7 @@ source('R/utils.R')
 watershed_ordering <- read_csv('data-raw/watershed_ordering.csv')
 usethis::use_data(watershed_ordering, overwrite = TRUE)
 
-# prep calsim data ------------
-calsim <- read_rds('data-raw/calsim_2008_2009/MikeWrightCalSimOct2017/cvpia_calsim.rds')
+# calsim prep (all versions) ---------------------------------------------------
 cvpia_nodes <- read_csv('data-raw/calsim_2008_2009/MikeWrightCalSimOct2017/cvpia_calsim_nodes.csv', skip = 1)
 watersheds <- cvpia_nodes$watershed
 
@@ -21,52 +20,61 @@ need_split_habitat <- cvpia_nodes$calsim_habitat_flow %>% str_detect(', ')
 habitat_split <- cvpia_nodes$calsim_habitat_flow[need_split_habitat] %>% str_split(', ') %>% flatten_chr()
 habitat_node <- c(cvpia_nodes$calsim_habitat_flow[!need_split_habitat], habitat_split, 'C134', 'C160')[-20]
 
-node_columns <- names(calsim) %in% c(habitat_node, 'date')
+# Flow Function ----------------------------------------------------------------
+generate_flow_cfs <- function(calsim_data, nodes){
+  node_columns <- names(calsim_data) %in% c(nodes, 'date')
 
-flow_calsim <- calsim[, node_columns]
+  flow_calsim <- calsim_data[, node_columns]
 
-flow <- flow_calsim %>%
-  mutate(`Upper Sacramento River` = C104,
-         `Antelope Creek` = C11307,
-         `Battle Creek` = C10803,
-         `Bear Creek` = C11001,
-         `Big Chico Creek` = C11501,
-         `Butte Creek` = C217A,
-         `Clear Creek` = C3,
-         `Cottonwood Creek` = C10802,
-         `Cow Creek` = C10801,
-         `Deer Creek` = C11309,
-         `Elder Creek` = C11303,
-         `Mill Creek` = C11308,
-         `Paynes Creek` = C11001,
-         `Stony Creek` = C142A,
-         `Thomes Creek` = C11304,
-         `Upper-mid Sacramento River` = C115,
-         `Bear River` = C285,
-         `Feather River` = C203,
-         `Yuba River` = C230,
-         `Lower-mid Sacramento River1` = C134, # low-mid habitat = 35.6/58*habitat(C134) + 22.4/58*habitat(C160),
-         `Lower-mid Sacramento River2` = C160,
-         `American River` = C9,
-         `Lower Sacramento River` = C166,
-         `Calaveras River` = C92,
-         `Cosumnes River` = C501,
-         # `Mokelumne River` = NA,
-         `Merced River` = C561,
-         `Stanislaus River` = C520,
-         `Tuolumne River` = C540,
-         `San Joaquin River` = C630) %>%
-  select(date, `Upper Sacramento River`:`San Joaquin River`)
+  flow <- flow_calsim %>%
+    mutate(`Upper Sacramento River` = C104,
+           `Antelope Creek` = C11307,
+           `Battle Creek` = C10803,
+           `Bear Creek` = C11001,
+           `Big Chico Creek` = C11501,
+           `Butte Creek` = C217A,
+           `Clear Creek` = C3,
+           `Cottonwood Creek` = C10802,
+           `Cow Creek` = C10801,
+           `Deer Creek` = C11309,
+           `Elder Creek` = C11303,
+           `Mill Creek` = C11308,
+           `Paynes Creek` = C11001,
+           `Stony Creek` = C142A,
+           `Thomes Creek` = C11304,
+           `Upper-mid Sacramento River` = C115,
+           `Bear River` = C285,
+           `Feather River` = C203,
+           `Yuba River` = C230,
+           `Lower-mid Sacramento River1` = C134, # low-mid habitat = 35.6/58*habitat(C134) + 22.4/58*habitat(C160),
+           `Lower-mid Sacramento River2` = C160,
+           `American River` = C9,
+           `Lower Sacramento River` = C166,
+           `Calaveras River` = C92,
+           `Cosumnes River` = C501,
+           # `Mokelumne River` = ?, # TODO figure out what to do with Moke with new calsim
+           `Merced River` = C561,
+           `Stanislaus River` = C520,
+           `Tuolumne River` = C540,
+           `San Joaquin River` = C630) %>%
+    select(date, `Upper Sacramento River`:`San Joaquin River`)
+  return(flow)
+}
+
+# Original (2008 - 2009 BiOp) ------------------------------------------------
+calsim <- read_rds('data-raw/calsim_2008_2009/MikeWrightCalSimOct2017/cvpia_calsim.rds')
+
+flow_2008_2009 <- generate_flow_cfs(calsim_data = calsim, nodes = habitat_node)
 
 # testing Moke flows from exteranl model to calsim II - C503 vs 04-501
-# moke_test <- read_excel('data-raw/EBMUDSIM/CVPIA_SIT_Data_RequestEBMUDSIMOutput_ExCond.xlsx', sheet = 'Tableau Clean-up') %>%
+# moke_test <- read_excel('data-raw/calsim_2008_2009/EBMUDSIM/CVPIA_SIT_Data_RequestEBMUDSIMOutput_ExCond.xlsx', sheet = 'Tableau Clean-up') %>%
 #   mutate(date = as_date(Date), C503...11) %>%
-#   select(date, C503 = C503...11)
+#   select(date, C503 = C503...11) %>% glimpse()
 #
-# c501_504 <- read_csv('data-raw/MikeWrightCalSimOct2017/C422-C843.csv', skip = 1) %>%
-#   select(date = X2, C504, C501) %>%
+# c501_504 <- read_csv('data-raw/calsim_2008_2009/MikeWrightCalSimOct2017/C422-C843.csv', skip = 1) %>%
+#   select(date = `...2`, C504, C501) %>%
 #   filter(!is.na(date)) %>%
-#   mutate(date = dmy(date))
+#   mutate(date = dmy(date)) %>% glimpse()
 #
 # moke_test %>%
 #   left_join(c501_504) %>%
@@ -81,18 +89,31 @@ flow <- flow_calsim %>%
 # #looks great
 
 # bring in Moke flow from other model run
-moke <- read_excel('data-raw/calsim_2008_2009/EBMUDSIM/CVPIA_SIT_Data_RequestEBMUDSIMOutput_ExCond.xlsx', sheet = 'Tableau Clean-up') %>%
+  moke <- read_excel('data-raw/calsim_2008_2009/EBMUDSIM/CVPIA_SIT_Data_RequestEBMUDSIMOutput_ExCond.xlsx',
+                   sheet = 'Tableau Clean-up') %>%
   mutate(date = as_date(Date), `Mokelumne River` = C91) %>%
   select(date, `Mokelumne River`)
 
-# tributary and mainstem habitat flow ------
-flows_cfs <- flow %>%
+# tributary and mainstem habitat flow ------------------------------------------
+# TODO once we add Moke into model update to remove moke column before joining new one
+flows_cfs_2008_2009 <- flow_2008_2009 %>%
   left_join(moke) %>%
   select(date:`Cosumnes River`, `Mokelumne River`, `Merced River`:`San Joaquin River`)
 
+# Add in new calsim run (2018 - 2019 Biop/Itp) data-----------------------------
+calsim_2019_biop_itp <- read_rds('data-raw/calsim_2019_BiOp_ITP/biop_cvpia_calsim.rds')
+
+flow_cfs_2019_biop_itp <- generate_flow_cfs(calsim_data = calsim_2019_biop_itp, nodes = habitat_node)
+
+# create flow_cfs with both 2008-2009 biop and 2018-2019 biop/itp
+flow_cfs <- list(biop_2008_2009 = flows_cfs_2008_2009,
+                 biop_itp_2018_2019 = flow_cfs_2019_biop_itp # missing moke
+)
+
+# Write flow cfs data object
 usethis::use_data(flows_cfs, overwrite = TRUE)
 
-# bypasses habitat flow -----
+# bypasses habitat flow --------------------------------------------------------
 bypass_flows <- calsim %>%
   select(date,
          sutter1 = D117,
