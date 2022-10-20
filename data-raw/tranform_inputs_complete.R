@@ -13,8 +13,8 @@ watershed_ordering <- read_csv('data-raw/watershed_ordering.csv')
 usethis::use_data(watershed_ordering, overwrite = TRUE)
 
 # prep calsim data ------------
-calsim <- read_rds('data-raw/MikeWrightCalSimOct2017/cvpia_calsim.rds')
-cvpia_nodes <- read_csv('data-raw/MikeWrightCalSimOct2017/cvpia_calsim_nodes.csv', skip = 1)
+calsim <- read_rds('data-raw/calsim_2008_2009/MikeWrightCalSimOct2017/cvpia_calsim.rds')
+cvpia_nodes <- read_csv('data-raw/calsim_2008_2009/MikeWrightCalSimOct2017/cvpia_calsim_nodes.csv', skip = 1)
 watersheds <- cvpia_nodes$watershed
 
 need_split_habitat <- cvpia_nodes$calsim_habitat_flow %>% str_detect(', ')
@@ -81,7 +81,7 @@ flow <- flow_calsim %>%
 # #looks great
 
 # bring in Moke flow from other model run
-moke <- read_excel('data-raw/EBMUDSIM/CVPIA_SIT_Data_RequestEBMUDSIMOutput_ExCond.xlsx', sheet = 'Tableau Clean-up') %>%
+moke <- read_excel('data-raw/calsim_2008_2009/EBMUDSIM/CVPIA_SIT_Data_RequestEBMUDSIMOutput_ExCond.xlsx', sheet = 'Tableau Clean-up') %>%
   mutate(date = as_date(Date), `Mokelumne River` = C91) %>%
   select(date, `Mokelumne River`)
 
@@ -163,7 +163,7 @@ temp_diver <- div_calsim %>%
   select(date, watersheds[-27])
 
 # bring in Moke diversions from other model run
-moke <- read_excel('data-raw/EBMUDSIM/CVPIA_SIT_Data_RequestEBMUDSIMOutput_ExCond.xlsx',
+moke <- read_excel('data-raw/calsim_2008_2009/EBMUDSIM/CVPIA_SIT_Data_RequestEBMUDSIMOutput_ExCond.xlsx',
                    sheet = 'Tableau Clean-up') %>%
   mutate(date = as_date(Date), `Mokelumne River` = (D503A + D503B + D503C + D502A + D502B)) %>%
   select(date, `Mokelumne River`)
@@ -232,7 +232,7 @@ temp_prop_diver <- div_calsim %>%
   spread(watershed, prop_diver)
 
 # bring in Moke diversions from other model run
-moke <- read_excel('data-raw/EBMUDSIM/CVPIA_SIT_Data_RequestEBMUDSIMOutput_ExCond.xlsx', sheet = 'Tableau Clean-up') %>%
+moke <- read_excel('data-raw/calsim_2008_2009/EBMUDSIM/CVPIA_SIT_Data_RequestEBMUDSIMOutput_ExCond.xlsx', sheet = 'Tableau Clean-up') %>%
   mutate(date = as_date(Date), `Mokelumne River` = (D503A + D503B + D503C + D502A + D502B) / C91) %>%
   select(date, `Mokelumne River`)
 
@@ -252,12 +252,12 @@ dimnames(proportion_diverted) <- list(watershed_ordering$watershed, month.abb[1:
 usethis::use_data(proportion_diverted, overwrite = TRUE)
 
 # misc flow nodes ----
-cs <- read_csv('data-raw/MikeWrightCalSimOct2017/C1_C169.csv', skip = 1) %>%
+cs <- read_csv('data-raw/calsim_2008_2009/MikeWrightCalSimOct2017/C1_C169.csv', skip = 1) %>%
   select(date = X2, C134, C165, C116, C123, C124, C125, C109) %>%
   filter(!is.na(date)) %>%
   mutate(date = dmy(date))
 
-ds <- read_csv('data-raw/MikeWrightCalSimOct2017/D100_D403.csv', skip = 1) %>%
+ds <- read_csv('data-raw/calsim_2008_2009/MikeWrightCalSimOct2017/D100_D403.csv', skip = 1) %>%
   select(date = X2, D160, D166A, D117, D124, D125, D126) %>%
   filter(!is.na(date)) %>%
   mutate(date = dmy(date))
