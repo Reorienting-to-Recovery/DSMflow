@@ -225,12 +225,21 @@ generate_diversion_total <- function(calsim_data, nodes){
 
 diversion_2008_2009 <-  generate_diversion_total(calsim_data= calsim_2008_2009,
                                                  nodes = all_div_nodes)
-#TODO: bring in Moke for 2008
-# bring in Moke diversions from other model run
-# moke <- read_excel('data-raw/calsim_2008_2009/EBMUDSIM/CVPIA_SIT_Data_RequestEBMUDSIMOutput_ExCond.xlsx',
-#                    sheet = 'Tableau Clean-up') %>%
-#   mutate(date = as_date(Date), `Mokelumne River` = (D503A + D503B + D503C + D502A + D502B)) %>%
-#   select(date, `Mokelumne River`)
+#bring in Moke diversions for 2008_2009 run from other model run
+moke <- read_excel('data-raw/calsim_2008_2009/EBMUDSIM/CVPIA_SIT_Data_RequestEBMUDSIMOutput_ExCond.xlsx',
+                   sheet = 'Tableau Clean-up') %>%
+  mutate(date = as_date(Date),
+         `Mokelumne River` = (D503A + D503B + D503C + D502A + D502B)) %>%
+  select(date, `Mokelumne River`) |>
+  filter(year(date) <= 2000 & year(date) >= 1980) |> # subset to 20 years
+  group_by(year(date), month(date)) |> # summarize by month
+  summarize(monthly_flow = sum(`Mokelumne River`)) |>
+  rename(year = `year(date)`,
+         month = `month(date)`) |>
+  pivot_wider(names_from = year, values_from = monthly_flow) |> # format to fit into model array
+  select(-month)
+
+diversion_2008_2009["Mokelumne River",,] <- as.matrix(moke) # add to 2008_2009 matrix
 
 diversion_2019_biop_itp <- generate_diversion_total(calsim_data = calsim_2019_biop_itp,
                                                     nodes = all_div_nodes)
