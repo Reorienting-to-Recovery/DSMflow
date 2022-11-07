@@ -650,20 +650,36 @@ usethis::use_data(delta_flows, overwrite = TRUE)
 
 # delta inflows
 # Replaces Dlt.inf
-inflow <- delta_flows |>
-  filter(year(date) >= 1980, year(date) <= 2000) |>
-  mutate(n_dlt_inflow_cms = DSMflow::cfs_to_cms(n_dlt_inflow_cfs),
-         s_dlt_inflow_cms = DSMflow::cfs_to_cms(s_dlt_inflow_cfs)) |>
-  select(date, n_dlt_inflow_cms, s_dlt_inflow_cms) |>
-  gather(delta, inflow, -date) |>
-  spread(date, inflow) |>
-  select(-delta)
 
-delta_inflow <- array(NA, dim = c(12, 21, 2))
-delta_inflow[ , , 1] <- as.matrix(inflow[1, ])
-delta_inflow[ , , 2] <- as.matrix(inflow[2, ])
+generate_delta_inflows <- function(delta_flows) {
+  inflow <- delta_flows |>
+    filter(year(date) >= 1980, year(date) <= 2000) |>
+    mutate(n_dlt_inflow_cms = DSMflow::cfs_to_cms(n_dlt_inflow_cfs),
+           s_dlt_inflow_cms = DSMflow::cfs_to_cms(s_dlt_inflow_cfs)) |>
+    select(date, n_dlt_inflow_cms, s_dlt_inflow_cms) |>
+    pivot_longer(n_dlt_inflow_cms:s_dlt_inflow_cms,
+                 names_to = "delta",
+                 values_to = "inflow") |>
+    pivot_wider(names_from = date,
+                values_from = inflow) |>
+    select(-delta)
 
-dimnames(delta_inflow) <- list(month.abb[1:12], 1980:2000, c('North Delta', 'South Delta'))
+  delta_inflow <- array(NA, dim = c(12, 21, 2))
+  # TODO: check that me adding nrow, ncol is ok (it wasn't working, even in original code)
+  delta_inflow[ , , 1] <- as.matrix(inflow[1, ], nrow = 12, ncol = 21)
+  delta_inflow[ , , 2] <- as.matrix(inflow[2, ], nrow = 12, ncol = 21)
+
+  dimnames(delta_inflow) <- list(month.abb[1:12],
+                                 1980:2000,
+                                 c('North Delta', 'South Delta'))
+  return(delta_inflow)
+}
+
+delta_inflows_2008_2009 <- generate_delta_inflows(delta_flows$biop_2008_2009)
+delta_inflows_2019_biop_itp <- generate_delta_inflows(delta_flows$biop_itp_2018_2019)
+
+delta_inflow <- list(biop_2008_2009 = delta_inflows_2008_2009,
+                    biop_itp_2018_2019 = delta_inflows_2019_biop_itp)
 
 usethis::use_data(delta_inflow, overwrite = TRUE)
 
