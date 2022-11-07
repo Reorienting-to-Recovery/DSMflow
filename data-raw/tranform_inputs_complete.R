@@ -481,12 +481,60 @@ usethis::use_data(upper_sacramento_flows, overwrite = TRUE)
 # proportion flows at tributary junction coming from natal watershed using october average flow
 # create lookup vector for retQ denominators based on Jim's previous input
 tributary_junctions <- c(rep(watersheds[16], 16), NA, watersheds[19], watersheds[21], watersheds[19],
-                  watersheds[21], NA, rep(watersheds[24],2), watersheds[25:27], rep(watersheds[31],4))
+                         watersheds[21], NA, rep(watersheds[24],2), watersheds[25:27], rep(watersheds[31],4))
 
 names(tributary_junctions) <- watersheds
 
+generate_proportion_flow_natal <- function(flow_cfs, tributary_junctions){
+  denominator <- flow_cfs |>
+    select(-`Lower-mid Sacramento River1`) |> #Feather river comes in below Fremont Weir use River2 for Lower-mid Sac
+    rename(`Lower-mid Sacramento River` = `Lower-mid Sacramento River2`) |>
+    pivot_longer(`Upper Sacramento River`:`San Joaquin River`,
+                 names_to = "watershed",
+                 values_to = "flow") |>
+    filter(month(date) == 10, watershed %in% unique(tributary_junctions)) |>
+    rename(denominator = watershed, junction_flow = flow)
+
+  proportion_flow_natal <- flow_cfs |>
+    select(-`Lower-mid Sacramento River1`) |> #Feather river comes in below Fremont Weir use River2 for Lower-mid Sac
+    rename(`Lower-mid Sacramento River` = `Lower-mid Sacramento River2`) |>
+    pivot_longer(`Upper Sacramento River`:`San Joaquin River`,
+                 names_to = "watershed",
+                 values_to = "flow") |>
+    filter(month(date) == 10) |>
+    mutate(denominator = tributary_junctions[watershed]) |>
+    left_join(denominator) |>
+    mutate(retQ = ifelse(flow / junction_flow > 1, 1, flow / junction_flow),
+           retQ = replace(retQ, watershed %in% c('Calaveras River', 'Cosumnes River', 'Mokelumne River'), 1)) |>
+    select(watershed, date, retQ) |>
+    mutate(year = year(date)) |>
+    filter(year >= 1979, year <= 2000) |>
+    select(watershed, year, retQ) |>
+    bind_rows(tibble(
+      year = 1979,
+      watershed = c('Yolo Bypass', 'Sutter Bypass'),
+      retQ = 0
+    )) |>
+    left_join(DSMflow::watershed_ordering) |>
+    arrange(order) |>
+    pivot_wider(names_from = year,
+                values_from = retQ) |>
+    select(-watershed, -order) |>
+    mutate_all(~replace_na(., 0)) |>
+    as.matrix()
+
+  rownames(proportion_flow_natal) <- watersheds
+  return(proportion_flow_natal)
+}
+
+proportion_flow_natal_2008_2009 <- generate_proportion_flow_natal(flows_cfs$biop_2008_2009, tributary_junctions)
+proportion_flow_natal_2019_biop_itp <- generate_proportion_flow_natal(flows_cfs$biop_itp_2018_2019, tributary_junctions)
+
+proportion_flow_natal <- list(biop_2008_2009 = proportion_flow_natal_2008_2009,
+                              biop_itp_2018_2019 = proportion_flow_natal_2019_biop_itp)
+
 denominator <- DSMflow::flows_cfs |>
-  select(-`Lower-mid Sacramento River1`) |> #Feather river comes in below Fremont Weir use River2 for Lower-mid Sac
+  select(-`Lower-mid Sacramento River1`) |>
   rename(`Lower-mid Sacramento River` = `Lower-mid Sacramento River2`) |>
   gather(watershed, flow, -date) |>
   filter(month(date) == 10, watershed %in% unique(tributary_junctions)) |>
