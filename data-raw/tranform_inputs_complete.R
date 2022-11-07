@@ -822,7 +822,7 @@ usethis::use_data(gates_overtopped, overwrite = TRUE)
 # I used node C129 for wilkins(Cyril recommended C129)
 wilkins_node <- c("C129")
 
-generate_wilkins_flow <- function(calsim_data) {
+generate_wilkins_flow <- function(calsim_data, wilkins_node) {
   wilkins_flow <- calsim_data |>
     select(date, wilkins_node) |>
     filter(year(date) >= 1980, year(date) <= 2000) |>
@@ -843,8 +843,8 @@ generate_wilkins_flow <- function(calsim_data) {
   return(wilkins_flow)
 }
 
-wilkins_flow_2008_2009 <- generate_wilkins_flow(calsim_2008_2009)
-wilkins_flow_2019_biop_itp <- generate_wilkins_flow(calsim_2019_biop_itp)
+wilkins_flow_2008_2009 <- generate_wilkins_flow(calsim_2008_2009, wilkins_node))
+wilkins_flow_2019_biop_itp <- generate_wilkins_flow(calsim_2019_biop_itp, wilkins_node))
 
 wilkins_flow <- list(biop_2008_2009 = wilkins_flow_2008_2009,
                      biop_itp_2018_2019 = wilkins_flow_2019_biop_itp)
@@ -854,7 +854,7 @@ usethis::use_data(wilkins_flow, overwrite = TRUE)
 # freeport flow
 freeport_node <- c("C400")
 
-generate_freeport_flow <- function(calsim_data) {
+generate_freeport_flow <- function(calsim_data, freeport_node) {
   freeport_flow <- calsim_data |>
     select(date, freeport_node) |>
     filter(
@@ -877,8 +877,8 @@ generate_freeport_flow <- function(calsim_data) {
   return(freeport_flow)
 }
 
-freeport_flow_2008_2009 <- generate_freeport_flow(calsim_2008_2009)
-freeport_flow_2019_biop_itp <- generate_freeport_flow(calsim_2019_biop_itp)
+freeport_flow_2008_2009 <- generate_freeport_flow(calsim_2008_2009, freeport_node)
+freeport_flow_2019_biop_itp <- generate_freeport_flow(calsim_2019_biop_itp, freeport_node)
 
 freeport_flow <- list(biop_2008_2009 = freeport_flow_2008_2009,
                       biop_itp_2018_2019 = freeport_flow_2019_biop_itp)
@@ -888,22 +888,34 @@ usethis::use_data(freeport_flow, overwrite = TRUE)
 # vernalis flow
 vernalis_node <- "C639"
 
-vernalis_flow <- calsim  |>
-  select(date, vernalis_node) |>
-  filter(
-    year(date) >= 1980, year(date) <= 2000) |>
-  transmute(
-    year = year(date),
-    month = month(date),
-    vernalisQcfs = C639,
-    vernalisQcms = cfs_to_cms(C639)
-  ) |>
-  select(year, month, vernalisQcms) |>
-  spread(year, vernalisQcms) |>
-  select(-month) |>
-  as.matrix()
+generate_vernalis_flow <- function(calsim_data, vernalis_node) {
+  vernalis_flow <- calsim_data  |>
+    select(date, vernalis_node) |>
+    filter(
+      year(date) >= 1980, year(date) <= 2000) |>
+    transmute(
+      year = year(date),
+      month = month(date),
+      vernalisQcfs = C639,
+      vernalisQcms = cfs_to_cms(C639)
+    ) |>
+    select(year, month, vernalisQcms) |>
+    #spread(year, vernalisQcms) |>
+    pivot_wider(names_from = year,
+                values_from = vernalisQcms) |>
+    select(-month) |>
+    as.matrix()
 
-rownames(vernalis_flow) <- month.abb
+  rownames(vernalis_flow) <- month.abb
+
+  return(vernalis_flow)
+}
+
+vernalis_flow_2008_2009 <- generate_vernalis_flow(calsim_2008_2009, vernalis_node)
+vernalis_flow_2019_biop_itp <- generate_vernalis_flow(calsim_2019_biop_itp, vernalis_node)
+
+vernalis_flow <- list(biop_2008_2009 = vernalis_flow_2008_2009,
+                      biop_itp_2018_2019 = vernalis_flow_2019_biop_itp)
 
 usethis::use_data(vernalis_flow, overwrite = TRUE)
 
