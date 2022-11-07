@@ -854,22 +854,35 @@ usethis::use_data(wilkins_flow, overwrite = TRUE)
 # freeport flow
 freeport_node <- c("C400")
 
-freeport_flow <- calsim |>
-  select(date, freeport_node) |>
-  filter(
-    year(date) >= 1980, year(date) <= 2000) |>
-  transmute(
-    year = year(date),
-    month = month(date),
-    freeportQcfs = C400,
-    freeportQcms = cfs_to_cms(C400)
-  ) |>
-  select(year, month, freeportQcms) |>
-  spread(year, freeportQcms) |>
-  select(-month) |>
-  as.matrix()
+generate_freeport_flow <- function(calsim_data) {
+  freeport_flow <- calsim_data |>
+    select(date, freeport_node) |>
+    filter(
+      year(date) >= 1980, year(date) <= 2000) |>
+    transmute(
+      year = year(date),
+      month = month(date),
+      freeportQcfs = C400,
+      freeportQcms = cfs_to_cms(C400)
+    ) |>
+    select(year, month, freeportQcms) |>
+    #spread(year, freeportQcms) |>
+    pivot_wider(names_from = year,
+                values_from = freeportQcms) |>
+    select(-month) |>
+    as.matrix()
 
-rownames(freeport_flow) <- month.abb
+  rownames(freeport_flow) <- month.abb
+
+  return(freeport_flow)
+}
+
+freeport_flow_2008_2009 <- generate_freeport_flow(calsim_2008_2009)
+freeport_flow_2019_biop_itp <- generate_freeport_flow(calsim_2019_biop_itp)
+
+freeport_flow <- list(biop_2008_2009 = freeport_flow_2008_2009,
+                      biop_itp_2018_2019 = freeport_flow_2019_biop_itp)
+
 usethis::use_data(freeport_flow, overwrite = TRUE)
 
 # vernalis flow
