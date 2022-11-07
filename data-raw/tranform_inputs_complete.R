@@ -62,7 +62,9 @@ generate_flow_cfs <- function(calsim_data, nodes){
 }
 
 # Original (2008 - 2009 BiOp) ------------------------------------------------
-calsim_2008_2009 <- read_rds('data-raw/calsim_2008_2009/MikeWrightCalSimOct2017/cvpia_calsim.rds')
+calsim_2008_2009 <- read_rds('data-raw/calsim_2008_2009/MikeWrightCalSimOct2017/cvpia_calsim.rds') |>
+  rename(D403D = D403D.x) |>
+  select(-D403D.y)
 
 flow_2008_2009 <- generate_flow_cfs(calsim_data = calsim_2008_2009, nodes = habitat_node)
 
@@ -582,13 +584,31 @@ usethis::use_data(proportion_pulse_flows, overwrite = TRUE)
 delta_cross_channel_closed <- read_csv('data-raw/delta_cross_channel_gates/DeltaCrossChannelTypicalOperations.csv', skip = 2) |>
   mutate(Month = which(month.name == Month), prop_days_closed = `Days Closed` / days_in_month(Month)) |>
   select(month = Month, days_closed = `Days Closed`, prop_days_closed) |>
-  gather(metric, value, -month) |>
-  spread(month, value) |>
-  select(-metric) |>
-  as.matrix()
+  pivot_longer(days_closed,
+               names_to = "metric",
+               values_to = "value") |>
+  pivot_wider(names_from = metric,
+              values_from = value) |>
+  select(-month) |>
+  select(days_closed, prop_days_closed) |>
+  as.matrix() |>
+  t()
 
 colnames(delta_cross_channel_closed) <- month.abb[1:12]
 rownames(delta_cross_channel_closed) <- c('count', 'proportion')
+
+#TODO: check that logic for this aligns with word doc proposal
+#TODO: automate the word doc proposal; does this need to be two different tables?
+# Per guidance from Reclamation’s CALSIM lead modeler (Derya Sumer), the same logic
+# used to represent days closed for the 2009 CALSIM model should be used for the 2019
+# CALSIM model. Specifically, there should be 28 days closed in May and 8 days closed
+# in June. It is important to note that DSM calibration would still require synthetic
+# monthly flows based on the 2009 CALSIM model ouputs that are representative of the
+# escapement period of record use for calibration.
+
+# replace May and June values according to text above (from word doc proposal)
+delta_cross_channel_closed[,"May"] <- c(28, 28/31)
+delta_cross_channel_closed[,"Jun"] <- c(8, 8/30)
 
 usethis::use_data(delta_cross_channel_closed, overwrite = TRUE)
 
@@ -597,23 +617,34 @@ usethis::use_data(delta_cross_channel_closed, overwrite = TRUE)
 # South Delta inflow: C401B + C504 + C508 + C644
 # North Delta diversions: D403A + D403B + D403C + D403D + D404
 # South Delta diversions: D418 + D419 + D412 + D410 + D413 + D409B + D416 + D408_OR + D408_VC
-delta_flows <- calsim |>
-  select(date, C400, C157, C401B, C504, C508, C644, D403A, D403B, D403C, D403D,
-         D404, D418, D419, D412, D410, D413, D409B, D416, D408_OR, D408_VC) |>
-  mutate(n_dlt_inflow_cfs = C400 + C157,
-         s_dlt_inflow_cfs = C401B + C504 + C508 + C644,
-         n_dlt_div_cfs =  D403A + D403B + D403C + D403D + D404,
-         s_dlt_div_cfs = D418 + D419 + D412 + D410 + D413 + D409B + D416 + D408_OR + D408_VC,
-         n_dlt_prop_div = n_dlt_div_cfs / n_dlt_inflow_cfs,
-         s_dlt_prop_div = s_dlt_div_cfs / s_dlt_inflow_cfs,
-         s_dlt_prop_div = ifelse(s_dlt_prop_div > 1, 1, s_dlt_prop_div)) |>
-  select(date,
-         n_dlt_inflow_cfs,
-         s_dlt_inflow_cfs,
-         n_dlt_div_cfs,
-         s_dlt_div_cfs,
-         n_dlt_prop_div,
-         s_dlt_prop_div)
+
+generate_delta_flows <- function(calsim_data) {
+  delta_flows <- calsim_data |>
+    select(date, C400, C157, C401B, C504, C508, C644, D403A, D403B, D403C, D403D,
+           D404, D418, D419, D412, D410, D413, D409B, D416, D408_OR, D408_VC) |>
+    mutate(n_dlt_inflow_cfs = C400 + C157,
+           s_dlt_inflow_cfs = C401B + C504 + C508 + C644,
+           n_dlt_div_cfs =  D403A + D403B + D403C + D403D + D404,
+           s_dlt_div_cfs = D418 + D419 + D412 + D410 + D413 + D409B + D416 + D408_OR + D408_VC,
+           n_dlt_prop_div = n_dlt_div_cfs / n_dlt_inflow_cfs,
+           s_dlt_prop_div = s_dlt_div_cfs / s_dlt_inflow_cfs,
+           s_dlt_prop_div = ifelse(s_dlt_prop_div > 1, 1, s_dlt_prop_div)) |>
+    select(date,
+           n_dlt_inflow_cfs,
+           s_dlt_inflow_cfs,
+           n_dlt_div_cfs,
+           s_dlt_div_cfs,
+           n_dlt_prop_div,
+           s_dlt_prop_div)
+
+  return(delta_flows)
+}
+
+delta_flows_2008_2009 <- generate_delta_flows(calsim_2008_2009)
+delta_flows_2019_biop_itp <- generate_delta_flows(calsim_2019_biop_itp)
+
+delta_flows <- list(biop_2008_2009 = delta_flows_2008_2009,
+                               biop_itp_2018_2019 = delta_flows_2019_biop_itp)
 
 usethis::use_data(delta_flows, overwrite = TRUE)
 
