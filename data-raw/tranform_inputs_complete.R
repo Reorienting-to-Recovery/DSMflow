@@ -361,22 +361,6 @@ proportion_diverted <- list(biop_2008_2009 = prop_diverted_2008_2009,
 usethis::use_data(proportion_diverted, overwrite = TRUE)
 
 
-# misc flow nodes ----
-cs <- read_csv('data-raw/calsim_2008_2009/MikeWrightCalSimOct2017/C1_C169.csv', skip = 1) |>
-  select(date = "...2", C134, C165, C116, C123, C124, C125, C109) |>
-  filter(!is.na(date)) |>
-  mutate(date = dmy(date))
-
-ds <- read_csv('data-raw/calsim_2008_2009/MikeWrightCalSimOct2017/D100_D403.csv', skip = 1) |>
-  select(date = "...2", D160, D166A, D117, D124, D125, D126) |>
-  filter(!is.na(date)) |>
-  mutate(date = dmy(date))
-
-misc_flows <- left_join(cs, ds) |>
-  gather(node, flow, -date) |>
-  filter(!is.na(flow)) |>
-  mutate(flow = as.numeric(flow)) |>
-  spread(node, flow)
 
 # tributary --------------
 generate_mean_flow <- function(bypass_flow, flow_cfs) {
@@ -406,7 +390,6 @@ generate_mean_flow <- function(bypass_flow, flow_cfs) {
                                month.abb[1:12],
                                1980:2000)
     return(mean_flow)
-
 }
 
 # create mean flows with both 2008-2009 biop and 2018-2019 biop/itp
@@ -420,19 +403,69 @@ mean_flow <- list(biop_2008_2009 = mean_flow_2008_2009,
 
 usethis::use_data(mean_flow, overwrite = TRUE)
 
-# Replaces upsacQ
-# flow at Bend C109, CALSIMII units cfs, sit-model units cms
-upper_sacramento_flows <- misc_flows |>
-  select(date, upsacQcfs = C109) |>
-  mutate(upsacQcms = DSMflow::cfs_to_cms(upsacQcfs)) |>
-  mutate(year = year(date), month = month(date)) |>
-  filter(year >= 1980, year <= 2000) |>
-  select(-date, -upsacQcfs) |>
-  spread(year, upsacQcms) |>
-  select(-month) |>
-  as.matrix()
+# misc flow nodes ----
 
-rownames(upper_sacramento_flows) <- month.abb[1:12]
+generate_misc_flow_nodes <- function(cs, ds) {
+  misc_flows <- left_join(cs, ds) |>
+    pivot_longer(C134:D126,
+                 names_to = "node",
+                 values_to = "flow") |>
+    arrange(node) |>
+    filter(!is.na(flow)) |>
+    mutate(flow = as.numeric(flow)) |>
+    pivot_wider(names_from = node,
+                 values_from = flow)
+
+  return(misc_flows)
+}
+
+# 2008-2009 biop
+cs <- read_csv('data-raw/calsim_2008_2009/MikeWrightCalSimOct2017/C1_C169.csv', skip = 1) |>
+  select(date = "...2", C134, C165, C116, C123, C124, C125, C109) |>
+  filter(!is.na(date)) |>
+  mutate(date = dmy(date))
+
+ds <- read_csv('data-raw/calsim_2008_2009/MikeWrightCalSimOct2017/D100_D403.csv', skip = 1) |>
+  select(date = "...2", D160, D166A, D117, D124, D125, D126) |>
+  filter(!is.na(date)) |>
+  mutate(date = dmy(date))
+
+misc_flows_2008_2009 <- generate_misc_flow_nodes(cs, ds)
+
+# 2018, 2019 biop
+cs <- read_csv('data-raw/calsim_2019_BiOp_ITP/C1_C169.csv', skip = 1) |>
+  select(date = "...2", C134, C165, C116, C123, C124, C125, C109) |>
+  filter(!is.na(date)) |>
+  mutate(date = dmy(date))
+
+ds <- read_csv('data-raw/calsim_2019_BiOp_ITP/D100_D403.csv', skip = 1) |>
+  select(date = "...2", D160, D166A, D117, D124, D125, D126) |>
+  filter(!is.na(date)) |>
+  mutate(date = dmy(date))
+
+misc_flows_2019_biop_itp <- generate_misc_flow_nodes(cs, ds)
+
+misc_flows <- list(biop_2008_2009 = misc_flows_2008_2009,
+                   biop_itp_2018_2019 = misc_flows_2019_biop_itp)
+
+# flow at Bend C109, CALSIMII units cfs, sit-model units cms
+# replaces upsacQ
+
+generate_upper_sacramento_flows <- function(misc_flows) {
+
+  upper_sacramento_flows <- misc_flows |>
+    select(date, upsacQcfs = C109) |>
+    mutate(upsacQcms = DSMflow::cfs_to_cms(upsacQcfs)) |>
+    mutate(year = year(date), month = month(date)) |>
+    filter(year >= 1980, year <= 2000) |>
+    select(-date, -upsacQcfs) |>
+    spread(year, upsacQcms) |>
+    select(-month) |>
+    as.matrix()
+
+  rownames(upper_sacramento_flows) <- month.abb[1:12]
+}
+
 usethis::use_data(upper_sacramento_flows, overwrite = TRUE)
 
 # Replaces retQ
