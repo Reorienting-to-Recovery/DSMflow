@@ -644,7 +644,7 @@ delta_flows_2008_2009 <- generate_delta_flows(calsim_2008_2009)
 delta_flows_2019_biop_itp <- generate_delta_flows(calsim_2019_biop_itp)
 
 delta_flows <- list(biop_2008_2009 = delta_flows_2008_2009,
-                               biop_itp_2018_2019 = delta_flows_2019_biop_itp)
+                    biop_itp_2018_2019 = delta_flows_2019_biop_itp)
 
 usethis::use_data(delta_flows, overwrite = TRUE)
 
@@ -685,18 +685,33 @@ usethis::use_data(delta_inflow, overwrite = TRUE)
 
 # delta prop diverted
 # Replaces dlt.divers
-dl_prop_div <- delta_flows |>
-  filter(year(date) >= 1980, year(date) <= 2000) |>
-  select(date, n_dlt_prop_div, s_dlt_prop_div) |>
-  gather(delta, prop_div, -date) |>
-  spread(date, prop_div) |>
-  select(-delta)
+generate_delta_proportion_diverted <- function(delta_flows) {
+  dl_prop_div <- delta_flows |>
+    filter(year(date) >= 1980, year(date) <= 2000) |>
+    select(date, n_dlt_prop_div, s_dlt_prop_div) |>
+    pivot_longer(n_dlt_prop_div:s_dlt_prop_div,
+                 names_to = "delta",
+                 values_to = "prop_div") |>
+    pivot_wider(names_from = date,
+                values_from = prop_div) |>
+    select(-delta)
 
-delta_proportion_diverted <- array(NA, dim = c(12, 21, 2))
-delta_proportion_diverted[ , , 1] <- as.matrix(dl_prop_div[1, ])
-delta_proportion_diverted[ , , 2] <- as.matrix(dl_prop_div[2, ])
+  delta_proportion_diverted <- array(NA, dim = c(12, 21, 2))
+  delta_proportion_diverted[ , , 1] <- as.matrix(dl_prop_div[1, ], nrow = 12, ncol = 21)
+  delta_proportion_diverted[ , , 2] <- as.matrix(dl_prop_div[2, ], nrow = 12, ncol = 21)
 
-dimnames(delta_proportion_diverted) <- list(month.abb[1:12], 1980:2000, c('North Delta', 'South Delta'))
+  dimnames(delta_proportion_diverted) <- list(month.abb[1:12],
+                                              1980:2000,
+                                              c('North Delta', 'South Delta'))
+
+  return(delta_proportion_diverted)
+}
+
+delta_propotion_diverted_2008_2009 <- generate_delta_proportion_diverted(delta_flows$biop_2008_2009)
+delta_propotion_diverted_2019_biop_itp <- generate_delta_proportion_diverted(delta_flows$biop_itp_2018_2019)
+
+delta_proportion_diverted <- list(biop_2008_2009 = delta_propotion_diverted_2008_2009,
+                                  biop_itp_2018_2019 = delta_propotion_diverted_2019_biop_itp)
 
 usethis::use_data(delta_proportion_diverted, overwrite = TRUE)
 
