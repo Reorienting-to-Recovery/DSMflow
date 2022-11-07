@@ -754,22 +754,40 @@ usethis::use_data(delta_total_diverted, overwrite = TRUE)
 
 # Replaces prop.Q.bypasses
 # cap values greater than 1 at 1
-bypass_prop_flow <- misc_flows |>
-  mutate(yolo = pmin(D160/C134, 1),
-         sutter = (D117 + D124 + D125 + D126)/C116,
-         year = year(date), month = month(date)) |>
-  select(month, year, yolo, sutter) |>
-  filter(between(year, 1980, 2000)) |>
-  gather(bypass, prop_flow, -month, -year) |>
-  spread(year, prop_flow) |>
-  arrange(bypass, month) |>
-  select(-month, -bypass) |>
-  as.matrix()
 
-proportion_flow_bypasses <- array(NA, dim = c(12, 21, 2))
-dimnames(proportion_flow_bypasses) <- list(month.abb[1:12], 1980:2000, c('Sutter Bypass', 'Yolo Bypass'))
-proportion_flow_bypasses[ , , 1] <- bypass_prop_flow[1:12, ]
-proportion_flow_bypasses[ , , 2] <- bypass_prop_flow[13:24, ]
+generate_proportion_flow_bypasses <- function(misc_flows) {
+  bypass_prop_flow <- misc_flows |>
+    mutate(yolo = pmin(D160/C134, 1),
+           sutter = (D117 + D124 + D125 + D126)/C116,
+           year = year(date), month = month(date)) |>
+    select(month, year, yolo, sutter) |>
+    filter(between(year, 1980, 2000)) |>
+    pivot_longer(yolo:sutter,
+                 names_to = "bypass",
+                 values_to = "prop_flow") |>
+    pivot_wider(names_from = year,
+                values_from = prop_flow) |>
+    arrange(bypass, month) |>
+    select(-month, -bypass) |>
+    as.matrix()
+
+  proportion_flow_bypasses <- array(NA, dim = c(12, 21, 2))
+  proportion_flow_bypasses[ , , 1] <- bypass_prop_flow[1:12, ]
+  proportion_flow_bypasses[ , , 2] <- bypass_prop_flow[13:24, ]
+
+  dimnames(proportion_flow_bypasses) <- list(month.abb[1:12],
+                                             1980:2000,
+                                             c('Sutter Bypass', 'Yolo Bypass'))
+
+  return(proportion_flow_bypasses)
+
+}
+
+proportion_flow_bypasses_2008_2009 <- generate_proportion_flow_bypasses(misc_flows$biop_2008_2009)
+proportion_flow_bypasses_2019_biop_itp <- generate_proportion_flow_bypasses(misc_flows$biop_itp_2018_2019)
+
+proportion_flow_bypasses <- list(biop_2008_2009 = proportion_flow_bypasses_2008_2009,
+                                 biop_itp_2018_2019 = proportion_flow_bypasses_2019_biop_itp)
 
 usethis::use_data(proportion_flow_bypasses, overwrite = TRUE)
 
