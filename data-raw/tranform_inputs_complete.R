@@ -533,65 +533,44 @@ proportion_flow_natal_2019_biop_itp <- generate_proportion_flow_natal(flows_cfs$
 proportion_flow_natal <- list(biop_2008_2009 = proportion_flow_natal_2008_2009,
                               biop_itp_2018_2019 = proportion_flow_natal_2019_biop_itp)
 
-denominator <- DSMflow::flows_cfs |>
-  select(-`Lower-mid Sacramento River1`) |>
-  rename(`Lower-mid Sacramento River` = `Lower-mid Sacramento River2`) |>
-  gather(watershed, flow, -date) |>
-  filter(month(date) == 10, watershed %in% unique(tributary_junctions)) |>
-  rename(denominator = watershed, junction_flow = flow)
-
-proportion_flow_natal <- DSMflow::flows_cfs |>
-  select(-`Lower-mid Sacramento River1`) |> #Feather river comes in below Fremont Weir use River2 for Lower-mid Sac
-  rename(`Lower-mid Sacramento River` = `Lower-mid Sacramento River2`) |>
-  gather(watershed, flow, -date) |>
-  filter(month(date) == 10) |>
-  mutate(denominator = tributary_junctions[watershed]) |>
-  left_join(denominator) |>
-  mutate(retQ = ifelse(flow / junction_flow > 1, 1, flow / junction_flow),
-         retQ = replace(retQ, watershed %in% c('Calaveras River', 'Cosumnes River', 'Mokelumne River'), 1)) |>
-  select(watershed, date, retQ) |>
-  mutate(year = year(date)) |>
-  filter(year >= 1979, year <= 2000) |>
-  select(watershed, year, retQ) |>
-  bind_rows(tibble(
-    year = 1979,
-    watershed = c('Yolo Bypass', 'Sutter Bypass'),
-    retQ = 0
-  )) |>
-  spread(year, retQ) |>
-  left_join(cvpiaData::watershed_ordering) |>
-  arrange(order) |>
-  mutate_all(~replace_na(., 0)) |>
-  select(-order, -watershed) |>
-  as.matrix()
-
-rownames(proportion_flow_natal) <- watersheds
-
 usethis::use_data(proportion_flow_natal, overwrite = TRUE)
 
 # Replaces prop.pulse
-proportion_pulse_flows <- DSMflow::flows_cfs |>
-  filter(between(year(date), 1980, 1999)) |>
-  mutate(`Lower-mid Sacramento River` = 35.6/58 * `Lower-mid Sacramento River1` + 22.4/58 *`Lower-mid Sacramento River2`) |>
-  select(-`Lower-mid Sacramento River1`, -`Lower-mid Sacramento River2`) |>
-  gather(watershed, flow, -date) |>
-  group_by(month = month(date), watershed) |>
-  summarise(prop_pulse = sd(flow)/median(flow)/100) |> # TODO why divide by 100?
-  mutate(prop_pulse = replace(prop_pulse, is.infinite(prop_pulse), 0)) |>
-  select(month, watershed, prop_pulse) |>
-  bind_rows(tibble(
-    month = rep(1:12, 2),
-    watershed = rep(c('Yolo Bypass', 'Sutter Bypass'), each = 12),
-    prop_pulse = 0
-  )) |>
-  spread(month, prop_pulse) |>
-  left_join(cvpiaData::watershed_ordering) |>
-  arrange(order) |>
-  select(-order, -watershed) |>
-  as.matrix()
+generate_proportion_pulse_flows <- function(flow_cfs) {
+  proportion_pulse_flows <- flow_cfs |>
+    filter(between(year(date), 1980, 1999)) |>
+    mutate(`Lower-mid Sacramento River` = 35.6/58 * `Lower-mid Sacramento River1` + 22.4/58 *`Lower-mid Sacramento River2`) |>
+    select(-`Lower-mid Sacramento River1`, -`Lower-mid Sacramento River2`) |>
+    pivot_longer(`Upper Sacramento River`:`Lower-mid Sacramento River`,
+                 names_to = "watershed",
+                 values_to = "flow") |>
+    group_by(month = month(date), watershed) |>
+    summarise(prop_pulse = sd(flow)/median(flow)/100) |>
+    mutate(prop_pulse = replace(prop_pulse, is.infinite(prop_pulse), 0)) |>
+    bind_rows(tibble(
+      month = rep(1:12, 2),
+      watershed = rep(c('Yolo Bypass', 'Sutter Bypass'), each = 12),
+      prop_pulse = 0
+    )) |>
+    pivot_wider(names_from = month,
+                 values_from = prop_pulse) |>
+    left_join(DSMflow::watershed_ordering) |>
+    arrange(order) |>
+    select(-order, -watershed) |>
+    as.matrix()
 
-colnames(proportion_pulse_flows) <- month.abb[1:12]
-rownames(proportion_pulse_flows) <- DSMflow::watershed_ordering$watershed
+  colnames(proportion_pulse_flows) <- month.abb[1:12]
+  rownames(proportion_pulse_flows) <- DSMflow::watershed_ordering$watershed
+
+  return(proportion_pulse_flows)
+}
+
+proportion_pulse_flows_2008_2009 <- generate_proportion_pulse_flows(flows_cfs$biop_2008_2009)
+# TODO: incorporate moke into the flows_cfs object for 2008/2009
+proportion_pulse_flows_2019_biop_itp <- generate_proportion_pulse_flows(flows_cfs$biop_itp_2018_2019)
+
+proportion_pulse_flows <- list(biop_2008_2009 = proportion_pulse_flows_2008_2009,
+                              biop_itp_2018_2019 = proportion_pulse_flows_2019_biop_itp)
 
 usethis::use_data(proportion_pulse_flows, overwrite = TRUE)
 
