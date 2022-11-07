@@ -5,6 +5,8 @@ library(lubridate)
 library(stringr)
 library(readxl)
 library(purrr)
+library(DSMflow)
+library(tibble)
 
 source('R/utils.R')
 
@@ -792,7 +794,9 @@ proportion_flow_bypasses <- list(biop_2008_2009 = proportion_flow_bypasses_2008_
 usethis::use_data(proportion_flow_bypasses, overwrite = TRUE)
 
 # Adds gates_overtopped
+# TODO: where does this come from? does this need to be modified for multiple inputs?
 bypass_overtopped <- read_csv("data-raw/delta_cross_channel_gates/bypass_overtopped.csv")
+
 bypass_overtopped <- bypass_overtopped |>
   mutate(year = year(date),
          month = month(date)) |>
@@ -810,29 +814,41 @@ gates_overtopped[ , , 1] <- bypass_overtopped[1:12, ]
 gates_overtopped[ , , 2] <- bypass_overtopped[13:24, ]
 
 usethis::use_data(gates_overtopped, overwrite = TRUE)
+
 # Delta Routing Flows ---------------------
 
-library(DSMflow)
-library(tibble)
 
 # Adds wilkins flow node to replace freeport flow
 # I used node C129 for wilkins(Cyril recommended C129)
 wilkins_node <- c("C129")
 
-wilkins_flow <- calsim |>
-  select(date, wilkins_node) |>
-  filter(year(date) >= 1980, year(date) <= 2000) |>
-  transmute(
-    year = year(date),
-    month = month(date),
-    wilklinsQcfs = C129,
-    wilkinsQcms = cfs_to_cms(C129))  |>
-  select(year, month, wilkinsQcms) |>
-  spread(year, wilkinsQcms) |>
-  select(-month) |>
-  as.matrix()
+generate_wilkins_flow <- function(calsim_data) {
+  wilkins_flow <- calsim_data |>
+    select(date, wilkins_node) |>
+    filter(year(date) >= 1980, year(date) <= 2000) |>
+    transmute(
+      year = year(date),
+      month = month(date),
+      wilklinsQcfs = C129,
+      wilkinsQcms = cfs_to_cms(C129))  |>
+    select(year, month, wilkinsQcms) |>
+    #spread(year, wilkinsQcms) |>
+    pivot_wider(names_from = year,
+                values_from = wilkinsQcms) |>
+    select(-month) |>
+    as.matrix()
 
-rownames(wilkins_flow) <- month.abb
+  rownames(wilkins_flow) <- month.abb
+
+  return(wilkins_flow)
+}
+
+wilkins_flow_2008_2009 <- generate_wilkins_flow(calsim_2008_2009)
+wilkins_flow_2019_biop_itp <- generate_wilkins_flow(calsim_2019_biop_itp)
+
+wilkins_flow <- list(biop_2008_2009 = wilkins_flow_2008_2009,
+                     biop_itp_2018_2019 = wilkins_flow_2019_biop_itp)
+
 usethis::use_data(wilkins_flow, overwrite = TRUE)
 
 # freeport flow
