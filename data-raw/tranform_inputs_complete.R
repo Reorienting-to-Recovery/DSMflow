@@ -455,16 +455,25 @@ generate_upper_sacramento_flows <- function(misc_flows) {
 
   upper_sacramento_flows <- misc_flows |>
     select(date, upsacQcfs = C109) |>
-    mutate(upsacQcms = DSMflow::cfs_to_cms(upsacQcfs)) |>
-    mutate(year = year(date), month = month(date)) |>
+    mutate(upsacQcms = DSMflow::cfs_to_cms(upsacQcfs),
+           year = year(date),
+           month = month(date)) |>
     filter(year >= 1980, year <= 2000) |>
     select(-date, -upsacQcfs) |>
-    spread(year, upsacQcms) |>
+    pivot_wider(names_from = year,
+                values_from = upsacQcms) |>
     select(-month) |>
     as.matrix()
 
   rownames(upper_sacramento_flows) <- month.abb[1:12]
+  return(upper_sacramento_flows)
 }
+
+upper_sacramento_flows_2008_2009 <- generate_upper_sacramento_flows(misc_flows$biop_2008_2009)
+upper_sacramento_flows_2019_biop_itp <- generate_upper_sacramento_flows(misc_flows$biop_itp_2018_2019)
+
+upper_sacramento_flows <- list(biop_2008_2009 = upper_sacramento_flows_2008_2009,
+                               biop_itp_2018_2019 = upper_sacramento_flows_2019_biop_itp)
 
 usethis::use_data(upper_sacramento_flows, overwrite = TRUE)
 
