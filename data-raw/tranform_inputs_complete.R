@@ -231,11 +231,12 @@ moke <- read_excel('data-raw/calsim_2008_2009/EBMUDSIM/CVPIA_SIT_Data_RequestEBM
   mutate(date = as_date(Date),
          `Mokelumne River` = (D503A + D503B + D503C + D502A + D502B)) %>%
   select(date, `Mokelumne River`) |>
-  filter(year(date) <= 2000 & year(date) >= 1980) |> # subset to 20 years
+  filter(year(date) <= 2000 & year(date) >= 1980) |># subset to 20 years
   group_by(year(date), month(date)) |> # summarize by month
   summarize(monthly_flow = sum(`Mokelumne River`)) |>
   rename(year = `year(date)`,
          month = `month(date)`) |>
+  mutate(monthly_flow = DSMflow::cfs_to_cms(monthly_flow)) |>
   pivot_wider(names_from = year, values_from = monthly_flow) |> # format to fit into model array
   select(-month)
 
@@ -245,7 +246,7 @@ diversion_2019_biop_itp <- generate_diversion_total(calsim_data = calsim_2019_bi
                                                     nodes = all_div_nodes)
 
 # create diversion flows with both 2008-2009 biop and 2018-2019 biop/itp
-total_diverted <- list(biop_2008_2009 = diversion_2008_2009,
+total_diverted <- list(biop_2008_2009 = diversion_2008_2009, # has moke
                      biop_itp_2018_2019 = diversion_2019_biop_itp # missing moke
 )
 
