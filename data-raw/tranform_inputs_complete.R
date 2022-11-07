@@ -707,30 +707,46 @@ generate_delta_proportion_diverted <- function(delta_flows) {
   return(delta_proportion_diverted)
 }
 
-delta_propotion_diverted_2008_2009 <- generate_delta_proportion_diverted(delta_flows$biop_2008_2009)
-delta_propotion_diverted_2019_biop_itp <- generate_delta_proportion_diverted(delta_flows$biop_itp_2018_2019)
+delta_proportion_diverted_2008_2009 <- generate_delta_proportion_diverted(delta_flows$biop_2008_2009)
+delta_proportion_diverted_2019_biop_itp <- generate_delta_proportion_diverted(delta_flows$biop_itp_2018_2019)
 
-delta_proportion_diverted <- list(biop_2008_2009 = delta_propotion_diverted_2008_2009,
-                                  biop_itp_2018_2019 = delta_propotion_diverted_2019_biop_itp)
+delta_proportion_diverted <- list(biop_2008_2009 = delta_proportion_diverted_2008_2009,
+                                  biop_itp_2018_2019 = delta_proportion_diverted_2019_biop_itp)
 
 usethis::use_data(delta_proportion_diverted, overwrite = TRUE)
 
 # delta total diversions
 # Replaces dlt.divers.tot
-dl_tot_div <- delta_flows |>
-  filter(year(date) >= 1980, year(date) <= 2000) |>
-  mutate(n_dlt_div_cms = DSMflow::cfs_to_cms(n_dlt_div_cfs),
-         s_dlt_div_cms = DSMflow::cfs_to_cms(s_dlt_div_cfs)) |>
-  select(date, n_dlt_div_cms, s_dlt_div_cms) |>
-  gather(delta, tot_div, -date) |>
-  spread(date, tot_div) |>
-  select(-delta)
 
-delta_total_diverted <- array(NA, dim = c(12, 21, 2))
-delta_total_diverted[ , , 1] <- as.matrix(dl_tot_div[1, ])
-delta_total_diverted[ , , 2] <- as.matrix(dl_tot_div[2, ])
+generate_delta_total_diverted <- function(delta_flows) {
+  dl_tot_div <- delta_flows |>
+    filter(year(date) >= 1980, year(date) <= 2000) |>
+    mutate(n_dlt_div_cms = DSMflow::cfs_to_cms(n_dlt_div_cfs),
+           s_dlt_div_cms = DSMflow::cfs_to_cms(s_dlt_div_cfs)) |>
+    select(date, n_dlt_div_cms, s_dlt_div_cms) |>
+    pivot_longer(n_dlt_div_cms:s_dlt_div_cms,
+                 names_to = "delta",
+                 values_to = "tot_div") |>
+    pivot_wider(names_from = date,
+                values_from = tot_div) |>
+    select(-delta)
 
-dimnames(delta_total_diverted) <- list(month.abb[1:12], 1980:2000, c('North Delta', 'South Delta'))
+  delta_total_diverted <- array(NA, dim = c(12, 21, 2))
+  delta_total_diverted[ , , 1] <- as.matrix(dl_tot_div[1, ], nrow = 12, ncol = 21)
+  delta_total_diverted[ , , 2] <- as.matrix(dl_tot_div[2, ], nrow = 12, ncol = 21)
+
+  dimnames(delta_total_diverted) <- list(month.abb[1:12],
+                                         1980:2000,
+                                         c('North Delta', 'South Delta'))
+  return(delta_total_diverted)
+
+}
+
+delta_total_diverted_2008_2009 <- generate_delta_total_diverted(delta_flows$biop_2008_2009)
+delta_total_diverted_2019_biop_itp <- generate_delta_total_diverted(delta_flows$biop_itp_2018_2019)
+
+delta_total_diverted <- list(biop_2008_2009 = delta_total_diverted_2008_2009,
+                             biop_itp_2018_2019 = delta_total_diverted_2019_biop_itp)
 
 usethis::use_data(delta_total_diverted, overwrite = TRUE)
 
