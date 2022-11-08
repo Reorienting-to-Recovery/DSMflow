@@ -101,8 +101,9 @@ moke <- read_excel('data-raw/calsim_2008_2009/EBMUDSIM/CVPIA_SIT_Data_RequestEBM
 # tributary and mainstem habitat flow ------------------------------------------
 # TODO once we add Moke into model update to remove moke column before joining new one
 flows_cfs_2008_2009 <- flow_2008_2009 |>
-  left_join(moke) |>
-  select(date:`Cosumnes River`, `Mokelumne River`, `Merced River`:`San Joaquin River`)
+  select(-`Mokelumne River`) |> # get rid of old Moke column
+  left_join(moke) |> # add in Moke
+  select(date:`Cosumnes River`, `Mokelumne River`, `Merced River`:`San Joaquin River`) # reorder
 
 # Add in new calsim run (2018 - 2019 Biop/Itp) data-----------------------------
 calsim_2019_biop_itp <- read_rds('data-raw/calsim_2019_BiOp_ITP/biop_cvpia_calsim.rds')
@@ -111,7 +112,7 @@ flow_cfs_2019_biop_itp <- generate_flow_cfs(calsim_data = calsim_2019_biop_itp, 
 
 # create flow_cfs with both 2008-2009 biop and 2018-2019 biop/itp
 flows_cfs <- list(biop_2008_2009 = flows_cfs_2008_2009,
-                 biop_itp_2018_2019 = flow_cfs_2019_biop_itp # missing moke
+                 biop_itp_2018_2019 = flow_cfs_2019_biop_itp # 2019 does not have moke
 )
 
 # Write flow cfs data object
@@ -227,7 +228,7 @@ generate_diversion_total <- function(calsim_data, nodes){
   return(total_diverted)
 }
 
-diversion_2008_2009 <-  generate_diversion_total(calsim_data= calsim_2008_2009,
+diversion_2008_2009 <-  generate_diversion_total(calsim_data = calsim_2008_2009,
                                                  nodes = all_div_nodes)
 #bring in Moke diversions for 2008_2009 run from other model run
 moke <- read_excel('data-raw/calsim_2008_2009/EBMUDSIM/CVPIA_SIT_Data_RequestEBMUDSIMOutput_ExCond.xlsx',
@@ -339,7 +340,7 @@ generate_proportion_diverted <- function(calsim_data, nodes) {
   return(proportion_diverted)
 }
 
-prop_diverted_2008_2009 <- generate_proportion_diverted(calsim_data= calsim_2008_2009,
+prop_diverted_2008_2009 <- generate_proportion_diverted(calsim_data = calsim_2008_2009,
                                                         nodes = all_div_nodes)
 # bring in Moke
 moke <- read_excel('data-raw/calsim_2008_2009/EBMUDSIM/CVPIA_SIT_Data_RequestEBMUDSIMOutput_ExCond.xlsx',
@@ -363,8 +364,6 @@ proportion_diverted <- list(biop_2008_2009 = prop_diverted_2008_2009,
 )
 
 usethis::use_data(proportion_diverted, overwrite = TRUE)
-
-
 
 # tributary --------------
 generate_mean_flow <- function(bypass_flow, flow_cfs) {
