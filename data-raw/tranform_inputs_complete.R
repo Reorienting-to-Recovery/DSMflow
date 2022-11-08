@@ -923,22 +923,35 @@ usethis::use_data(vernalis_flow, overwrite = TRUE)
 
 stockton_node <- "C417A"
 
-stockton_flow <- calsim |>
-  select(date, stockton_node) |>
-  filter(
-    year(date) >= 1980, year(date) <= 2000) |>
-  transmute(
-    year = year(date),
-    month = month(date),
-    stocktonQcfs = C417A,
-    stocktonQcms = cfs_to_cms(C417A)
-  ) |>
-  select(year, month, stocktonQcms) |>
-  spread(year, stocktonQcms) |>
-  select(-month) |>
-  as.matrix()
+generate_stockton_flow <- function(calsim_data, stockton_node) {
+  stockton_flow <- calsim_data |>
+    select(date, stockton_node) |>
+    filter(
+      year(date) >= 1980, year(date) <= 2000) |>
+    transmute(
+      year = year(date),
+      month = month(date),
+      stocktonQcfs = C417A,
+      stocktonQcms = cfs_to_cms(C417A)
+    ) |>
+    select(year, month, stocktonQcms) |>
+    pivot_wider(names_from = year,
+                 values_from = stocktonQcms) |>
+    #spread(year, stocktonQcms) |>
+    select(-month) |>
+    as.matrix()
 
-rownames(stockton_flow) <- month.abb
+  rownames(stockton_flow) <- month.abb
+
+  return(stockton_flow)
+
+}
+
+stockton_flow_2008_2009 <- generate_stockton_flow(calsim_2008_2009, stockton_node)
+stockton_flow_2019_biop_itp <- generate_stockton_flow(calsim_2019_biop_itp, stockton_node)
+
+stockton_flow <- list(biop_2008_2009 = stockton_flow_2008_2009,
+                      biop_itp_2018_2019 = stockton_flow_2019_biop_itp)
 
 usethis::use_data(stockton_flow, overwrite = TRUE)
 
