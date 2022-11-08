@@ -991,22 +991,34 @@ usethis::use_data(cvp_exports, overwrite = TRUE)
 
 # swp exports
 
-swp_exports <- calsim |>
-  select(date, DEL_SWP_TOTAL) |>
-  filter(
-    year(date) >= 1980, year(date) <= 2000) |>
-  transmute(
-    date = date,
-    year = year(date),
-    month = month(date),
-    swpExportsQcfs = DEL_SWP_TOTAL,
-    swpExportsQcms = cfs_to_cms(DEL_SWP_TOTAL)
-  ) |>
-  select(year, month, swpExportsQcms) |>
-  spread(year, swpExportsQcms) |>
-  select(-month) |>
-  as.matrix()
+generate_swp_exports <- function(calsim_data) {
+  swp_exports <- calsim_data |>
+    select(date, DEL_SWP_TOTAL) |>
+    filter(
+      year(date) >= 1980, year(date) <= 2000) |>
+    transmute(
+      date = date,
+      year = year(date),
+      month = month(date),
+      swpExportsQcfs = DEL_SWP_TOTAL,
+      swpExportsQcms = cfs_to_cms(DEL_SWP_TOTAL)
+    ) |>
+    select(year, month, swpExportsQcms) |>
+    pivot_wider(names_from = year,
+                values_from = swpExportsQcms) |>
+    select(-month) |>
+    as.matrix()
 
-rownames(swp_exports) <- month.abb
+  rownames(swp_exports) <- month.abb
+
+  return(swp_exports)
+
+}
+
+swp_exports_2008_2009 <- generate_swp_exports(calsim_2008_2009)
+swp_exports_2019_biop_itp <- generate_swp_exports(calsim_2019_biop_itp)
+
+swp_exports <- list(biop_2008_2009 = swp_exports_2008_2009,
+                    biop_itp_2018_2019 = swp_exports_2019_biop_itp)
 
 usethis::use_data(swp_exports, overwrite = TRUE)
