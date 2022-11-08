@@ -957,23 +957,35 @@ usethis::use_data(stockton_flow, overwrite = TRUE)
 
 
 # cvp exports
-cvp_exports <- calsim |>
-  select(date, DEL_CVP_TOTAL) |>
-  filter(
-    year(date) >= 1980, year(date) <= 2000) |>
-  transmute(
-    date = date,
-    year = year(date),
-    month = month(date),
-    cvpExportsQcfs = DEL_CVP_TOTAL,
-    cvpExportsQcms = cfs_to_cms(DEL_CVP_TOTAL)
-  ) |>
-  select(year, month, cvpExportsQcms) |>
-  spread(year, cvpExportsQcms) |>
-  select(-month) |>
-  as.matrix()
 
-rownames(cvp_exports) <- month.abb
+generate_cvp_exports <- function(calsim_data) {
+  cvp_exports <- calsim_data |>
+    select(date, DEL_CVP_TOTAL) |>
+    filter(
+      year(date) >= 1980, year(date) <= 2000) |>
+    transmute(
+      date = date,
+      year = year(date),
+      month = month(date),
+      cvpExportsQcfs = DEL_CVP_TOTAL,
+      cvpExportsQcms = cfs_to_cms(DEL_CVP_TOTAL)
+    ) |>
+    select(year, month, cvpExportsQcms) |>
+    pivot_wider(names_from = year,
+                values_from = cvpExportsQcms) |>
+    select(-month) |>
+    as.matrix()
+
+  rownames(cvp_exports) <- month.abb
+
+  return(cvp_exports)
+
+}
+
+cvp_exports_2008_2009 <- generate_cvp_exports(calsim_2008_2009)
+cvp_exports_2019_biop_itp <- generate_cvp_exports(calsim_2019_biop_itp)
+cvp_exports <- list(biop_2008_2009 = cvp_exports_2008_2009,
+                    biop_itp_2018_2019 = cvp_exports_2019_biop_itp)
 
 usethis::use_data(cvp_exports, overwrite = TRUE)
 
