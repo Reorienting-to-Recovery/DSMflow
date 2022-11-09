@@ -779,11 +779,8 @@ delta_total_diverted <- list(biop_2008_2009 = delta_total_diverted_2008_2009,
 
 usethis::use_data(delta_total_diverted, overwrite = TRUE)
 
-# bypasses -------------
-
-# Replaces prop.Q.bypasses
+# bypasses ---------------------------------------------------------------------
 # cap values greater than 1 at 1
-
 generate_proportion_flow_bypasses <- function(misc_flows) {
   bypass_prop_flow <- misc_flows |>
     mutate(yolo = pmin(D160/C134, 1),
@@ -820,7 +817,7 @@ proportion_flow_bypasses <- list(biop_2008_2009 = proportion_flow_bypasses_2008_
 
 usethis::use_data(proportion_flow_bypasses, overwrite = TRUE)
 
-# Adds gates_overtopped
+# Adds gates_overtopped --------------------------------------------------------
 # TODO: where does this come from? does this need to be modified for multiple inputs?
 bypass_overtopped <- read_csv("data-raw/delta_cross_channel_gates/bypass_overtopped.csv")
 
