@@ -377,6 +377,7 @@ proportion_diverted <- list(biop_2008_2009 = prop_diverted_2008_2009,
 usethis::use_data(proportion_diverted, overwrite = TRUE)
 
 # tributary --------------
+# Mean flows -------------------------------------------------------------------
 generate_mean_flow <- function(bypass_flow, flow_cfs) {
   bypass <- bypass_flow |>
     select(date, `Sutter Bypass` = sutter4, `Yolo Bypass` = yolo2)
@@ -390,9 +391,9 @@ generate_mean_flow <- function(bypass_flow, flow_cfs) {
                  values_to = "flow_cfs") |>
     filter(watershed != "Lower-mid Sacramento River1") |>
     mutate(flow_cms = DSMflow::cfs_to_cms(flow_cfs),
-           watershed = ifelse(watershed == "Lower-mid Sacramento River2", "Lower-mid Sacramento River", watershed)) |>
+           watershed = ifelse(watershed == "Lower-mid Sacramento River2",
+                              "Lower-mid Sacramento River", watershed)) |>
     select(-flow_cfs) |>
-    # spread(date, flow_cms)
     left_join(DSMflow::watershed_ordering) |>
     pivot_wider(names_from = date,
                 values_from = flow_cms) |>
@@ -408,7 +409,6 @@ generate_mean_flow <- function(bypass_flow, flow_cfs) {
 
 # create mean flows with both 2008-2009 biop and 2018-2019 biop/itp
 # using bypass nodes that are activated the most for meanQ
-
 mean_flow_2008_2009 <- generate_mean_flow(bypass_flows$biop_2008_2009, flows_cfs$biop_2008_2009)
 mean_flow_2019_biop_itp <- generate_mean_flow(bypass_flows$biop_itp_2018_2019, flows_cfs$biop_itp_2018_2019) # missing moke
 
