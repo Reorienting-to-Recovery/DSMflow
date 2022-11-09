@@ -591,6 +591,7 @@ proportion_pulse_flows <- list(biop_2008_2009 = proportion_pulse_flows_2008_2009
 usethis::use_data(proportion_pulse_flows, overwrite = TRUE)
 
 # delta flow objects -----------------------------------------------------------
+# Cross channel gates
 #  C400 flow at freeport
 # 1) daily discharge of the Sacramento River at Freeport
 # 2) an indicator variable for whether the DCC is open (1) or closed (0).
@@ -646,7 +647,7 @@ delta_cross_channel_closed <- list(biop_2008_2009 = delta_cross_channel_closed_2
 
 usethis::use_data(delta_cross_channel_closed, overwrite = TRUE)
 
-# delta flows and diversions --------------------
+# delta flows and diversions ---------------------------------------------------
 # North Delta inflows: C400 + C157
 # South Delta inflow: C401B + C504 + C508 + C644
 # North Delta diversions: D403A + D403B + D403C + D403D + D404
