@@ -941,7 +941,6 @@ vernalis_flow <- list(biop_2008_2009 = vernalis_flow_2008_2009,
 usethis::use_data(vernalis_flow, overwrite = TRUE)
 
 # stockton flow ----------------------------------------------------------------
-
 stockton_node <- "C417A"
 
 generate_stockton_flow <- function(calsim_data, stockton_node) {
@@ -958,14 +957,12 @@ generate_stockton_flow <- function(calsim_data, stockton_node) {
     select(year, month, stocktonQcms) |>
     pivot_wider(names_from = year,
                  values_from = stocktonQcms) |>
-    #spread(year, stocktonQcms) |>
     select(-month) |>
     as.matrix()
 
   rownames(stockton_flow) <- month.abb
 
   return(stockton_flow)
-
 }
 
 stockton_flow_2008_2009 <- generate_stockton_flow(calsim_2008_2009, stockton_node)
