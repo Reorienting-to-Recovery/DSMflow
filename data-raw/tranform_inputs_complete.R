@@ -68,29 +68,9 @@ calsim_2008_2009 <- read_rds('data-raw/calsim_2008_2009/MikeWrightCalSimOct2017/
   rename(D403D = D403D.x) |>
   select(-D403D.y)
 
-flow_2008_2009 <- generate_flow_cfs(calsim_data = calsim_2008_2009, nodes = habitat_node)
 
-# testing Moke flows from exteranl model to calsim II - C503 vs 04-501
-# moke_test <- read_excel('data-raw/calsim_2008_2009/EBMUDSIM/CVPIA_SIT_Data_RequestEBMUDSIMOutput_ExCond.xlsx', sheet = 'Tableau Clean-up') |>
-#   mutate(date = as_date(Date), C503...11) |>
-#   select(date, C503 = C503...11) |> glimpse()
-#
-# c501_504 <- read_csv('data-raw/calsim_2008_2009/MikeWrightCalSimOct2017/C422-C843.csv', skip = 1) |>
-#   select(date = `...2`, C504, C501) |>
-#   filter(!is.na(date)) |>
-#   mutate(date = dmy(date)) |> glimpse()
-#
-# moke_test |>
-#   left_join(c501_504) |>
-#   mutate(calsim = as.numeric(C504) - as.numeric(C501)) |>
-#   select(date, ebmudsim = C503, calsim) |>
-#   gather(model, flow, -date) |>
-#   filter(year(date) >= 1980, year(date) < 2000) |>
-#   ggplot(aes(x = date, y = flow, color = model)) +
-#   geom_line() +
-#   theme_minimal() +
-#   theme(text = element_text(size = 18))
-# #looks great
+# Generate 2008 2009 flow_cfs --------------------------------------------------
+flow_2008_2009 <- generate_flow_cfs(calsim_data = calsim_2008_2009, nodes = habitat_node)
 
 # bring in Moke flow from other model run
 moke <- read_excel('data-raw/calsim_2008_2009/EBMUDSIM/CVPIA_SIT_Data_RequestEBMUDSIMOutput_ExCond.xlsx',
@@ -98,8 +78,7 @@ moke <- read_excel('data-raw/calsim_2008_2009/EBMUDSIM/CVPIA_SIT_Data_RequestEBM
   mutate(date = as_date(Date), `Mokelumne River` = C91) |>
   select(date, `Mokelumne River`)
 
-# tributary and mainstem habitat flow ------------------------------------------
-# TODO once we add Moke into model update to remove moke column before joining new one
+# join moke to flows
 flows_cfs_2008_2009 <- flow_2008_2009 |>
   select(-`Mokelumne River`) |> # get rid of old Moke column
   left_join(moke) |> # add in Moke
@@ -120,9 +99,9 @@ flow_cfs_2019_biop_itp <- flow_cfs_2019_biop_itp |>
   left_join(moke_2019) |> # add in Moke
   select(date:`Cosumnes River`, `Mokelumne River`, `Merced River`:`San Joaquin River`) # reorder
 
-# create flow_cfs with both 2008-2009 biop and 2018-2019 biop/itp
+# create flow_cfs with both 2008-2009 biop and 2018-2019 biop/itp ---------------
 flows_cfs <- list(biop_2008_2009 = flows_cfs_2008_2009,
-                 biop_itp_2018_2019 = flow_cfs_2019_biop_itp # 2019 does not have moke
+                  biop_itp_2018_2019 = flow_cfs_2019_biop_itp
 )
 
 # Write flow cfs data object
