@@ -129,12 +129,12 @@ bypass_2019_biop_itp <- generate_bypass_flows(calsim_run = calsim_2019_biop_itp)
 
 # create bypass flows with both 2008-2009 biop and 2018-2019 biop/itp
 bypass_flows <- list(biop_2008_2009 = bypass_2008_2009,
-                     biop_itp_2018_2019 = bypass_2019_biop_itp # missing moke
+                     biop_itp_2018_2019 = bypass_2019_biop_itp
 )
 
 usethis::use_data(bypass_flows, overwrite = TRUE)
 
-# diversions -------
+# diversions -------------------------------------------------------------------
 need_split <- cvpia_nodes$cal_sim_flow_nodes |> str_detect(', ')
 div_split <- cvpia_nodes$cal_sim_flow_nodes[need_split] |> str_split(', ') |> flatten_chr()
 div_flow_nodes <- c(cvpia_nodes$cal_sim_flow_nodes[!need_split], div_split)
@@ -195,12 +195,10 @@ generate_diversion_total <- function(calsim_data, nodes){
   # turn into array for total_diversion
   total_diverted <- div_tot |>
     filter(year(date) >= 1980, year(date) <= 2000) |>
-    #gather(watershed, tot_diver, -date) |> # this is from original code
     pivot_longer(`Upper Sacramento River`:`San Joaquin River`,
                  names_to = "watershed",
                  values_to = "tot_diver") |>
     mutate(tot_diver = DSMflow::cfs_to_cms(tot_diver)) |>
-    #spread(date, tot_diver) |> # this is from original code
     pivot_wider(names_from = date,
                 values_from = tot_diver) |>
     left_join(DSMflow::watershed_ordering) |>
@@ -217,6 +215,7 @@ generate_diversion_total <- function(calsim_data, nodes){
   return(total_diverted)
 }
 
+# generate diversions for 2008 2009 --------------------------------------------
 diversion_2008_2009 <-  generate_diversion_total(calsim_data = calsim_2008_2009,
                                                  nodes = all_div_nodes)
 #bring in Moke diversions for 2008_2009 run from other model run
@@ -236,6 +235,7 @@ moke <- read_excel('data-raw/calsim_2008_2009/EBMUDSIM/CVPIA_SIT_Data_RequestEBM
 
 diversion_2008_2009["Mokelumne River",,] <- as.matrix(moke) # add to 2008_2009 matrix
 
+# generate diversions for 2019 biop --------------------------------------------
 diversion_2019_biop_itp <- generate_diversion_total(calsim_data = calsim_2019_biop_itp,
                                                     nodes = all_div_nodes)
 
