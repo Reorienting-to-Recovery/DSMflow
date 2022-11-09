@@ -590,12 +590,12 @@ proportion_pulse_flows <- list(biop_2008_2009 = proportion_pulse_flows_2008_2009
 
 usethis::use_data(proportion_pulse_flows, overwrite = TRUE)
 
-# DELTA ----
+# delta flow objects -----------------------------------------------------------
 #  C400 flow at freeport
 # 1) daily discharge of the Sacramento River at Freeport
 # 2) an indicator variable for whether the DCC is open (1) or closed (0).
 # Replaces dlt.gates
-delta_cross_channel_closed <- read_csv('data-raw/delta_cross_channel_gates/DeltaCrossChannelTypicalOperations.csv', skip = 2) |>
+delta_cross_channel_closed_2008_2009 <- read_csv('data-raw/delta_cross_channel_gates/DeltaCrossChannelTypicalOperations.csv', skip = 2) |>
   mutate(Month = which(month.name == Month), prop_days_closed = `Days Closed` / days_in_month(Month)) |>
   select(month = Month, days_closed = `Days Closed`, prop_days_closed) |>
   pivot_longer(days_closed,
@@ -608,11 +608,11 @@ delta_cross_channel_closed <- read_csv('data-raw/delta_cross_channel_gates/Delta
   as.matrix() |>
   t()
 
-colnames(delta_cross_channel_closed) <- month.abb[1:12]
-rownames(delta_cross_channel_closed) <- c('count', 'proportion')
+colnames(delta_cross_channel_closed_2008_2009) <- month.abb[1:12]
+rownames(delta_cross_channel_closed_2008_2009) <- c('count', 'proportion')
 
-#TODO: check that logic for this aligns with word doc proposal
-#TODO: automate the word doc proposal; does this need to be two different tables?
+# Generate for 2019
+# The followung guidance was provided to use for the update:
 # Per guidance from Reclamation’s CALSIM lead modeler (Derya Sumer), the same logic
 # used to represent days closed for the 2009 CALSIM model should be used for the 2019
 # CALSIM model. Specifically, there should be 28 days closed in May and 8 days closed
@@ -620,9 +620,29 @@ rownames(delta_cross_channel_closed) <- c('count', 'proportion')
 # monthly flows based on the 2009 CALSIM model ouputs that are representative of the
 # escapement period of record use for calibration.
 
+delta_cross_channel_closed_2018_2019 <- read_csv('data-raw/delta_cross_channel_gates/DeltaCrossChannelTypicalOperations.csv', skip = 2) |>
+  mutate(Month = which(month.name == Month), prop_days_closed = `Days Closed` / days_in_month(Month)) |>
+  select(month = Month, days_closed = `Days Closed`, prop_days_closed) |>
+  pivot_longer(days_closed,
+               names_to = "metric",
+               values_to = "value") |>
+  pivot_wider(names_from = metric,
+              values_from = value) |>
+  select(-month) |>
+  select(days_closed, prop_days_closed) |>
+  as.matrix() |>
+  t()
+
+colnames(delta_cross_channel_closed_2018_2019) <- month.abb[1:12]
+rownames(delta_cross_channel_closed_2018_2019) <- c('count', 'proportion')
+
 # replace May and June values according to text above (from word doc proposal)
-delta_cross_channel_closed[,"May"] <- c(28, 28/31)
-delta_cross_channel_closed[,"Jun"] <- c(8, 8/30)
+delta_cross_channel_closed_2018_2019[ , "May"] <- c(28, 28/31)
+delta_cross_channel_closed_2018_2019[ , "Jun"] <- c(8, 8/30)
+
+# Combine into named list
+delta_cross_channel_closed <- list(biop_2008_2009 = delta_cross_channel_closed_2008_2009,
+                                   biop_itp_2018_2019 = delta_cross_channel_closed_2018_2019)
 
 usethis::use_data(delta_cross_channel_closed, overwrite = TRUE)
 
