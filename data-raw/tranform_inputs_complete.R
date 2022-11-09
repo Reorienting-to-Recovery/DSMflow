@@ -715,8 +715,7 @@ delta_inflow <- list(biop_2008_2009 = delta_inflows_2008_2009,
 
 usethis::use_data(delta_inflow, overwrite = TRUE)
 
-# delta prop diverted
-# Replaces dlt.divers
+# delta prop diverted ----------------------------------------------------------
 generate_delta_proportion_diverted <- function(delta_flows) {
   dl_prop_div <- delta_flows |>
     filter(year(date) >= 1980, year(date) <= 2000) |>
