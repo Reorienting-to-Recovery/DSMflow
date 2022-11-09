@@ -54,7 +54,7 @@ generate_flow_cfs <- function(calsim_data, nodes){
            `Lower Sacramento River` = C166,
            `Calaveras River` = C92,
            `Cosumnes River` = C501,
-           `Mokelumne River` = NA, # TODO figure out what to do with Moke with new calsim
+           `Mokelumne River` = NA,
            `Merced River` = C561,
            `Stanislaus River` = C520,
            `Tuolumne River` = C540,
@@ -108,7 +108,17 @@ flows_cfs_2008_2009 <- flow_2008_2009 |>
 # Add in new calsim run (2018 - 2019 Biop/Itp) data-----------------------------
 calsim_2019_biop_itp <- read_rds('data-raw/calsim_2019_BiOp_ITP/biop_cvpia_calsim.rds')
 
+moke_2019 <- read_excel('data-raw/calsim_2019_BiOp_ITP/EBMUDSIM/CVPIA_SIT_Data_RequestUpdated2022.xlsx',
+                   sheet = 'Tableau Clean-up') |>
+  mutate(date = as_date(Date), `Mokelumne River` = C91) |>
+  select(date, `Mokelumne River`)
+
 flow_cfs_2019_biop_itp <- generate_flow_cfs(calsim_data = calsim_2019_biop_itp, nodes = habitat_node)
+
+flow_cfs_2019_biop_itp <- flow_cfs_2019_biop_itp |>
+  select(-`Mokelumne River`) |> # get rid of old Moke column
+  left_join(moke_2019) |> # add in Moke
+  select(date:`Cosumnes River`, `Mokelumne River`, `Merced River`:`San Joaquin River`) # reorder
 
 # create flow_cfs with both 2008-2009 biop and 2018-2019 biop/itp
 flows_cfs <- list(biop_2008_2009 = flows_cfs_2008_2009,
@@ -250,6 +260,23 @@ diversion_2008_2009["Mokelumne River",,] <- as.matrix(moke) # add to 2008_2009 m
 diversion_2019_biop_itp <- generate_diversion_total(calsim_data = calsim_2019_biop_itp,
                                                     nodes = all_div_nodes)
 
+#bring in Moke diversions for 20019 run from other model run
+moke_2019 <- read_excel('data-raw/calsim_2019_BiOp_ITP/EBMUDSIM/CVPIA_SIT_Data_RequestUpdated2022.xlsx',
+                   sheet = 'Tableau Clean-up') |>
+  mutate(date = as_date(Date),
+         `Mokelumne River` = (D503A + D503B + D503C + D502A + D502B)) |>
+  select(date, `Mokelumne River`) |>
+  filter(year(date) <= 2000 & year(date) >= 1980) |># subset to 20 years
+  group_by(year(date), month(date)) |> # summarize by month
+  summarize(monthly_flow = sum(`Mokelumne River`)) |>
+  rename(year = `year(date)`,
+         month = `month(date)`) |>
+  mutate(monthly_flow = DSMflow::cfs_to_cms(monthly_flow)) |>
+  pivot_wider(names_from = year, values_from = monthly_flow) |> # format to fit into model array
+  select(-month)
+
+diversion_2019_biop_itp["Mokelumne River",,] <- as.matrix(moke_2019) # add to 2008_2009 matrix
+
 # create diversion flows with both 2008-2009 biop and 2018-2019 biop/itp
 total_diverted <- list(biop_2008_2009 = diversion_2008_2009, # has moke
                      biop_itp_2018_2019 = diversion_2019_biop_itp # missing moke
@@ -332,7 +359,7 @@ generate_proportion_diverted <- function(calsim_data, nodes) {
     select(-watershed) |>
     mutate_all(~replace_na(., 0)) |>
     arrange(order) |>
-    select(-order) |> glimpse()
+    select(-order) |>
     create_model_array()
 
   dimnames(proportion_diverted) <- list(watershed_ordering$watershed,
@@ -355,8 +382,21 @@ moke <- read_excel('data-raw/calsim_2008_2009/EBMUDSIM/CVPIA_SIT_Data_RequestEBM
 
 prop_diverted_2008_2009["Mokelumne River",,] <- as.matrix(moke) # add to 2008_2009 matrix
 
+# run for 2019
 prop_diverted_2019_biop_itp <- generate_proportion_diverted(calsim_data = calsim_2019_biop_itp,
                                                            nodes = all_div_nodes)
+# bring in Moke for 2019
+moke_2019 <- read_excel('data-raw/calsim_2019_BiOp_ITP/EBMUDSIM/CVPIA_SIT_Data_RequestUpdated2022.xlsx.',
+                   sheet = 'Tableau Clean-up') |>
+  mutate(date = as_date(Date), `Mokelumne River` = (D503A + D503B + D503C + D502A + D502B) / C91) |>
+  select(date, `Mokelumne River`) |>
+  filter(year(date) <= 2000 & year(date) >= 1980) |> # 1980-2000
+  group_by(year(date), month(date)) |>
+  summarize(monthly_flow = sum(`Mokelumne River`)) |> # summarize by month and year to fit into model array
+  pivot_wider(names_from = `year(date)`, values_from = monthly_flow) |>
+  select(-`month(date)`)
+
+prop_diverted_2019_biop_itp["Mokelumne River",,] <- as.matrix(moke_2019) # add to 2008_2009 matrix
 
 # create proportion diversion flows with both 2008-2009 biop and 2018-2019 biop/itp
 proportion_diverted <- list(biop_2008_2009 = prop_diverted_2008_2009,
@@ -569,7 +609,7 @@ generate_proportion_pulse_flows <- function(flow_cfs) {
 }
 
 proportion_pulse_flows_2008_2009 <- generate_proportion_pulse_flows(flows_cfs$biop_2008_2009)
-# TODO: incorporate moke into the flows_cfs object for 2008/2009
+
 proportion_pulse_flows_2019_biop_itp <- generate_proportion_pulse_flows(flows_cfs$biop_itp_2018_2019)
 
 proportion_pulse_flows <- list(biop_2008_2009 = proportion_pulse_flows_2008_2009,
