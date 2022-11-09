@@ -746,9 +746,7 @@ delta_proportion_diverted <- list(biop_2008_2009 = delta_proportion_diverted_200
 
 usethis::use_data(delta_proportion_diverted, overwrite = TRUE)
 
-# delta total diversions
-# Replaces dlt.divers.tot
-
+# delta total diversions -------------------------------------------------------
 generate_delta_total_diverted <- function(delta_flows) {
   dl_tot_div <- delta_flows |>
     filter(year(date) >= 1980, year(date) <= 2000) |>
