@@ -839,9 +839,9 @@ gates_overtopped[ , , 2] <- bypass_overtopped[13:24, ]
 
 usethis::use_data(gates_overtopped, overwrite = TRUE)
 
-# Delta Routing Flows ---------------------
+# Delta Routing Flows ----------------------------------------------------------
 
-
+# wilkins flow -----------------------------------------------------------------
 # Adds wilkins flow node to replace freeport flow
 # I used node C129 for wilkins(Cyril recommended C129)
 wilkins_node <- c("C129")
@@ -867,8 +867,8 @@ generate_wilkins_flow <- function(calsim_data, wilkins_node) {
   return(wilkins_flow)
 }
 
-wilkins_flow_2008_2009 <- generate_wilkins_flow(calsim_2008_2009, wilkins_node))
-wilkins_flow_2019_biop_itp <- generate_wilkins_flow(calsim_2019_biop_itp, wilkins_node))
+wilkins_flow_2008_2009 <- generate_wilkins_flow(calsim_2008_2009, wilkins_node)
+wilkins_flow_2019_biop_itp <- generate_wilkins_flow(calsim_2019_biop_itp, wilkins_node)
 
 wilkins_flow <- list(biop_2008_2009 = wilkins_flow_2008_2009,
                      biop_itp_2018_2019 = wilkins_flow_2019_biop_itp)
