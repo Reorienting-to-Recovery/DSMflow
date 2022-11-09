@@ -1005,8 +1005,7 @@ cvp_exports <- list(biop_2008_2009 = cvp_exports_2008_2009,
 
 usethis::use_data(cvp_exports, overwrite = TRUE)
 
-# swp exports
-
+# swp exports ------------------------------------------------------------------
 generate_swp_exports <- function(calsim_data) {
   swp_exports <- calsim_data |>
     select(date, DEL_SWP_TOTAL) |>
@@ -1028,7 +1027,6 @@ generate_swp_exports <- function(calsim_data) {
   rownames(swp_exports) <- month.abb
 
   return(swp_exports)
-
 }
 
 swp_exports_2008_2009 <- generate_swp_exports(calsim_2008_2009)
