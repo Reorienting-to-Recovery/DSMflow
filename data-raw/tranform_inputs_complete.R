@@ -974,8 +974,7 @@ stockton_flow <- list(biop_2008_2009 = stockton_flow_2008_2009,
 usethis::use_data(stockton_flow, overwrite = TRUE)
 
 
-# cvp exports
-
+# cvp exports ------------------------------------------------------------------
 generate_cvp_exports <- function(calsim_data) {
   cvp_exports <- calsim_data |>
     select(date, DEL_CVP_TOTAL) |>
@@ -997,7 +996,6 @@ generate_cvp_exports <- function(calsim_data) {
   rownames(cvp_exports) <- month.abb
 
   return(cvp_exports)
-
 }
 
 cvp_exports_2008_2009 <- generate_cvp_exports(calsim_2008_2009)
