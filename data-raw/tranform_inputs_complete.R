@@ -264,7 +264,7 @@ total_diverted <- list(biop_2008_2009 = diversion_2008_2009, # has moke
 usethis::use_data(total_diverted, overwrite = TRUE)
 
 
-# proportion_diverted
+# proportion_diverted ----------------------------------------------------------
 generate_proportion_diverted <- function(calsim_data, nodes) {
 
   node_columns <- names(calsim_data) %in% c(nodes, 'date')
@@ -308,7 +308,6 @@ generate_proportion_diverted <- function(calsim_data, nodes) {
            `Tuolumne River` = D545 / C540,
            `San Joaquin River` = (D637 + D630B + D630A + D620B) / (D637 + D630B + D630A + D620B + C637)) |>
     select(`Upper Sacramento River`:`San Joaquin River`, date) |>
-    #gather(watershed, prop_diver, -date) |>
     pivot_longer(`Upper Sacramento River`:`San Joaquin River`,
                  names_to = "watershed",
                  values_to = "prop_diver") |>
@@ -319,21 +318,13 @@ generate_proportion_diverted <- function(calsim_data, nodes) {
              prop_diver > 1 ~ 1,
              TRUE ~ prop_diver
            ))
-    #spread(watershed, prop_diver)
-    # pivot_wider(names_from = date,
-    #             values_from = prop_diver) |> glimpse()
+
 
   # create array
   proportion_diverted <- temp_prop_diverted |>
-    #left_join(moke) |>
     filter(year(date) >= 1980, year(date) <= 2000) |>
-    #gather(watershed, prop_diver, -date) |>
-    # pivot_longer(`Upper Sacramento River`:`San Joaquin River`,
-    #              names_to = "watershed",
-    #              values_to = "prop_diver") |> glimpse()
     pivot_wider(names_from = date,
                 values_from = prop_diver) |>
-    #spread(date, prop_diver) |>
     left_join(DSMflow::watershed_ordering) |>
     select(-watershed) |>
     mutate_all(~replace_na(., 0)) |>
@@ -346,6 +337,7 @@ generate_proportion_diverted <- function(calsim_data, nodes) {
   return(proportion_diverted)
 }
 
+# Generate proportion diverted for 2008 and 2009 -------------------------------
 prop_diverted_2008_2009 <- generate_proportion_diverted(calsim_data = calsim_2008_2009,
                                                         nodes = all_div_nodes)
 # bring in Moke
@@ -359,9 +351,9 @@ moke <- read_excel('data-raw/calsim_2008_2009/EBMUDSIM/CVPIA_SIT_Data_RequestEBM
   pivot_wider(names_from = `year(date)`, values_from = monthly_flow) |>
   select(-`month(date)`)
 
-prop_diverted_2008_2009["Mokelumne River",,] <- as.matrix(moke) # add to 2008_2009 matrix
+prop_diverted_2008_2009["Mokelumne River", , ] <- as.matrix(moke) # add to 2008_2009 matrix
 
-# run for 2019
+# Generate proportion diverted for 2019 ----------------------------------------
 prop_diverted_2019_biop_itp <- generate_proportion_diverted(calsim_data = calsim_2019_biop_itp,
                                                            nodes = all_div_nodes)
 # bring in Moke for 2019
@@ -379,7 +371,7 @@ prop_diverted_2019_biop_itp["Mokelumne River",,] <- as.matrix(moke_2019) # add t
 
 # create proportion diversion flows with both 2008-2009 biop and 2018-2019 biop/itp
 proportion_diverted <- list(biop_2008_2009 = prop_diverted_2008_2009,
-                       biop_itp_2018_2019 = prop_diverted_2019_biop_itp # missing moke
+                       biop_itp_2018_2019 = prop_diverted_2019_biop_itp
 )
 
 usethis::use_data(proportion_diverted, overwrite = TRUE)
