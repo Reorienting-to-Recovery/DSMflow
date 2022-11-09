@@ -907,7 +907,7 @@ freeport_flow <- list(biop_2008_2009 = freeport_flow_2008_2009,
 
 usethis::use_data(freeport_flow, overwrite = TRUE)
 
-# vernalis flow
+# vernalis flow ----------------------------------------------------------------
 vernalis_node <- "C639"
 
 generate_vernalis_flow <- function(calsim_data, vernalis_node) {
@@ -922,7 +922,6 @@ generate_vernalis_flow <- function(calsim_data, vernalis_node) {
       vernalisQcms = cfs_to_cms(C639)
     ) |>
     select(year, month, vernalisQcms) |>
-    #spread(year, vernalisQcms) |>
     pivot_wider(names_from = year,
                 values_from = vernalisQcms) |>
     select(-month) |>
@@ -941,7 +940,7 @@ vernalis_flow <- list(biop_2008_2009 = vernalis_flow_2008_2009,
 
 usethis::use_data(vernalis_flow, overwrite = TRUE)
 
-# stockton flow
+# stockton flow ----------------------------------------------------------------
 
 stockton_node <- "C417A"
 
