@@ -683,9 +683,7 @@ delta_flows <- list(biop_2008_2009 = delta_flows_2008_2009,
 
 usethis::use_data(delta_flows, overwrite = TRUE)
 
-# delta inflows
-# Replaces Dlt.inf
-
+# delta inflows ----------------------------------------------------------------
 generate_delta_inflows <- function(delta_flows) {
   inflow <- delta_flows |>
     filter(year(date) >= 1980, year(date) <= 2000) |>
@@ -700,7 +698,6 @@ generate_delta_inflows <- function(delta_flows) {
     select(-delta)
 
   delta_inflow <- array(NA, dim = c(12, 21, 2))
-  # TODO: check that me adding nrow, ncol is ok (it wasn't working, even in original code)
   delta_inflow[ , , 1] <- as.matrix(inflow[1, ], nrow = 12, ncol = 21)
   delta_inflow[ , , 2] <- as.matrix(inflow[2, ], nrow = 12, ncol = 21)
 
