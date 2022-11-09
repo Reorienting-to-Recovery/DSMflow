@@ -491,6 +491,7 @@ upper_sacramento_flows <- list(biop_2008_2009 = upper_sacramento_flows_2008_2009
 
 usethis::use_data(upper_sacramento_flows, overwrite = TRUE)
 
+# prop flow natal --------------------------------------------------------------
 # Replaces retQ
 # proportion flows at tributary junction coming from natal watershed using october average flow
 # create lookup vector for retQ denominators based on Jim's previous input
