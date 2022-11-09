@@ -550,6 +550,7 @@ proportion_flow_natal <- list(biop_2008_2009 = proportion_flow_natal_2008_2009,
 
 usethis::use_data(proportion_flow_natal, overwrite = TRUE)
 
+# proportion pulse flows -------------------------------------------------------
 # Replaces prop.pulse
 generate_proportion_pulse_flows <- function(flow_cfs) {
   proportion_pulse_flows <- flow_cfs |>
