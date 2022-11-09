@@ -418,7 +418,7 @@ mean_flow <- list(biop_2008_2009 = mean_flow_2008_2009,
 usethis::use_data(mean_flow, overwrite = TRUE)
 
 # misc flow nodes ----
-
+# prepare misc flow nodes to be used to generate additional data objects
 generate_misc_flow_nodes <- function(cs, ds) {
   misc_flows <- left_join(cs, ds) |>
     pivot_longer(C134:D126,
