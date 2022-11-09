@@ -844,7 +844,7 @@ usethis::use_data(gates_overtopped, overwrite = TRUE)
 # wilkins flow -----------------------------------------------------------------
 # Adds wilkins flow node to replace freeport flow
 # I used node C129 for wilkins(Cyril recommended C129)
-wilkins_node <- c("C129")
+wilkins_node <- "C129"
 
 generate_wilkins_flow <- function(calsim_data, wilkins_node) {
   wilkins_flow <- calsim_data |>
@@ -856,7 +856,6 @@ generate_wilkins_flow <- function(calsim_data, wilkins_node) {
       wilklinsQcfs = C129,
       wilkinsQcms = cfs_to_cms(C129))  |>
     select(year, month, wilkinsQcms) |>
-    #spread(year, wilkinsQcms) |>
     pivot_wider(names_from = year,
                 values_from = wilkinsQcms) |>
     select(-month) |>
@@ -875,8 +874,8 @@ wilkins_flow <- list(biop_2008_2009 = wilkins_flow_2008_2009,
 
 usethis::use_data(wilkins_flow, overwrite = TRUE)
 
-# freeport flow
-freeport_node <- c("C400")
+# freeport flow ----------------------------------------------------------------
+freeport_node <- "C400"
 
 generate_freeport_flow <- function(calsim_data, freeport_node) {
   freeport_flow <- calsim_data |>
@@ -890,7 +889,6 @@ generate_freeport_flow <- function(calsim_data, freeport_node) {
       freeportQcms = cfs_to_cms(C400)
     ) |>
     select(year, month, freeportQcms) |>
-    #spread(year, freeportQcms) |>
     pivot_wider(names_from = year,
                 values_from = freeportQcms) |>
     select(-month) |>
