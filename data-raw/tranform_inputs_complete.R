@@ -818,24 +818,41 @@ proportion_flow_bypasses <- list(biop_2008_2009 = proportion_flow_bypasses_2008_
 usethis::use_data(proportion_flow_bypasses, overwrite = TRUE)
 
 # Adds gates_overtopped --------------------------------------------------------
-# TODO: where does this come from? does this need to be modified for multiple inputs?
-bypass_overtopped <- read_csv("data-raw/delta_cross_channel_gates/bypass_overtopped.csv")
+# overtopped is > 100 cfs
 
-bypass_overtopped <- bypass_overtopped |>
-  mutate(year = year(date),
-         month = month(date)) |>
-  filter(between(year, 1980, 2000)) |>
-  select(-date) |>
-  gather(bypass, overtopped, -month, -year) |>
-  spread(year, overtopped) |>
-  arrange(bypass, month)  |>
-  select(-month, -bypass) |>
-  as.matrix()
+generate_gates_overtopped <- function(calsim_data) {
+  bypass_overtopped <- calsim_data %>%
+    mutate(sutter = D117 + D124 + D125 + D126 + C137,
+           yolo = D160 + C157) %>%
+    select(date, sutter, yolo) %>%
+    filter(between(year(date), 1980, 2000)) %>%
+    gather(bypass, flow, - date) %>%
+    mutate(overtopped = flow >= 100) %>%
+    select(-flow) %>%
+    spread(bypass, overtopped) |>
+    mutate(year = year(date),
+           month = month(date)) |>
+    # filter(between(year, 1980, 2000)) |>
+    select(-date) |>
+    gather(bypass, overtopped, -month, -year) |>
+    spread(year, overtopped) |>
+    arrange(bypass, month)  |>
+    select(-month, -bypass) |>
+    as.matrix()
 
-gates_overtopped <- array(NA, dim = c(12, 21, 2))
-dimnames(gates_overtopped) <- list(month.abb[1:12], 1980:2000, c('Sutter Bypass', 'Yolo Bypass'))
-gates_overtopped[ , , 1] <- bypass_overtopped[1:12, ]
-gates_overtopped[ , , 2] <- bypass_overtopped[13:24, ]
+  gates_overtopped <- array(NA, dim = c(12, 21, 2))
+  dimnames(gates_overtopped) <- list(month.abb[1:12], 1980:2000, c('Sutter Bypass', 'Yolo Bypass'))
+  gates_overtopped[ , , 1] <- bypass_overtopped[1:12, ]
+  gates_overtopped[ , , 2] <- bypass_overtopped[13:24, ]
+
+  return(gates_overtopped)
+}
+
+gates_overtopped_2008_2009 <- generate_gates_overtopped(calsim_2008_2009)
+gates_overtopped_2019_biop_itp <- generate_gates_overtopped(calsim_2019_biop_itp)
+
+gates_overtopped <- list(biop_2008_2009 = gates_overtopped_2008_2009,
+                         biop_itp_2018_2019 = gates_overtopped_2019_biop_itp)
 
 usethis::use_data(gates_overtopped, overwrite = TRUE)
 
