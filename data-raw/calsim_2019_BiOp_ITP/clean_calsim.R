@@ -3,18 +3,18 @@ library(lubridate)
 library(stringr)
 library(devtools)
 
-cvpia_nodes <- read_csv('data-raw/biop_inputs/cvpia_calsim_nodes.csv', skip = 1)
-need_split <- cvpia_nodes$calsim_habitat_flow %>% str_detect(', ')
-habitat_split <- cvpia_nodes$calsim_habitat_flow[need_split] %>% str_split(', ') %>% flatten_chr()
-habitat_nodes <- c(cvpia_nodes$calsim_habitat_flow[!need_split], habitat_split, 'C134', 'C160')[-20]
+cvpia_nodes <- read_csv('data-raw/calsim_2019_BiOp_ITP/cvpia_calsim_nodes.csv', skip = 1)
+hab_col_need_split <- cvpia_nodes$calsim_habitat_flow %>% str_detect(', ')
+habitat_split <- cvpia_nodes$calsim_habitat_flow[hab_col_need_split] %>% str_split(', ') %>% flatten_chr()
+habitat_nodes <- c(cvpia_nodes$calsim_habitat_flow[!hab_col_need_split], habitat_split, 'C134', 'C160')[-20]
 
-need_split <- cvpia_nodes$cal_sim_flow_nodes %>% str_detect(', ')
-div_split <- cvpia_nodes$cal_sim_flow_nodes[need_split] %>% str_split(', ') %>% flatten_chr()
-div_flow_nodes <- c(cvpia_nodes$cal_sim_flow_nodes[!need_split], div_split)
+flow_col_need_split <- cvpia_nodes$cal_sim_flow_nodes %>% str_detect(', ')
+div_split <- cvpia_nodes$cal_sim_flow_nodes[flow_col_need_split] %>% str_split(', ') %>% flatten_chr()
+div_flow_nodes <- c(cvpia_nodes$cal_sim_flow_nodes[!flow_col_need_split], div_split)
 
-need_split <- cvpia_nodes$cal_sim_diversion_nodes %>% str_detect(', ')
-div_split <- cvpia_nodes$cal_sim_diversion_nodes[need_split] %>% str_split(', ') %>% flatten_chr()
-div_nodes <- c(cvpia_nodes$cal_sim_diversion_nodes[!need_split], div_split)
+div_col_need_split <- cvpia_nodes$cal_sim_diversion_nodes %>% str_detect(', ')
+div_split <- cvpia_nodes$cal_sim_diversion_nodes[div_col_need_split] %>% str_split(', ') %>% flatten_chr()
+div_nodes <- c(cvpia_nodes$cal_sim_diversion_nodes[!div_col_need_split], div_split)
 diversion_nodes <- div_nodes[!is.na(div_nodes)] %>% str_trim('both') %>% str_replace(',', '')
 
 # Add wilkins nodes
@@ -34,8 +34,8 @@ del_total_nodes <- c('DEL_SWP_TOTAL', 'DEL_CVP_TOTAL')
 all_nodes <- c(habitat_nodes, div_flow_nodes, diversion_nodes, delta_nodes, combined_flow_nodes, bypass_nodes, wilkins_nodes, del_total_nodes,'X2') %>% unique()
 
 pick_columns <- function(file, nodes) {
-  col_nm <- read_csv(paste0('data-raw/biop_inputs/', file), skip = 1) %>% names()
-  temp <- read_csv(paste0('data-raw/biop_inputs/', file), skip = 7, col_names = col_nm)
+  col_nm <- read_csv(paste0('data-raw/calsim_2019_BiOp_ITP/', file), skip = 1) %>% names()
+  temp <- read_csv(paste0('data-raw/calsim_2019_BiOp_ITP/', file), skip = 7, col_names = col_nm)
 
   desired_nodes <- col_nm %in% nodes
 
@@ -47,14 +47,14 @@ pick_columns <- function(file, nodes) {
   return(cleaned)
 }
 
-file_names <- list.files('data-raw/biop_inputs/', '*.csv')[-5]
+file_names <- list.files('data-raw/calsim_2019_BiOp_ITP/', '*.csv')[-5]
 # cvpia_calsim <- map_dfc(file_names, pick_columns, all_nodes) %>%
 #   select(-date1, -date2, -date3, -date4, -date5, -date6)
 cvpia_calsim <- map(file_names, pick_columns, all_nodes) %>%
   reduce(full_join, by = 'date')
 
 
-write_rds(cvpia_calsim, 'data-raw/biop_inputs/biop_cvpia_calsim.rds')
+write_rds(cvpia_calsim, 'data-raw/calsim_2019_BiOp_ITP/biop_cvpia_calsim.rds')
 
 # testing things to pick flow nodes------------------------------------
 comparison_nodes <- c('C157', 'D160', 'D166A', 'D117', 'D124', 'D125', 'D126', 'C166', 'C165', 'X2', 'C134', 'C160')
