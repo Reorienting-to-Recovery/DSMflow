@@ -1,0 +1,7 @@
+The csv's in this directory are saved output from BenchmarkHist_0111_DV.dss provided by Kirk Nelson in October 2021.
+This dss file is saved on the egnyte file share https://flowwest.egnyte.com/navigate/folder/cc617097-3620-40aa-b0eb-3021093a0520.
+All the nodes from part C = 'FLOW-CHANNEL' or 'FLOW-DELIVERY' and part B starting with a 'C' or 'D' were copied
+into several csv's because the HEC viewer would crash when attempting to export all these nodes at once.
+Additionally the nodes from part B = 'DEL_SWP_TOTAL' and B = 'BEL_CVP_TOTAL' were copied into a csv.
+The 'clean_calsim.R' file is a script that will select the nodes of interest defined in 'cvpia_calsim_nodes.csv'
+and rename them to fit the needs of generating model inputs for the SIT model.
