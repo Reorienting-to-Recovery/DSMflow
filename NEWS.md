@@ -1,3 +1,11 @@
+# DSMflow 1.1
+
+Flow related datasets for use with the following DSM models:
+
+* [Fall Run DSM (v2.1)](https://github.com/CVPIA-OSC/fallRunDSM/releases/tag/v2.1)
+* [Winter Run DSM (v2.1)](https://github.com/CVPIA-OSC/winterRunDSM/releases/tag/v2.1)
+* [Spring Run DSM (v2.1)](https://github.com/CVPIA-OSC/springRunDSM/releases/tag/v2.1)
+
 # DSMflow 1.0
 
 Flow related datasets for use with the following DSM models:
