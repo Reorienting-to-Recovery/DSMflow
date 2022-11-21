@@ -215,9 +215,13 @@
 
 
 #' Upper Sacramento River Flow
-#' @description A dataset containing the Upper Sacramento River flow in cubic meters per second
+#' @description A named list where each component contains a dataset with the Upper Sacramento
+#' River flow in cubic meters per second. The components of the list contain output from two
+#' different Calsim II runs:
+#' * biop_2008_2009: output from the 2008-20019 Calsim II run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
 #'
-#' @format a 12 by 21 matrix (month by year)
+#' @format a named list of two components, each containing a 12 by 21 matrix (month by year)
 #'
 #' @details The Upper Sacramento River is represented using node CALSIM II 'FLOW-CHANNEL' C109 node at Bend.
 #' Each row represents a month, each column a year from 1980-2000.
