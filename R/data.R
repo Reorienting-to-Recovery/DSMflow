@@ -72,9 +72,13 @@
 "flows_cfs"
 
 #' Monthly Mean Flow (cms)
-#' @description The mean flow in cubic meters per second for each watershed every
-#' month of every year in the simulation (1980-2000).
-#' @format a 3 dimensional array [31 watersheds, 12 months, 21 years]
+#' @description A named list containing the mean flow in cubic meters per second for each watershed every
+#' month of every year in the simulation (1980-2000). The components of the list contain output from
+#' two different Calsim II runs:
+#' * biop_2008_2009: output from the 2008-20019 Calsim II run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+#'
+#' @format a named list of two components, each containing a 3 dimensional array [31 watersheds, 12 months, 21 years]
 #' @source
 #' Calculated using \code{\link{flows_cfs}}
 #'
