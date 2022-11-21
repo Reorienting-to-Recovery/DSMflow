@@ -1,9 +1,12 @@
 # Tributaries and Mainstems -----
 #' Flow in cfs
-#' @description A dataset containing the flow in cubic feet per second within watersheds for
+#' @description A named list containing datasets from the 2008-2009 and 2018-2019 Calsim II runs for
 #' use with the CVPIA SIT Salmon Population Model to develop habitat inputs.
+#' The named list components are:
+#' * biop_2008_2009: flow in cubic feet per second within watersheds from the 2008-20019 Calsim II run.
+#' * biop_itp_2018_2019: flow in cubic feet per second within watersheds from the 2018-2019 Calsim II run.
 #'
-#' @format dataframe with 985 rows and 33 variables:
+#' @format named list with two components, each containing a dataframe with 985 rows and 33 variables:
 #' \describe{
 #' \item{date}{CALSIM II date}
 #' \item{Upper Sacramento River}{C104}
