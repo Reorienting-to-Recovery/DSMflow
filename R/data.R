@@ -371,9 +371,12 @@
 #' Proportion of Sacramento River Flow through the Sutter and Yolo Bypasses
 #' @description The monthly proportion of Sacramento River flow within the bypasses
 #' (years 1980-2000) for use with the CVPIA SIT Salmon Population Model to
-#' apportion fish onto the bypasses.
+#' apportion fish onto the bypasses. Contains these data modeled with two Calsim II
+#' model outputs stored as elements of a named list:
+#' * biop_2008_2009: output from the 2008-20019 Calsim II run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
 #'
-#' @format a 12 by 21 by 2 array (month, year, bypass):
+#' @format a named list where each element contains a 12 by 21 by 2 array (month, year, bypass):
 #'
 #' [ , , 1] = Sutter Bypass represented with CALSIM II nodes (D117 + D124 + D125 + D126)/C116
 #'
