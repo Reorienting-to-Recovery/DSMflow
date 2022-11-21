@@ -27,13 +27,17 @@ data(package = 'DSMflow')
 
 Output from the CALSIM II operational model is used to generate hydrologic inputs for the CVPIA Decision Support Model (DSM). CALSIM II is the model used to simulate California State Water Project (SWP) / Central Valley Project (CVP) operations. CALSIM II was developed in the Water Resource Integrated Modeling System (WRIMS model engine or WRIMS), a generalized water resources modeling system for evaluating operational alternatives of large, complex river basins.
 
-The 2017 DSM uses the existing conditions simulation from the 2009 CalSim-II Draft SWP Delivery Reliability Studies 2009. The CALSIM II run is a Reclamation product used to replicate current operations for comparison with proposed adjustments under an ongoing Endangered Species Act consultation with the National Marine Fisheries Service.
+The 2017 DSM can use the existing conditions simulation from the 2009 CalSim-II Draft SWP Delivery Reliability Studies 2009. The CALSIM II run is a Reclamation product used to replicate current operations for comparison with proposed adjustments under an ongoing Endangered Species Act consultation with the National Marine Fisheries Service.
 
 A current NMFS Biological Opinion concluded that, as proposed, CVP and SWP operations were likely to jeopardize the continued existence of four federally- listed anadromous fish species:\
 - Sacramento River winter-run Chinook salmon\
 - Central Valley spring-run Chinook salmon\
 - California Central Valley steelhead\
 - Southern distinct population segment of the North American green sturgeon
+
+Data objects in this package contain information from a Calsim II run from 2009 and a Calsim II 
+run from 2019, both spanning the years 1980-2000. See documentation for more information how to 
+access data objects from each run.
 
 This CALSIM II run was used as the basis of comparison for other potential operations that could offset impacts to listed species.
 
