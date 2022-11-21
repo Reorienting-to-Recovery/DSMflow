@@ -536,7 +536,7 @@
 #' Delta Total Diverted
 #' @description The total diverted of delta inflow in cubic meters per second from 1980-2000 from
 #' two different Calsim II runs. These can be accessed as separate elements of a named list named after
-#' the Calsim II run it came from:
+#' the Calsim II run they came from:
 #' * biop_2008_2009: output from the 2008-20019 Calsim II run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
 #'
@@ -558,7 +558,7 @@
 
 #' @title Flow at Wilkins
 #' @description flow in cms at Wilkins (CALSIM node C129) from two different Calsim II runs. Data from
-#' each Calsim II run is stored as a separate element of a named list, named after the Calsim II run
+#' each Calsim II run are stored as a separate element of a named list, named after the Calsim II run
 #' it came from:
 #' * biop_2008_2009: output from the 2008-20019 Calsim II run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
@@ -578,7 +578,7 @@
 
 #' @title Flow at Freeport
 #' @description flow in cms at Freeport (CALSIM node C400) from two separate Calsim II runs. Data from
-#' each Calsim II run is stored as an element of a named list, named after the Calsim II run it came from:
+#' each Calsim II run are stored as an element of a named list, named after the Calsim II run it came from:
 #' * biop_2008_2009: output from the 2008-20019 Calsim II run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
 #' @format A named list where each element contains a matrix with months (1-12) as rows and years (1980-1999) as columns
@@ -594,8 +594,12 @@
 "freeport_flow"
 
 #' @title Flow at Vernalis
-#' @description flow in cms at Vernalis (CALSIM node C639)
-#' @format A matrix with months (1-12) as rows and years (1980-1999) as columns
+#' @description flow in cms at Vernalis (CALSIM node C639) from two different Calsim II runs. Data
+#' from each Calsim II run are stored as elements in a named list, named after the Calsim II run
+#' they came from:
+#' * biop_2008_2009: output from the 2008-20019 Calsim II run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+#' @format A named list where each element contains a matrix with months (1-12) as rows and years (1980-1999) as columns
 #' @details \code{vernalis_flow} was calculated using a 'FLOW-CHANNEL' node from CALSIM II.
 #'
 #'  \href{https://s3-us-west-2.amazonaws.com/cvpiaflow-r-package/BST_CALSIMII_schematic_040110.jpg}{CALSIM II schematic}
