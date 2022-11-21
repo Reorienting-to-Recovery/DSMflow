@@ -85,10 +85,13 @@
 "mean_flow"
 
 #' Total Flow Diverted
-#' @description A dataset containing the diverted flow in cms within watersheds for
-#' use with the CVPIA SIT Salmon Population Model.
+#' @description A named list with datasets containing the diverted flow in cms within watersheds for
+#' use with the CVPIA SIT Salmon Population Model. The components of the list contain output from two
+#' different Calsim II runs:
+#' * biop_2008_2009: output from the 2008-20019 Calsim II run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
 #'
-#' @format a 31 by 12 by 21 array [watershed, month, year (1980-2000)]
+#' @format a named list of two components, each containing a 31 by 12 by 21 array [watershed, month, year (1980-2000)]
 #'
 #' @details The proportion diverted was calculated using 'FLOW-CHANNEL' and 'FLOW-DELIVERY' nodes from CALSIM II.
 #' The nodes and calculation for each watershed are outlined below
@@ -146,10 +149,13 @@
 "total_diverted"
 
 #' Proportion of Flow Diverted
-#' @description A dataset containing the proportion of flow diverted within watersheds for
-#' use with the CVPIA SIT Salmon Population Model.
+#' @description A named list where each component contains a dataset with the proportion of flow diverted within watersheds for
+#' use with the CVPIA SIT Salmon Population Model. The components of the list contain output from two
+#' different Calsim II runs:
+#' * biop_2008_2009: output from the 2008-20019 Calsim II run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
 #'
-#' @format a 31 by 12 by 21 array [watershed, month, year (1980-2000)]
+#' @format a named list of two components, each containing a 31 by 12 by 21 array [watershed, month, year (1980-2000)]
 #'
 #' @details The proportion diverted was calculated using 'FLOW-CHANNEL' and 'FLOW-DELIVERY' nodes from CALSIM II.
 #' The nodes and calculation for each watershed are outlined below
