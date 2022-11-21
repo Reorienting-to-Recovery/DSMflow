@@ -488,9 +488,13 @@
 "delta_flows"
 
 #' Delta Inflow
-#' @description The delta inflow in cubic meters per second from 1980-1999.
+#' @description A named list containing delta inflow in cubic meters per second from 1980-1999
+#' from two different Calsim II runs. These are stored as elements in a list and named by the
+#' Calsim II run they came from:
+#' * biop_2008_2009: output from the 2008-20019 Calsim II run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
 #'
-#' @format A 3 dimensional array: 12 by 20 by 2 (months, years, deltas)
+#' @format A named list where each element contains a 3 dimensional array: 12 by 20 by 2 (months, years, deltas)
 #'
 #' [ , , 1] North Delta
 #'
