@@ -422,8 +422,12 @@
 # Delta -----
 #' Delta Cross Channel Operations
 #' @description The number of days and proportion of days the Delta Cross Channel
-#' gates are typically closed for each month
-#' @format a 2 by 12 matrix, row one and two are the count and proportion of days
+#' gates are typically closed for each month. Contains these data for two different Calsim II
+#' runs stored as elements of a named list:
+#' * biop_2008_2009: output from the 2008-20019 Calsim II run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+#'
+#' @format a named list where each element is a 2 by 12 matrix, row one and two are the count and proportion of days
 #' closed respectively, columns are months
 #' @details By rule, 45 days between November-January, based on real time monitoring.
 #' For modeling purposes, the days closed where divided between December and January.
