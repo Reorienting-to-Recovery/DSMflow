@@ -315,8 +315,12 @@
 
 # replaces prop.pulse
 #' Proportion Pulse Flow
-#' @description Estimated monthly proportion of flow that is a pulse
-#' @format a 31 by 12 matrix (watersheds by months)
+#' @description A named list with estimated monthly proportion of flow that is a pulse. Each component
+#' of the list contains output from a different Calsim II run:
+#' * biop_2008_2009: output from the 2008-20019 Calsim II run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+#'
+#' @format a named list where each component is a 31 by 12 matrix (watersheds by months)
 #' @details proportion_pulse_flows = sd(flow)/median(flow)/100
 #'
 #' The value is divided by 100 to adjust the scaling to more closely resemble measured data.
