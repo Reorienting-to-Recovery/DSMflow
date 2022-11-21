@@ -240,11 +240,14 @@
 "upper_sacramento_flows"
 
 #' Return Flow
-#' @description A dataset containing the proportion flows at tributary junction
+#' @description A named list containing the proportion flows at tributary junction
 #' coming from natal watershed using October CALSIM II flows. These proportions are used to estimate
-#' straying in the CVPIA SIT Salmon Population Model.
+#' straying in the CVPIA SIT Salmon Population Model. Each component of the list contains a dataset
+#' with output from a different Calsim II run:
+#' * biop_2008_2009: output from the 2008-20019 Calsim II run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
 #'
-#' @format 31 by 22 matrix (watersheds by years 1979-2000):
+#' @format a named list where each component contains a 31 by 22 matrix (watersheds by years 1979-2000):
 #'
 #' @details The return flow proportion is calculated using the average October flow
 #' in each watershed divided by the average October flow of the tributary it flows
