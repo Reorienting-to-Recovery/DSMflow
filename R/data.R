@@ -534,9 +534,13 @@
 "delta_proportion_diverted"
 
 #' Delta Total Diverted
-#' @description The total diverted of delta inflow in cubic meters per second from 1980-2000.
+#' @description The total diverted of delta inflow in cubic meters per second from 1980-2000 from
+#' two different Calsim II runs. These can be accessed as separate elements of a named list named after
+#' the Calsim II run it came from:
+#' * biop_2008_2009: output from the 2008-20019 Calsim II run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
 #'
-#' @format A 3 dimensional array: 12 by 21 by 2 (months, years, deltas)
+#' @format A named list where each element contains a 3 dimensional array: 12 by 21 by 2 (months, years, deltas)
 #'
 #' [ , , 1] North Delta
 #'
