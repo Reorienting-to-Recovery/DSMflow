@@ -557,8 +557,13 @@
 "delta_total_diverted"
 
 #' @title Flow at Wilkins
-#' @description flow in cms at Wilkins (CALSIM node C129)
-#' @format A matrix with months (1-12) as rows and years (1980-1999) as columns
+#' @description flow in cms at Wilkins (CALSIM node C129) from two different Calsim II runs. Data from
+#' each Calsim II run is stored as a separate element of a named list, named after the Calsim II run
+#' it came from:
+#' * biop_2008_2009: output from the 2008-20019 Calsim II run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+#' @format A named list where each element contains a matrix with months (1-12) as rows and years
+#' (1980-1999) as columns
 #' @details \code{Wilkins_flow} was calculated using a 'FLOW-CHANNEL' node from CALSIM II.
 #'
 #' \href{https://s3-us-west-2.amazonaws.com/cvpiaflow-r-package/BST_CALSIMII_schematic_040110.jpg}{CALSIM II schematic}
