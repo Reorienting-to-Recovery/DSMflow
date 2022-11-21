@@ -331,10 +331,13 @@
 
 # Bypasses ------
 #' Flow through the Sutter and Yolo Bypasses
-#' @description A dataset containing the flow within the bypasses for
-#' estimating available rearing habitat within the bypasses.
+#' @description A named list containing datasets with the flow within the bypasses for
+#' estimating available rearing habitat within the bypasses. Each component of the list
+#' contains this output from a different Calsim II run:
+#' * biop_2008_2009: output from the 2008-20019 Calsim II run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
 #'
-#' @format dataframe with 972 rows and 7 variables:
+#' @format a named list where each component contains a dataframe with 972 rows and 7 variables:
 #' \describe{
 #' \item{date}{CALSIM II date}
 #' \item{sutter1}{D117}
