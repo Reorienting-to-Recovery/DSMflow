@@ -448,10 +448,13 @@
 "delta_cross_channel_closed"
 
 #' Delta Flows and Diversions
-#' @description A dataset containing the inflow, total diversions, and proportion
-#' diverted for the North and South Deltas.
+#' @description A named list with datasets containing the inflow, total diversions, and proportion
+#' diverted for the North and South Deltas from two different Calsim II runs. Each dataset
+#' is stored as an element named by the Calsim II run it came from:
+#' * biop_2008_2009: output from the 2008-20019 Calsim II run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
 #'
-#' @format dataframe with 972 rows and 7 variables:
+#' @format a named list where each element contains a dataframe with 972 rows and 7 variables:
 #' \describe{
 #' \item{date}{CALSIM II date}
 #' \item{n_dlt_inflow_cfs}{C400 + C157, north delta inflow in cubic feet per second}
