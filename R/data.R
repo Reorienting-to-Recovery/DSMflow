@@ -629,8 +629,13 @@
 "stockton_flow"
 
 #' @title CVP Exports
-#' @description Total exports for CVP in cms. Value is obtained using CALSIM variable DEL_CVP_EXP.
-#' @format A matrix with months (1-12) as rows and years (1980-1999) as columns
+#' @description Total exports for CVP in cms from two separate Calsim II runs. Values are obtained
+#' using CALSIM variable DEL_CVP_EXP. Data from each Calsim II run are stored as separate elements
+#' in a named list, named for the Calsim II run they came from:
+#' * biop_2008_2009: output from the 2008-20019 Calsim II run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+#' @format A named list where each element contains a matrix with months (1-12) as rows and
+#' years (1980-1999) as columns
 #' @details
 #' The flows here are obtained from a CALSIM II run designed for the structured
 #' decision making in the delta.
