@@ -612,8 +612,11 @@
 "vernalis_flow"
 
 #' @title Flow at Stockton
-#' @description flow in cms at Stockton (CALSIM node C417A)
-#' @format A matrix with months (1-12) as rows and years (1980-1999) as columns
+#' @description flow in cms at Stockton (CALSIM node C417A) from two Calsim II runs. Data from each
+#' Calsim II run are stored as elements in a named list, named after the Calsim II run they came from:
+#' * biop_2008_2009: output from the 2008-20019 Calsim II run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+#' @format A named list where each element contains a matrix with months (1-12) as rows and years (1980-1999) as columns
 #' @details \code{vernalis_flow} was calculated using a 'FLOW-CHANNEL' node from CALSIM II.
 #'
 #' \href{https://s3-us-west-2.amazonaws.com/cvpiaflow-r-package/BST_CALSIMII_schematic_040110.jpg}{CALSIM II schematic}
