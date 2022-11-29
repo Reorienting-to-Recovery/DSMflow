@@ -5,6 +5,7 @@
 #' The named list components are:
 #' * biop_2008_2009: flow in cubic feet per second within watersheds from the 2008-20019 Calsim II run.
 #' * biop_itp_2018_2019: flow in cubic feet per second within watersheds from the 2018-2019 Calsim II run.
+#' @md
 #'
 #' @format named list with two components, each containing a dataframe with 985 rows and 33 variables:
 #' \describe{
@@ -77,6 +78,7 @@
 #' two different Calsim II runs:
 #' * biop_2008_2009: output from the 2008-20019 Calsim II run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+#' @md
 #'
 #' @format a named list of two components, each containing a 3 dimensional array [31 watersheds, 12 months, 21 years]
 #' @source
@@ -90,6 +92,7 @@
 #' different Calsim II runs:
 #' * biop_2008_2009: output from the 2008-20019 Calsim II run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+#' @md
 #'
 #' @format a named list of two components, each containing a 31 by 12 by 21 array [watershed, month, year (1980-2000)]
 #'
@@ -154,6 +157,7 @@
 #' different Calsim II runs:
 #' * biop_2008_2009: output from the 2008-20019 Calsim II run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+#' @md
 #'
 #' @format a named list of two components, each containing a 31 by 12 by 21 array [watershed, month, year (1980-2000)]
 #'
@@ -220,6 +224,7 @@
 #' different Calsim II runs:
 #' * biop_2008_2009: output from the 2008-20019 Calsim II run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+#' @md
 #'
 #' @format a named list of two components, each containing a 12 by 21 matrix (month by year)
 #'
@@ -246,6 +251,7 @@
 #' with output from a different Calsim II run:
 #' * biop_2008_2009: output from the 2008-20019 Calsim II run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+#' @md
 #'
 #' @format a named list where each component contains a 31 by 22 matrix (watersheds by years 1979-2000):
 #'
@@ -319,6 +325,7 @@
 #' of the list contains output from a different Calsim II run:
 #' * biop_2008_2009: output from the 2008-20019 Calsim II run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+#' @md
 #'
 #' @format a named list where each component is a 31 by 12 matrix (watersheds by months)
 #' @details proportion_pulse_flows = sd(flow)/median(flow)/100
@@ -336,6 +343,7 @@
 #' contains this output from a different Calsim II run:
 #' * biop_2008_2009: output from the 2008-20019 Calsim II run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+#' @md
 #'
 #' @format a named list where each component contains a dataframe with 972 rows and 7 variables:
 #' \describe{
@@ -375,6 +383,7 @@
 #' model outputs stored as elements of a named list:
 #' * biop_2008_2009: output from the 2008-20019 Calsim II run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+#' @md
 #'
 #' @format a named list where each element contains a 12 by 21 by 2 array (month, year, bypass):
 #'
@@ -406,6 +415,7 @@
 #' as elements of a named list:
 #' * biop_2008_2009: output from the 2008-20019 Calsim II run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+#' @md
 #'
 #' @format a named list where each element contains a 12 by 21 by 2 array (month, year, bypass):
 #'
@@ -426,6 +436,7 @@
 #' runs stored as elements of a named list:
 #' * biop_2008_2009: output from the 2008-20019 Calsim II run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+#' @md
 #'
 #' @format a named list where each element is a 2 by 12 matrix, row one and two are the count and proportion of days
 #' closed respectively, columns are months
@@ -453,6 +464,7 @@
 #' is stored as an element named by the Calsim II run it came from:
 #' * biop_2008_2009: output from the 2008-20019 Calsim II run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+#' @md
 #'
 #' @format a named list where each element contains a dataframe with 972 rows and 7 variables:
 #' \describe{
@@ -493,6 +505,7 @@
 #' Calsim II run they came from:
 #' * biop_2008_2009: output from the 2008-20019 Calsim II run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+#' @md
 #'
 #' @format A named list where each element contains a 3 dimensional array: 12 by 20 by 2 (months, years, deltas)
 #'
@@ -516,6 +529,7 @@
 #' two different Calsim II runs. These are stored as elements named by the Calsim II run they came from:
 #' * biop_2008_2009: output from the 2008-20019 Calsim II run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+#' @md
 #'
 #' @format A named list where each component contains a 3 dimensional array: 12 by 21 by 2 [months, years, deltas]
 #'
@@ -539,6 +553,7 @@
 #' the Calsim II run they came from:
 #' * biop_2008_2009: output from the 2008-20019 Calsim II run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+#' @md
 #'
 #' @format A named list where each element contains a 3 dimensional array: 12 by 21 by 2 (months, years, deltas)
 #'
@@ -562,6 +577,7 @@
 #' it came from:
 #' * biop_2008_2009: output from the 2008-20019 Calsim II run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+#' @md
 #' @format A named list where each element contains a matrix with months (1-12) as rows and years
 #' (1980-1999) as columns
 #' @details \code{Wilkins_flow} was calculated using a 'FLOW-CHANNEL' node from CALSIM II.
@@ -581,6 +597,7 @@
 #' each Calsim II run are stored as an element of a named list, named after the Calsim II run it came from:
 #' * biop_2008_2009: output from the 2008-20019 Calsim II run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+#' @md
 #' @format A named list where each element contains a matrix with months (1-12) as rows and years (1980-1999) as columns
 #' @details \code{freeport_flow} was calculated using a 'FLOW-CHANNEL' node from CALSIM II.
 #'
@@ -599,6 +616,7 @@
 #' they came from:
 #' * biop_2008_2009: output from the 2008-20019 Calsim II run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+#' @md
 #' @format A named list where each element contains a matrix with months (1-12) as rows and years (1980-1999) as columns
 #' @details \code{vernalis_flow} was calculated using a 'FLOW-CHANNEL' node from CALSIM II.
 #'
@@ -616,6 +634,7 @@
 #' Calsim II run are stored as elements in a named list, named after the Calsim II run they came from:
 #' * biop_2008_2009: output from the 2008-20019 Calsim II run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+#' @md
 #' @format A named list where each element contains a matrix with months (1-12) as rows and years (1980-1999) as columns
 #' @details \code{vernalis_flow} was calculated using a 'FLOW-CHANNEL' node from CALSIM II.
 #'
@@ -634,6 +653,7 @@
 #' in a named list, named for the Calsim II run they came from:
 #' * biop_2008_2009: output from the 2008-20019 Calsim II run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+#' @md
 #' @format A named list where each element contains a matrix with months (1-12) as rows and
 #' years (1980-1999) as columns
 #' @details
@@ -655,6 +675,7 @@
 #' in a named list, named for the Calsim II run they came from:
 #' * biop_2008_2009: output from the 2008-20019 Calsim II run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+#' @md
 #' @format A named list where each element contains a matrix with months (1-12) as rows and
 #' years (1980-1999) as columns
 #' @details

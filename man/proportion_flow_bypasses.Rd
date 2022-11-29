@@ -5,17 +5,17 @@
 \alias{proportion_flow_bypasses}
 \title{Proportion of Sacramento River Flow through the Sutter and Yolo Bypasses}
 \format{
-a 12 by 21 by 2 array (month, year, bypass):
+a named list where each element contains a 12 by 21 by 2 array (month, year, bypass):
 
-[ , , 1] = Sutter Bypass represented with CALSIM II nodes (D117 + D124 + D125 + D126)/C116
+\link{ , , 1} = Sutter Bypass represented with CALSIM II nodes (D117 + D124 + D125 + D126)/C116
 
-[ , , 2] = Yolo Bypass represented with CALSIM II nodes D160/C134
+\link{ , , 2} = Yolo Bypass represented with CALSIM II nodes D160/C134
 }
 \source{
 \itemize{
-  \item \strong{Data Wrangling:} Sadie Gill  \email{sgill@flowwest.com}
-  \item \strong{Node Selection:} Mark Tompkins \email{mtompkins@flowwest.com} and Mike Urkov \email{mike.urkov@gmail.com}
-  \item \strong{CALSIM Model Output:} Michael Wright \email{mwright@usbr.gov}
+\item \strong{Data Wrangling:} Sadie Gill  \email{sgill@flowwest.com}
+\item \strong{Node Selection:} Mark Tompkins \email{mtompkins@flowwest.com} and Mike Urkov \email{mike.urkov@gmail.com}
+\item \strong{CALSIM Model Output:} Michael Wright \email{mwright@usbr.gov}
 }
 }
 \usage{
@@ -24,14 +24,19 @@ proportion_flow_bypasses
 \description{
 The monthly proportion of Sacramento River flow within the bypasses
 (years 1980-2000) for use with the CVPIA SIT Salmon Population Model to
-apportion fish onto the bypasses.
+apportion fish onto the bypasses. Contains these data modeled with two Calsim II
+model outputs stored as elements of a named list:
+\itemize{
+\item biop_2008_2009: output from the 2008-20019 Calsim II run.
+\item biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+}
 }
 \details{
 The proportions of Sacramento River flowing through the bypasses are represented using
 'FLOW-CHANNEL' and 'FLOW-DELIVERY' nodes from CALSIM II.
 
- Some of the calculated values for Yolo Bypass were greater than 1.
- These values were capped at 1 for model usage.
+Some of the calculated values for Yolo Bypass were greater than 1.
+These values were capped at 1 for model usage.
 
 \href{https://s3-us-west-2.amazonaws.com/cvpiaflow-r-package/BST_CALSIMII_schematic_040110.jpg}{CALSIM II schematic}
 }

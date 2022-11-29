@@ -5,20 +5,27 @@
 \alias{wilkins_flow}
 \title{Flow at Wilkins}
 \format{
-A matrix with months (1-12) as rows and years (1980-1999) as columns
+A named list where each element contains a matrix with months (1-12) as rows and years
+(1980-1999) as columns
 }
 \source{
 \itemize{
-  \item \strong{Data Wrangling:} Sadie Gill  \email{sgill@flowwest.com}
-  \item \strong{Node Selection:} Cyril Michel \email{cyril.michel@noaa.gov}
-  \item \strong{CALSIM Model Output:} Michael Wright \email{mwright@usbr.gov}
+\item \strong{Data Wrangling:} Sadie Gill  \email{sgill@flowwest.com}
+\item \strong{Node Selection:} Cyril Michel \email{cyril.michel@noaa.gov}
+\item \strong{CALSIM Model Output:} Michael Wright \email{mwright@usbr.gov}
 }
 }
 \usage{
 wilkins_flow
 }
 \description{
-flow in cms at Wilkins (CALSIM node C129)
+flow in cms at Wilkins (CALSIM node C129) from two different Calsim II runs. Data from
+each Calsim II run are stored as a separate element of a named list, named after the Calsim II run
+it came from:
+\itemize{
+\item biop_2008_2009: output from the 2008-20019 Calsim II run.
+\item biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+}
 }
 \details{
 \code{Wilkins_flow} was calculated using a 'FLOW-CHANNEL' node from CALSIM II.

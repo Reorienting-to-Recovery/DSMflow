@@ -5,7 +5,7 @@
 \alias{flows_cfs}
 \title{Flow in cfs}
 \format{
-dataframe with 985 rows and 33 variables:
+named list with two components, each containing a dataframe with 985 rows and 33 variables:
 \describe{
 \item{date}{CALSIM II date}
 \item{Upper Sacramento River}{C104}
@@ -42,17 +42,22 @@ dataframe with 985 rows and 33 variables:
 }
 \source{
 \itemize{
-  \item \strong{Data Wrangling:} Sadie Gill  \email{sgill@flowwest.com}
-  \item \strong{Node Selection:} Mark Tompkins \email{mtompkins@flowwest.com} and Mike Urkov \email{mike.urkov@gmail.com}
-  \item \strong{CALSIM Model Output:} Michael Wright \email{mwright@usbr.gov}
+\item \strong{Data Wrangling:} Sadie Gill  \email{sgill@flowwest.com}
+\item \strong{Node Selection:} Mark Tompkins \email{mtompkins@flowwest.com} and Mike Urkov \email{mike.urkov@gmail.com}
+\item \strong{CALSIM Model Output:} Michael Wright \email{mwright@usbr.gov}
 }
 }
 \usage{
 flows_cfs
 }
 \description{
-A dataset containing the flow in cubic feet per second within watersheds for
+A named list containing datasets from the 2008-2009 and 2018-2019 Calsim II runs for
 use with the CVPIA SIT Salmon Population Model to develop habitat inputs.
+The named list components are:
+\itemize{
+\item biop_2008_2009: flow in cubic feet per second within watersheds from the 2008-20019 Calsim II run.
+\item biop_itp_2018_2019: flow in cubic feet per second within watersheds from the 2018-2019 Calsim II run.
+}
 }
 \details{
 The flow is represented using 'FLOW-CHANNEL' and 'FLOW-DELIVERY' nodes from CALSIM II.
@@ -67,12 +72,9 @@ When calculating habitat for the Lower-Mid Sacramento river, calculate the habit
 sum them proportion to the length of stream above and below the weir:
 \deqn{35.6/58 * (habitat at C134) + 22.4/58 * (habitat at C160)}
 
-
 \emph{*Because there are no modeled flows at Bear Creek, flows at Paynes Creek are used}
 
-
 \emph{**Mokelumne River flow is from a separate model provided by EBMUD.}
-
 
 \href{https://s3-us-west-2.amazonaws.com/cvpiaflow-r-package/BST_CALSIMII_schematic_040110.jpg}{CALSIM II schematic}
 }

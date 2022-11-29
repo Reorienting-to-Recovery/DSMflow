@@ -5,19 +5,26 @@
 \alias{swp_exports}
 \title{SWP Exports}
 \format{
-A matrix with months (1-12) as rows and years (1980-1999) as columns
+A named list where each element contains a matrix with months (1-12) as rows and
+years (1980-1999) as columns
 }
 \source{
 \itemize{
-  \item \strong{Data Wrangling:} Sadie Gill  \email{sgill@flowwest.com}
-  \item \strong{CALSIM Model Output:} Michael Wright \email{mwright@usbr.gov}
+\item \strong{Data Wrangling:} Sadie Gill  \email{sgill@flowwest.com}
+\item \strong{CALSIM Model Output:} Michael Wright \email{mwright@usbr.gov}
 }
 }
 \usage{
 swp_exports
 }
 \description{
-Total exports for SWP in cms. Value is obtained using CALSIM variable DEL_SWP_EXP.
+Total exports for SWP in cms from two separate Calsim II runs. Values are
+obtained using CALSIM variable DEL_SWP_EXP. Data from each Calsim II run are stored as separate elements
+in a named list, named for the Calsim II run they came from:
+\itemize{
+\item biop_2008_2009: output from the 2008-20019 Calsim II run.
+\item biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+}
 }
 \details{
 The flows here are obtained from a CALSIM II run designed for the structured

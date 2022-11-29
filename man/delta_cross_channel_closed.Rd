@@ -5,7 +5,7 @@
 \alias{delta_cross_channel_closed}
 \title{Delta Cross Channel Operations}
 \format{
-a 2 by 12 matrix, row one and two are the count and proportion of days
+a named list where each element is a 2 by 12 matrix, row one and two are the count and proportion of days
 closed respectively, columns are months
 }
 \source{
@@ -18,7 +18,12 @@ delta_cross_channel_closed
 }
 \description{
 The number of days and proportion of days the Delta Cross Channel
-gates are typically closed for each month
+gates are typically closed for each month. Contains these data for two different Calsim II
+runs stored as elements of a named list:
+\itemize{
+\item biop_2008_2009: output from the 2008-20019 Calsim II run.
+\item biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+}
 }
 \details{
 By rule, 45 days between November-January, based on real time monitoring.
@@ -26,9 +31,9 @@ For modeling purposes, the days closed where divided between December and Januar
 
 Note: Some real-time changes possible based on:
 \itemize{
- \item fish monitoring
- \item interior delta salinity
- \item flood operations
+\item fish monitoring
+\item interior delta salinity
+\item flood operations
 }
 
 In May, typically open for Memorial Day.
