@@ -20,10 +20,10 @@ proportion_diverted
 \description{
 A named list where each component contains a dataset with the proportion of flow diverted within watersheds for
 use with the CVPIA SIT Salmon Population Model. The components of the list contain output from two
-different Calsim II runs:
+different Calsim II BiOp runs:
 \itemize{
-\item biop_2008_2009: output from the 2008-20019 Calsim II run.
-\item biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+\item biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
+\item biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
 }
 }
 \details{

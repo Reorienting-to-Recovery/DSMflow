@@ -18,16 +18,16 @@ years (1980-1999) as columns
 swp_exports
 }
 \description{
-Total exports for SWP in cms from two separate Calsim II runs. Values are
-obtained using CALSIM variable DEL_SWP_EXP. Data from each Calsim II run are stored as separate elements
-in a named list, named for the Calsim II run they came from:
+Total exports for SWP in cms from two separate Calsim II BiOp runs. Values are
+obtained using CALSIM variable DEL_SWP_EXP. Data from each Calsim II BiOp run are stored as separate elements
+in a named list, named for the Calsim II BiOp run they came from:
 \itemize{
-\item biop_2008_2009: output from the 2008-20019 Calsim II run.
-\item biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+\item biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
+\item biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
 }
 }
 \details{
-The flows here are obtained from a CALSIM II run designed for the structured
+The flows here are obtained from a Calsim II BiOp run designed for the structured
 decision making in the delta.
 \href{https://s3-us-west-2.amazonaws.com/cvpiaflow-r-package/BST_CALSIMII_schematic_040110.jpg}{CALSIM II schematic}
 }

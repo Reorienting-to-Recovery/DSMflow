@@ -19,12 +19,12 @@ A named list where each element contains a matrix with months (1-12) as rows and
 wilkins_flow
 }
 \description{
-flow in cms at Wilkins (CALSIM node C129) from two different Calsim II runs. Data from
-each Calsim II run are stored as a separate element of a named list, named after the Calsim II run
+flow in cms at Wilkins (CALSIM node C129) from two different Calsim II BiOp runs. Data from
+each Calsim II BiOp run are stored as a separate element of a named list, named after the Calsim II BiOp run
 it came from:
 \itemize{
-\item biop_2008_2009: output from the 2008-20019 Calsim II run.
-\item biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+\item biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
+\item biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
 }
 }
 \details{

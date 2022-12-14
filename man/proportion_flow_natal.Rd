@@ -23,10 +23,10 @@ proportion_flow_natal
 A named list containing the proportion flows at tributary junction
 coming from natal watershed using October CALSIM II flows. These proportions are used to estimate
 straying in the CVPIA SIT Salmon Population Model. Each component of the list contains a dataset
-with output from a different Calsim II run:
+with output from a different Calsim II BiOp run:
 \itemize{
-\item biop_2008_2009: output from the 2008-20019 Calsim II run.
-\item biop_itp_2018_2019: output from the 2018-2019 Calsim II run.
+\item biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
+\item biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
 }
 }
 \details{

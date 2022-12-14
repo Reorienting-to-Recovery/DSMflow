@@ -51,12 +51,12 @@ named list with two components, each containing a dataframe with 985 rows and 33
 flows_cfs
 }
 \description{
-A named list containing datasets from the 2008-2009 and 2018-2019 Calsim II runs for
+A named list containing datasets from the 2008-2009 and 2018-2019 Calsim II BiOp runs for
 use with the CVPIA SIT Salmon Population Model to develop habitat inputs.
 The named list components are:
 \itemize{
-\item biop_2008_2009: flow in cubic feet per second within watersheds from the 2008-20019 Calsim II run.
-\item biop_itp_2018_2019: flow in cubic feet per second within watersheds from the 2018-2019 Calsim II run.
+\item biop_2008_2009: flow in cubic feet per second within watersheds from the 2008-2009 Calsim II BiOp run.
+\item biop_itp_2018_2019: flow in cubic feet per second within watersheds from the 2018-2019 Calsim II BiOp run.
 }
 }
 \details{
