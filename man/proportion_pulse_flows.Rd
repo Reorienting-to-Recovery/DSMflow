@@ -5,13 +5,18 @@
 \alias{proportion_pulse_flows}
 \title{Proportion Pulse Flow}
 \format{
-a 31 by 12 matrix (watersheds by months)
+a named list where each component is a 31 by 12 matrix (watersheds by months)
 }
 \usage{
 proportion_pulse_flows
 }
 \description{
-Estimated monthly proportion of flow that is a pulse
+A named list with estimated monthly proportion of flow that is a pulse. Each component
+of the list contains output from a different Calsim II BiOp run:
+\itemize{
+\item biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
+\item biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+}
 }
 \details{
 proportion_pulse_flows = sd(flow)/median(flow)/100

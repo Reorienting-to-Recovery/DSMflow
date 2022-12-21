@@ -5,17 +5,23 @@
 \alias{delta_total_diverted}
 \title{Delta Total Diverted}
 \format{
-A 3 dimensional array: 12 by 21 by 2 (months, years, deltas)
+A named list where each element contains a 3 dimensional array: 12 by 21 by 2 (months, years, deltas)
 
-[ , , 1] North Delta
+\link{ , , 1} North Delta
 
-[ , , 2] South Delta
+\link{ , , 2} South Delta
 }
 \usage{
 delta_total_diverted
 }
 \description{
-The total diverted of delta inflow in cubic meters per second from 1980-2000.
+The total diverted of delta inflow in cubic meters per second from 1980-2000 from
+two different Calsim II BiOp runs. These can be accessed as separate elements of a named list named after
+the Calsim II BiOp run they came from:
+\itemize{
+\item biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
+\item biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+}
 }
 \details{
 The North Delta is defined as the area west of and including the Sacramento River below Freeport to Chips Island.

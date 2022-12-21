@@ -5,7 +5,7 @@
 \alias{bypass_flows}
 \title{Flow through the Sutter and Yolo Bypasses}
 \format{
-dataframe with 972 rows and 7 variables:
+a named list where each component contains a dataframe with 972 rows and 7 variables:
 \describe{
 \item{date}{CALSIM II date}
 \item{sutter1}{D117}
@@ -18,17 +18,22 @@ dataframe with 972 rows and 7 variables:
 }
 \source{
 \itemize{
-  \item \strong{Data Wrangling:} Sadie Gill  \email{sgill@flowwest.com}
-  \item \strong{Node Selection:} Mark Tompkins \email{mtompkins@flowwest.com}
-  \item \strong{CALSIM Model Output:} Michael Wright \email{mwright@usbr.gov}
+\item \strong{Data Wrangling:} Sadie Gill  \email{sgill@flowwest.com}
+\item \strong{Node Selection:} Mark Tompkins \email{mtompkins@flowwest.com}
+\item \strong{CALSIM Model Output:} Michael Wright \email{mwright@usbr.gov}
 }
 }
 \usage{
 bypass_flows
 }
 \description{
-A dataset containing the flow within the bypasses for
-estimating available rearing habitat within the bypasses.
+A named list containing datasets with the flow within the bypasses for
+estimating available rearing habitat within the bypasses. Each component of the list
+contains this output from a different Calsim II BiOp run:
+\itemize{
+\item biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
+\item biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+}
 }
 \details{
 The flow in cubic feet per second through the bypasses are represented using
@@ -38,7 +43,6 @@ The nodes for each watershed are outlined above.
 \section{Model Usage}{
 
 The habitat within the bypasses are split at the major weirs.
-
 
 \href{https://s3-us-west-2.amazonaws.com/cvpiaflow-r-package/BST_CALSIMII_schematic_040110.jpg}{CALSIM II schematic}
 }

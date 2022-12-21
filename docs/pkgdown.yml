@@ -1,8 +1,8 @@
-pandoc: '2.18'
-pkgdown: 2.0.3
+pandoc: 2.19.2
+pkgdown: 2.0.6
 pkgdown_sha: ~
 articles: {}
-last_built: 2022-08-26T17:19Z
+last_built: 2022-12-21T22:22Z
 urls:
   reference: https://cvpia-osc.github.io/DSMflow/reference
   article: https://cvpia-osc.github.io/DSMflow/articles

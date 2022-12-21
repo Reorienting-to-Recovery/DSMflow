@@ -5,20 +5,26 @@
 \alias{upper_sacramento_flows}
 \title{Upper Sacramento River Flow}
 \format{
-a 12 by 21 matrix (month by year)
+a named list of two components, each containing a 12 by 21 matrix (month by year)
 }
 \source{
 \itemize{
-  \item \strong{Data Wrangling:} Sadie Gill  \email{sgill@flowwest.com}
-  \item \strong{Node Selection:} Mark Tompkins \email{mtompkins@flowwest.com} and Mike Urkov \email{mike.urkov@gmail.com}
-  \item \strong{CALSIM Model Output:} Michael Wright \email{mwright@usbr.gov}
+\item \strong{Data Wrangling:} Sadie Gill  \email{sgill@flowwest.com}
+\item \strong{Node Selection:} Mark Tompkins \email{mtompkins@flowwest.com} and Mike Urkov \email{mike.urkov@gmail.com}
+\item \strong{CALSIM Model Output:} Michael Wright \email{mwright@usbr.gov}
 }
 }
 \usage{
 upper_sacramento_flows
 }
 \description{
-A dataset containing the Upper Sacramento River flow in cubic meters per second
+A named list where each component contains a dataset with the Upper Sacramento
+River flow in cubic meters per second. The components of the list contain output from two
+different Calsim II BiOp runs:
+\itemize{
+\item biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
+\item biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+}
 }
 \details{
 The Upper Sacramento River is represented using node CALSIM II 'FLOW-CHANNEL' C109 node at Bend.

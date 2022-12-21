@@ -5,13 +5,13 @@
 \alias{proportion_flow_natal}
 \title{Return Flow}
 \format{
-31 by 22 matrix (watersheds by years 1979-2000):
+a named list where each component contains a 31 by 22 matrix (watersheds by years 1979-2000):
 }
 \source{
 \itemize{
-  \item \strong{Data Wrangling:} Sadie Gill  \email{sgill@flowwest.com}
-  \item \strong{Node Selection:} Mark Tompkins \email{mtompkins@flowwest.com} and Mike Urkov \email{mike.urkov@gmail.com}
-  \item \strong{CALSIM Model Output:} Michael Wright \email{mwright@usbr.gov}
+\item \strong{Data Wrangling:} Sadie Gill  \email{sgill@flowwest.com}
+\item \strong{Node Selection:} Mark Tompkins \email{mtompkins@flowwest.com} and Mike Urkov \email{mike.urkov@gmail.com}
+\item \strong{CALSIM Model Output:} Michael Wright \email{mwright@usbr.gov}
 }
 
 Calculated using \code{\link{flows_cfs}}
@@ -20,9 +20,14 @@ Calculated using \code{\link{flows_cfs}}
 proportion_flow_natal
 }
 \description{
-A dataset containing the proportion flows at tributary junction
+A named list containing the proportion flows at tributary junction
 coming from natal watershed using October CALSIM II flows. These proportions are used to estimate
-straying in the CVPIA SIT Salmon Population Model.
+straying in the CVPIA SIT Salmon Population Model. Each component of the list contains a dataset
+with output from a different Calsim II BiOp run:
+\itemize{
+\item biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
+\item biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+}
 }
 \details{
 The return flow proportion is calculated using the average October flow
@@ -30,51 +35,49 @@ in each watershed divided by the average October flow of the tributary it flows
 into for each year of the simulation. These tributary relationships
 are described in detail below.
 
-
 \strong{Flow into Upper-mid Sacramento River:}
 \itemize{
-  \item Upper Sacramento River
-  \item Antelope Creek
-  \item Battle Creek
-  \item Bear Creek
-  \item Big Chico Creek
-  \item Butte Creek
-  \item Clear Creek
-  \item Cottonwood Creek
-  \item Cow Creek
-  \item Deer Creek
-  \item Elder Creek
-  \item Mill Creek
-  \item Paynes Creek
-  \item Stony Creek
-  \item Thomes Creek
+\item Upper Sacramento River
+\item Antelope Creek
+\item Battle Creek
+\item Bear Creek
+\item Big Chico Creek
+\item Butte Creek
+\item Clear Creek
+\item Cottonwood Creek
+\item Cow Creek
+\item Deer Creek
+\item Elder Creek
+\item Mill Creek
+\item Paynes Creek
+\item Stony Creek
+\item Thomes Creek
 }
 
 \strong{Flow into Feather River:}
 \itemize{
-  \item Bear River
-  \item Yuba River
+\item Bear River
+\item Yuba River
 }
 
 \strong{Flow into Lower-mid Sacramento River:}
 \itemize{
-  \item Feather River
+\item Feather River
 }
 
 \strong{Flow into Lower Sacramento River:}
 \itemize{
-  \item American River
+\item American River
 }
 
 \strong{Flow into San Joaquin River:}
 \itemize{
-  \item Merced River
-  \item Tuolumne River
-  \item Stanislaus River
+\item Merced River
+\item Tuolumne River
+\item Stanislaus River
 }
 
-The Mokulumne River, Calaveras River, and Cosumnes River are assigened 100\%.
-
+The Mokulumne River, Calaveras River, and Cosumnes River are assigened 100\\%.
 
 \href{https://s3-us-west-2.amazonaws.com/cvpiaflow-r-package/BST_CALSIMII_schematic_040110.jpg}{CALSIM II schematic}
 }

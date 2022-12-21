@@ -3,17 +3,17 @@
 \docType{data}
 \name{gates_overtopped}
 \alias{gates_overtopped}
-\title{If gates are overtopped at teh Sutter and Yolo Bypasses}
+\title{If gates are overtopped at the Sutter and Yolo Bypasses}
 \format{
-a 12 by 21 by 2 array (month, year, bypass):
+a named list where each element contains a 12 by 21 by 2 array (month, year, bypass):
 
-[ , , 1] = Sutter Bypass represented with CALSIM II nodes (D117 + D124 + D125 + D126)/C116
+\link{ , , 1} = Sutter Bypass represented with CALSIM II nodes (D117 + D124 + D125 + D126)/C116
 
-[ , , 2] = Yolo Bypass represented with CALSIM II nodes D160/C134
+\link{ , , 2} = Yolo Bypass represented with CALSIM II nodes D160/C134
 }
 \source{
 \itemize{
-  \item \strong{Data Wrangling:} Erin Cain  \email{ecain@flowwest.com}
+\item \strong{Data Wrangling:} Erin Cain  \email{ecain@flowwest.com}
 }
 }
 \usage{
@@ -22,6 +22,11 @@ gates_overtopped
 \description{
 A monthly TRUE or FALSE value to describe if the gates are overtopped to the bypasses
 (years 1980-2000) for use with the CVPIA SIT Salmon Population Model to
-apportion fish onto the bypasses.
+apportion fish onto the bypasses. Contains these data for two different Calsim II BiOp runs, stored
+as elements of a named list:
+\itemize{
+\item biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
+\item biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+}
 }
 \keyword{datasets}

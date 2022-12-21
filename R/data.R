@@ -1,9 +1,13 @@
 # Tributaries and Mainstems -----
 #' Flow in cfs
-#' @description A dataset containing the flow in cubic feet per second within watersheds for
+#' @description A named list containing datasets from the 2008-2009 and 2018-2019 Calsim II BiOp runs for
 #' use with the CVPIA SIT Salmon Population Model to develop habitat inputs.
+#' The named list components are:
+#' * biop_2008_2009: flow in cubic feet per second within watersheds from the 2008-2009 Calsim II BiOp run.
+#' * biop_itp_2018_2019: flow in cubic feet per second within watersheds from the 2018-2019 Calsim II BiOp run.
+#' @md
 #'
-#' @format dataframe with 985 rows and 33 variables:
+#' @format named list with two components, each containing a dataframe with 985 rows and 33 variables:
 #' \describe{
 #' \item{date}{CALSIM II date}
 #' \item{Upper Sacramento River}{C104}
@@ -69,19 +73,28 @@
 "flows_cfs"
 
 #' Monthly Mean Flow (cms)
-#' @description The mean flow in cubic meters per second for each watershed every
-#' month of every year in the simulation (1980-2000).
-#' @format a 3 dimensional array [31 watersheds, 12 months, 21 years]
+#' @description A named list containing the mean flow in cubic meters per second for each watershed every
+#' month of every year in the simulation (1980-2000). The components of the list contain output from
+#' two different Calsim II BiOp runs:
+#' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+#' @md
+#'
+#' @format a named list of two components, each containing a 3 dimensional array [31 watersheds, 12 months, 21 years]
 #' @source
 #' Calculated using \code{\link{flows_cfs}}
 #'
 "mean_flow"
 
 #' Total Flow Diverted
-#' @description A dataset containing the diverted flow in cms within watersheds for
-#' use with the CVPIA SIT Salmon Population Model.
+#' @description A named list with datasets containing the diverted flow in cms within watersheds for
+#' use with the CVPIA SIT Salmon Population Model. The components of the list contain output from two
+#' different Calsim II BiOp runs:
+#' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+#' @md
 #'
-#' @format a 31 by 12 by 21 array [watershed, month, year (1980-2000)]
+#' @format a named list of two components, each containing a 31 by 12 by 21 array [watershed, month, year (1980-2000)]
 #'
 #' @details The proportion diverted was calculated using 'FLOW-CHANNEL' and 'FLOW-DELIVERY' nodes from CALSIM II.
 #' The nodes and calculation for each watershed are outlined below
@@ -139,10 +152,14 @@
 "total_diverted"
 
 #' Proportion of Flow Diverted
-#' @description A dataset containing the proportion of flow diverted within watersheds for
-#' use with the CVPIA SIT Salmon Population Model.
+#' @description A named list where each component contains a dataset with the proportion of flow diverted within watersheds for
+#' use with the CVPIA SIT Salmon Population Model. The components of the list contain output from two
+#' different Calsim II BiOp runs:
+#' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+#' @md
 #'
-#' @format a 31 by 12 by 21 array [watershed, month, year (1980-2000)]
+#' @format a named list of two components, each containing a 31 by 12 by 21 array [watershed, month, year (1980-2000)]
 #'
 #' @details The proportion diverted was calculated using 'FLOW-CHANNEL' and 'FLOW-DELIVERY' nodes from CALSIM II.
 #' The nodes and calculation for each watershed are outlined below
@@ -202,9 +219,14 @@
 
 
 #' Upper Sacramento River Flow
-#' @description A dataset containing the Upper Sacramento River flow in cubic meters per second
+#' @description A named list where each component contains a dataset with the Upper Sacramento
+#' River flow in cubic meters per second. The components of the list contain output from two
+#' different Calsim II BiOp runs:
+#' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+#' @md
 #'
-#' @format a 12 by 21 matrix (month by year)
+#' @format a named list of two components, each containing a 12 by 21 matrix (month by year)
 #'
 #' @details The Upper Sacramento River is represented using node CALSIM II 'FLOW-CHANNEL' C109 node at Bend.
 #' Each row represents a month, each column a year from 1980-2000.
@@ -223,11 +245,15 @@
 "upper_sacramento_flows"
 
 #' Return Flow
-#' @description A dataset containing the proportion flows at tributary junction
+#' @description A named list containing the proportion flows at tributary junction
 #' coming from natal watershed using October CALSIM II flows. These proportions are used to estimate
-#' straying in the CVPIA SIT Salmon Population Model.
+#' straying in the CVPIA SIT Salmon Population Model. Each component of the list contains a dataset
+#' with output from a different Calsim II BiOp run:
+#' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+#' @md
 #'
-#' @format 31 by 22 matrix (watersheds by years 1979-2000):
+#' @format a named list where each component contains a 31 by 22 matrix (watersheds by years 1979-2000):
 #'
 #' @details The return flow proportion is calculated using the average October flow
 #' in each watershed divided by the average October flow of the tributary it flows
@@ -295,8 +321,13 @@
 
 # replaces prop.pulse
 #' Proportion Pulse Flow
-#' @description Estimated monthly proportion of flow that is a pulse
-#' @format a 31 by 12 matrix (watersheds by months)
+#' @description A named list with estimated monthly proportion of flow that is a pulse. Each component
+#' of the list contains output from a different Calsim II BiOp run:
+#' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+#' @md
+#'
+#' @format a named list where each component is a 31 by 12 matrix (watersheds by months)
 #' @details proportion_pulse_flows = sd(flow)/median(flow)/100
 #'
 #' The value is divided by 100 to adjust the scaling to more closely resemble measured data.
@@ -307,10 +338,14 @@
 
 # Bypasses ------
 #' Flow through the Sutter and Yolo Bypasses
-#' @description A dataset containing the flow within the bypasses for
-#' estimating available rearing habitat within the bypasses.
+#' @description A named list containing datasets with the flow within the bypasses for
+#' estimating available rearing habitat within the bypasses. Each component of the list
+#' contains this output from a different Calsim II BiOp run:
+#' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+#' @md
 #'
-#' @format dataframe with 972 rows and 7 variables:
+#' @format a named list where each component contains a dataframe with 972 rows and 7 variables:
 #' \describe{
 #' \item{date}{CALSIM II date}
 #' \item{sutter1}{D117}
@@ -344,9 +379,13 @@
 #' Proportion of Sacramento River Flow through the Sutter and Yolo Bypasses
 #' @description The monthly proportion of Sacramento River flow within the bypasses
 #' (years 1980-2000) for use with the CVPIA SIT Salmon Population Model to
-#' apportion fish onto the bypasses.
+#' apportion fish onto the bypasses. Contains these data modeled with two Calsim II
+#' model outputs stored as elements of a named list:
+#' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+#' @md
 #'
-#' @format a 12 by 21 by 2 array (month, year, bypass):
+#' @format a named list where each element contains a 12 by 21 by 2 array (month, year, bypass):
 #'
 #' [ , , 1] = Sutter Bypass represented with CALSIM II nodes (D117 + D124 + D125 + D126)/C116
 #'
@@ -369,11 +408,16 @@
 #'
 "proportion_flow_bypasses"
 
-#' If gates are overtopped at teh Sutter and Yolo Bypasses
+#' If gates are overtopped at the Sutter and Yolo Bypasses
 #' @description A monthly TRUE or FALSE value to describe if the gates are overtopped to the bypasses
 #' (years 1980-2000) for use with the CVPIA SIT Salmon Population Model to
-#' apportion fish onto the bypasses.
-#' @format a 12 by 21 by 2 array (month, year, bypass):
+#' apportion fish onto the bypasses. Contains these data for two different Calsim II BiOp runs, stored
+#' as elements of a named list:
+#' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+#' @md
+#'
+#' @format a named list where each element contains a 12 by 21 by 2 array (month, year, bypass):
 #'
 #' [ , , 1] = Sutter Bypass represented with CALSIM II nodes (D117 + D124 + D125 + D126)/C116
 #'
@@ -388,8 +432,13 @@
 # Delta -----
 #' Delta Cross Channel Operations
 #' @description The number of days and proportion of days the Delta Cross Channel
-#' gates are typically closed for each month
-#' @format a 2 by 12 matrix, row one and two are the count and proportion of days
+#' gates are typically closed for each month. Contains these data for two different Calsim II
+#' runs stored as elements of a named list:
+#' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+#' @md
+#'
+#' @format a named list where each element is a 2 by 12 matrix, row one and two are the count and proportion of days
 #' closed respectively, columns are months
 #' @details By rule, 45 days between November-January, based on real time monitoring.
 #' For modeling purposes, the days closed where divided between December and January.
@@ -410,10 +459,14 @@
 "delta_cross_channel_closed"
 
 #' Delta Flows and Diversions
-#' @description A dataset containing the inflow, total diversions, and proportion
-#' diverted for the North and South Deltas.
+#' @description A named list with datasets containing the inflow, total diversions, and proportion
+#' diverted for the North and South Deltas from two different Calsim II BiOp runs. Each dataset
+#' is stored as an element named by the Calsim II BiOp run it came from:
+#' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+#' @md
 #'
-#' @format dataframe with 972 rows and 7 variables:
+#' @format a named list where each element contains a dataframe with 972 rows and 7 variables:
 #' \describe{
 #' \item{date}{CALSIM II date}
 #' \item{n_dlt_inflow_cfs}{C400 + C157, north delta inflow in cubic feet per second}
@@ -447,9 +500,14 @@
 "delta_flows"
 
 #' Delta Inflow
-#' @description The delta inflow in cubic meters per second from 1980-1999.
+#' @description A named list containing delta inflow in cubic meters per second from 1980-1999
+#' from two different Calsim II BiOp runs. These are stored as elements in a list and named by the
+#' Calsim II BiOp run they came from:
+#' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+#' @md
 #'
-#' @format A 3 dimensional array: 12 by 20 by 2 (months, years, deltas)
+#' @format A named list where each element contains a 3 dimensional array: 12 by 20 by 2 (months, years, deltas)
 #'
 #' [ , , 1] North Delta
 #'
@@ -467,9 +525,13 @@
 "delta_inflow"
 
 #' Delta Proportion Diverted
-#' @description The proportion of delta inflow diverted from 1980-2000.
+#' @description A named list containing the proportion of delta inflow diverted from 1980-2000 from
+#' two different Calsim II BiOp runs. These are stored as elements named by the Calsim II BiOp run they came from:
+#' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+#' @md
 #'
-#' @format A 3 dimensional array: 12 by 21 by 2 [months, years, deltas]
+#' @format A named list where each component contains a 3 dimensional array: 12 by 21 by 2 [months, years, deltas]
 #'
 #' [ , , 1] North Delta
 #'
@@ -486,9 +548,14 @@
 "delta_proportion_diverted"
 
 #' Delta Total Diverted
-#' @description The total diverted of delta inflow in cubic meters per second from 1980-2000.
+#' @description The total diverted of delta inflow in cubic meters per second from 1980-2000 from
+#' two different Calsim II BiOp runs. These can be accessed as separate elements of a named list named after
+#' the Calsim II BiOp run they came from:
+#' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+#' @md
 #'
-#' @format A 3 dimensional array: 12 by 21 by 2 (months, years, deltas)
+#' @format A named list where each element contains a 3 dimensional array: 12 by 21 by 2 (months, years, deltas)
 #'
 #' [ , , 1] North Delta
 #'
@@ -505,8 +572,14 @@
 "delta_total_diverted"
 
 #' @title Flow at Wilkins
-#' @description flow in cms at Wilkins (CALSIM node C129)
-#' @format A matrix with months (1-12) as rows and years (1980-1999) as columns
+#' @description flow in cms at Wilkins (CALSIM node C129) from two different Calsim II BiOp runs. Data from
+#' each Calsim II BiOp run are stored as a separate element of a named list, named after the Calsim II BiOp run
+#' it came from:
+#' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+#' @md
+#' @format A named list where each element contains a matrix with months (1-12) as rows and years
+#' (1980-1999) as columns
 #' @details \code{Wilkins_flow} was calculated using a 'FLOW-CHANNEL' node from CALSIM II.
 #'
 #' \href{https://s3-us-west-2.amazonaws.com/cvpiaflow-r-package/BST_CALSIMII_schematic_040110.jpg}{CALSIM II schematic}
@@ -520,8 +593,12 @@
 "wilkins_flow"
 
 #' @title Flow at Freeport
-#' @description flow in cms at Freeport (CALSIM node C400)
-#' @format A matrix with months (1-12) as rows and years (1980-1999) as columns
+#' @description flow in cms at Freeport (CALSIM node C400) from two separate Calsim II BiOp runs. Data from
+#' each Calsim II BiOp run are stored as an element of a named list, named after the Calsim II BiOp run it came from:
+#' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+#' @md
+#' @format A named list where each element contains a matrix with months (1-12) as rows and years (1980-1999) as columns
 #' @details \code{freeport_flow} was calculated using a 'FLOW-CHANNEL' node from CALSIM II.
 #'
 #' \href{https://s3-us-west-2.amazonaws.com/cvpiaflow-r-package/BST_CALSIMII_schematic_040110.jpg}{CALSIM II schematic}
@@ -534,8 +611,13 @@
 "freeport_flow"
 
 #' @title Flow at Vernalis
-#' @description flow in cms at Vernalis (CALSIM node C639)
-#' @format A matrix with months (1-12) as rows and years (1980-1999) as columns
+#' @description flow in cms at Vernalis (CALSIM node C639) from two different Calsim II BiOp runs. Data
+#' from each Calsim II BiOp run are stored as elements in a named list, named after the Calsim II BiOp run
+#' they came from:
+#' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+#' @md
+#' @format A named list where each element contains a matrix with months (1-12) as rows and years (1980-1999) as columns
 #' @details \code{vernalis_flow} was calculated using a 'FLOW-CHANNEL' node from CALSIM II.
 #'
 #'  \href{https://s3-us-west-2.amazonaws.com/cvpiaflow-r-package/BST_CALSIMII_schematic_040110.jpg}{CALSIM II schematic}
@@ -548,8 +630,12 @@
 "vernalis_flow"
 
 #' @title Flow at Stockton
-#' @description flow in cms at Stockton (CALSIM node C417A)
-#' @format A matrix with months (1-12) as rows and years (1980-1999) as columns
+#' @description flow in cms at Stockton (CALSIM node C417A) from two Calsim II BiOp runs. Data from each
+#' Calsim II BiOp run are stored as elements in a named list, named after the Calsim II BiOp run they came from:
+#' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+#' @md
+#' @format A named list where each element contains a matrix with months (1-12) as rows and years (1980-1999) as columns
 #' @details \code{vernalis_flow} was calculated using a 'FLOW-CHANNEL' node from CALSIM II.
 #'
 #' \href{https://s3-us-west-2.amazonaws.com/cvpiaflow-r-package/BST_CALSIMII_schematic_040110.jpg}{CALSIM II schematic}
@@ -562,10 +648,16 @@
 "stockton_flow"
 
 #' @title CVP Exports
-#' @description Total exports for CVP in cms. Value is obtained using CALSIM variable DEL_CVP_EXP.
-#' @format A matrix with months (1-12) as rows and years (1980-1999) as columns
+#' @description Total exports for CVP in cms from two separate Calsim II BiOp runs. Values are obtained
+#' using CALSIM variable DEL_CVP_EXP. Data from each Calsim II BiOp run are stored as separate elements
+#' in a named list, named for the Calsim II BiOp run they came from:
+#' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+#' @md
+#' @format A named list where each element contains a matrix with months (1-12) as rows and
+#' years (1980-1999) as columns
 #' @details
-#' The flows here are obtained from a CALSIM II run designed for the structured
+#' The flows here are obtained from a Calsim II BiOp run designed for the structured
 #' decision making in the delta.
 #'
 #' \href{https://s3-us-west-2.amazonaws.com/cvpiaflow-r-package/BST_CALSIMII_schematic_040110.jpg}{CALSIM II schematic}
@@ -578,10 +670,16 @@
 "cvp_exports"
 
 #' @title SWP Exports
-#' @description Total exports for SWP in cms. Value is obtained using CALSIM variable DEL_SWP_EXP.
-#' @format A matrix with months (1-12) as rows and years (1980-1999) as columns
+#' @description Total exports for SWP in cms from two separate Calsim II BiOp runs. Values are
+#' obtained using CALSIM variable DEL_SWP_EXP. Data from each Calsim II BiOp run are stored as separate elements
+#' in a named list, named for the Calsim II BiOp run they came from:
+#' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
+#' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+#' @md
+#' @format A named list where each element contains a matrix with months (1-12) as rows and
+#' years (1980-1999) as columns
 #' @details
-#' The flows here are obtained from a CALSIM II run designed for the structured
+#' The flows here are obtained from a Calsim II BiOp run designed for the structured
 #' decision making in the delta.
 #' \href{https://s3-us-west-2.amazonaws.com/cvpiaflow-r-package/BST_CALSIMII_schematic_040110.jpg}{CALSIM II schematic}
 #'

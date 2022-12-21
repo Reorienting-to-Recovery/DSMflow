@@ -1,3 +1,11 @@
+# DSMflow 2.0
+
+The 2022 update to DSMflow includes the following changes:
+
+* **CALSIM updates**. Updated DSMflow datasets include new 2019 biop flows. The result of
+doing so means accessing each flow dataset must be done using the following format: 
+`flow_cfs$biop_2008_2009` and `flow_cfs$biop_itp_2018_2019`.
+
 # DSMflow 1.0
 
 Flow related datasets for use with the following DSM models:

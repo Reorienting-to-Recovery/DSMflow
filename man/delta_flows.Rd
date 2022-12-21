@@ -5,7 +5,7 @@
 \alias{delta_flows}
 \title{Delta Flows and Diversions}
 \format{
-dataframe with 972 rows and 7 variables:
+a named list where each element contains a dataframe with 972 rows and 7 variables:
 \describe{
 \item{date}{CALSIM II date}
 \item{n_dlt_inflow_cfs}{C400 + C157, north delta inflow in cubic feet per second}
@@ -18,17 +18,22 @@ dataframe with 972 rows and 7 variables:
 }
 \source{
 \itemize{
-  \item \strong{Data Wrangling:} Sadie Gill  \email{sgill@flowwest.com}
-  \item \strong{Node Selection:} Mark Tompkins \email{mtompkins@flowwest.com} and Mike Urkov \email{mike.urkov@gmail.com}
-  \item \strong{CALSIM Model Output:} Michael Wright \email{mwright@usbr.gov}
+\item \strong{Data Wrangling:} Sadie Gill  \email{sgill@flowwest.com}
+\item \strong{Node Selection:} Mark Tompkins \email{mtompkins@flowwest.com} and Mike Urkov \email{mike.urkov@gmail.com}
+\item \strong{CALSIM Model Output:} Michael Wright \email{mwright@usbr.gov}
 }
 }
 \usage{
 delta_flows
 }
 \description{
-A dataset containing the inflow, total diversions, and proportion
-diverted for the North and South Deltas.
+A named list with datasets containing the inflow, total diversions, and proportion
+diverted for the North and South Deltas from two different Calsim II BiOp runs. Each dataset
+is stored as an element named by the Calsim II BiOp run it came from:
+\itemize{
+\item biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
+\item biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+}
 }
 \details{
 The inflow, diversions, and proportions diverted in the North and South
@@ -40,7 +45,6 @@ below Freeport to Chips Island.
 The South Delta is defined as the area east of the Sacramento River below Freeport
 to Chips Island and the San Joaquin River below Vernalis. The nodes and calculation
 for each delta are outlined above.
-
 
 \href{https://s3-us-west-2.amazonaws.com/cvpiaflow-r-package/BST_CALSIMII_schematic_040110.jpg}{CALSIM II schematic}
 }
