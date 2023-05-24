@@ -39,9 +39,6 @@ pick_columns <- function(file, nodes) {
 
   desired_nodes <- col_nm %in% nodes
 
-  print(file)
-  print(desired_nodes)
-
   cleaned <- temp %>%
     rename(date = `...2`) %>%
     select(date, col_nm[desired_nodes]) %>%
