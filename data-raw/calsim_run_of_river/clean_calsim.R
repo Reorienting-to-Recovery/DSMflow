@@ -39,11 +39,20 @@ pick_columns <- function(file, nodes) {
 
   desired_nodes <- col_nm %in% nodes
 
-  cleaned <- temp %>%
-    rename(date = `...2`) %>%
-    select(date, col_nm[desired_nodes]) %>%
-    mutate(date = as.Date(date)-lubridate::years(110)) %>%
+  filter <- temp |>
+    rename(date = `...2`) |>
+    select(date, col_nm[desired_nodes]) |>
+    mutate(date = as.Date(date)) |>
+    filter(year(date) <= 2003)
+
+  cleaned <- temp |>
+    rename(date = `...2`) |>
+    select(date, col_nm[desired_nodes]) |>
+    filter(year(date) > 2003) |>
+    mutate(date = as.Date(date)-lubridate::years(100)) |>
+    bind_rows(filter) |>
     filter(year(date) >= 1922, year(date) <= 2002)
+
   return(cleaned)
 }
 
@@ -116,7 +125,7 @@ lower_mid_sacramento_river_floodplain %>% View()
 testnodes %>%
   select(date, D160, D166A) %>%
   gather(nodes, flow, -date) %>%
-  #filter(year(date) >= 1980, year(date) < 1990) %>%
+  filter(year(date) >= 1980, year(date) < 1990) %>%
   ggplot(aes(x = date, y = flow, fill = nodes)) +
   geom_col(position = 'dodge') +
   theme_minimal()

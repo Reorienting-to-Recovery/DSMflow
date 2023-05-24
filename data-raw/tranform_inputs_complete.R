@@ -73,7 +73,7 @@ calsim_2008_2009 <- read_rds('data-raw/calsim_2008_2009/MikeWrightCalSimOct2017/
 flow_2008_2009 <- generate_flow_cfs(calsim_data = calsim_2008_2009, nodes = habitat_node)
 
 # bring in Moke flow from other model run
-moke <- read_excel('data-raw/calsim_2008_2009/EBMUDSIM/CVPIA_SIT_Data_RequestEBMUDSIMOutput_ExCond.xlsx',
+moke <- readxl::read_excel('data-raw/calsim_2008_2009/EBMUDSIM/CVPIA_SIT_Data_RequestEBMUDSIMOutput_ExCond.xlsx',
                    sheet = 'Tableau Clean-up') |>
   mutate(date = as_date(Date), `Mokelumne River` = C91) |>
   select(date, `Mokelumne River`)
@@ -87,7 +87,7 @@ flows_cfs_2008_2009 <- flow_2008_2009 |>
 # Add in new calsim run (2018 - 2019 Biop/Itp) data-----------------------------
 calsim_2019_biop_itp <- read_rds('data-raw/calsim_2019_BiOp_ITP/biop_cvpia_calsim.rds')
 
-moke_2019 <- read_excel('data-raw/calsim_2019_BiOp_ITP/EBMUDSIM/CVPIA_SIT_Data_RequestUpdated2022.xlsx',
+moke_2019 <- readxl::read_excel('data-raw/calsim_2019_BiOp_ITP/EBMUDSIM/CVPIA_SIT_Data_RequestUpdated2022.xlsx',
                    sheet = 'Tableau Clean-up') |>
   mutate(date = as_date(Date), `Mokelumne River` = C91) |>
   select(date, `Mokelumne River`)
@@ -99,9 +99,26 @@ flow_cfs_2019_biop_itp <- flow_cfs_2019_biop_itp |>
   left_join(moke_2019) |> # add in Moke
   select(date:`Cosumnes River`, `Mokelumne River`, `Merced River`:`San Joaquin River`) # reorder
 
-# create flow_cfs with both 2008-2009 biop and 2018-2019 biop/itp ---------------
+# Add run of river
+calsim_run_of_river <- read_rds('data-raw/calsim_run_of_river/run_of_river_r2r_calsim.rds')
+
+# TODO: temporarily just use 2019 data for Moke in run of river
+moke_2019 <- read_excel('data-raw/calsim_2019_BiOp_ITP/EBMUDSIM/CVPIA_SIT_Data_RequestUpdated2022.xlsx',
+                        sheet = 'Tableau Clean-up') |>
+  mutate(date = as_date(Date), `Mokelumne River` = C91) |>
+  select(date, `Mokelumne River`)
+
+flow_cfs_run_of_river <- generate_flow_cfs(calsim_data = calsim_run_of_river, nodes = habitat_node)
+
+flow_cfs_run_of_river <- flow_cfs_run_of_river |>
+  select(-`Mokelumne River`) |> # get rid of old Moke column
+  left_join(moke_2019) |> # #TODO: update with updated Moke data
+  select(date:`Cosumnes River`, `Mokelumne River`, `Merced River`:`San Joaquin River`) # reorder
+
+# create flow_cfs with both 2008-2009 biop and 2018-2019 biop/itp and run of river ---------------
 flows_cfs <- list(biop_2008_2009 = flows_cfs_2008_2009,
-                  biop_itp_2018_2019 = flow_cfs_2019_biop_itp
+                  biop_itp_2018_2019 = flow_cfs_2019_biop_itp,
+                  run_of_river = flow_cfs_run_of_river
 )
 
 # Write flow cfs data object
@@ -126,10 +143,12 @@ generate_bypass_flows <- function(calsim_run) {
 
 bypass_2008_2009 <-  generate_bypass_flows(calsim_run = calsim_2008_2009)
 bypass_2019_biop_itp <- generate_bypass_flows(calsim_run = calsim_2019_biop_itp)
+run_of_river = generate_bypass_flows(calsim_run = calsim_run_of_river)
 
 # create bypass flows with both 2008-2009 biop and 2018-2019 biop/itp
 bypass_flows <- list(biop_2008_2009 = bypass_2008_2009,
-                     biop_itp_2018_2019 = bypass_2019_biop_itp
+                     biop_itp_2018_2019 = bypass_2019_biop_itp,
+                     run_of_river = run_of_river
 )
 
 usethis::use_data(bypass_flows, overwrite = TRUE)
@@ -219,7 +238,7 @@ generate_diversion_total <- function(calsim_data, nodes){
 diversion_2008_2009 <-  generate_diversion_total(calsim_data = calsim_2008_2009,
                                                  nodes = all_div_nodes)
 #bring in Moke diversions for 2008_2009 run from other model run
-moke <- read_excel('data-raw/calsim_2008_2009/EBMUDSIM/CVPIA_SIT_Data_RequestEBMUDSIMOutput_ExCond.xlsx',
+moke <- readxl::read_excel('data-raw/calsim_2008_2009/EBMUDSIM/CVPIA_SIT_Data_RequestEBMUDSIMOutput_ExCond.xlsx',
                    sheet = 'Tableau Clean-up') |>
   mutate(date = as_date(Date),
          `Mokelumne River` = (D503A + D503B + D503C + D502A + D502B)) |>
@@ -240,7 +259,7 @@ diversion_2019_biop_itp <- generate_diversion_total(calsim_data = calsim_2019_bi
                                                     nodes = all_div_nodes)
 
 #bring in Moke diversions for 20019 run from other model run
-moke_2019 <- read_excel('data-raw/calsim_2019_BiOp_ITP/EBMUDSIM/CVPIA_SIT_Data_RequestUpdated2022.xlsx',
+moke_2019 <- readxl::read_excel('data-raw/calsim_2019_BiOp_ITP/EBMUDSIM/CVPIA_SIT_Data_RequestUpdated2022.xlsx',
                    sheet = 'Tableau Clean-up') |>
   mutate(date = as_date(Date),
          `Mokelumne River` = (D503A + D503B + D503C + D502A + D502B)) |>
@@ -256,9 +275,34 @@ moke_2019 <- read_excel('data-raw/calsim_2019_BiOp_ITP/EBMUDSIM/CVPIA_SIT_Data_R
 
 diversion_2019_biop_itp["Mokelumne River",,] <- as.matrix(moke_2019) # add to 2008_2009 matrix
 
+
+# generate diversions for run of river ------------------------------------
+diversion_run_of_river <- generate_diversion_total(calsim_data = calsim_run_of_river,
+                                                   nodes = all_div_nodes)
+
+# TODO: update when we have moke for run of river
+# bring in Moke diversions for 20019 run from other model run
+moke_2019_run_of_river <- readxl::read_excel('data-raw/calsim_2019_BiOp_ITP/EBMUDSIM/CVPIA_SIT_Data_RequestUpdated2022.xlsx',
+                                sheet = 'Tableau Clean-up') |>
+  mutate(date = as_date(Date),
+         `Mokelumne River` = (D503A + D503B + D503C + D502A + D502B)) |>
+  select(date, `Mokelumne River`) |>
+  filter(year(date) <= 2000 & year(date) >= 1980) |># subset to 20 years
+  group_by(year(date), month(date)) |> # summarize by month
+  summarize(monthly_flow = sum(`Mokelumne River`)) |>
+  rename(year = `year(date)`,
+         month = `month(date)`) |>
+  mutate(monthly_flow = DSMflow::cfs_to_cms(monthly_flow)) |>
+  pivot_wider(names_from = year, values_from = monthly_flow) |> # format to fit into model array
+  select(-month)
+
+diversion_run_of_river["Mokelumne River",,] <- as.matrix(moke_2019_run_of_river)
+
+
 # create diversion flows with both 2008-2009 biop and 2018-2019 biop/itp
 total_diverted <- list(biop_2008_2009 = diversion_2008_2009, # has moke
-                     biop_itp_2018_2019 = diversion_2019_biop_itp # missing moke
+                     biop_itp_2018_2019 = diversion_2019_biop_itp, # missing moke
+                     run_of_river = diversion_run_of_river
 )
 
 usethis::use_data(total_diverted, overwrite = TRUE)
@@ -369,9 +413,29 @@ moke_2019 <- read_excel('data-raw/calsim_2019_BiOp_ITP/EBMUDSIM/CVPIA_SIT_Data_R
 
 prop_diverted_2019_biop_itp["Mokelumne River",,] <- as.matrix(moke_2019) # add to 2008_2009 matrix
 
-# create proportion diversion flows with both 2008-2009 biop and 2018-2019 biop/itp
+# generate proportion diverted for run of river ---------------------------
+
+# Generate proportion diverted for 2019 ----------------------------------------
+prop_diverted_run_of_river <- generate_proportion_diverted(calsim_data = calsim_run_of_river,
+                                                            nodes = all_div_nodes)
+# TODO: update if we get run of river for Moke
+# bring in Moke for 2019
+moke_2019 <- read_excel('data-raw/calsim_2019_BiOp_ITP/EBMUDSIM/CVPIA_SIT_Data_RequestUpdated2022.xlsx.',
+                        sheet = 'Tableau Clean-up') |>
+  mutate(date = as_date(Date), `Mokelumne River` = (D503A + D503B + D503C + D502A + D502B) / C91) |>
+  select(date, `Mokelumne River`) |>
+  filter(year(date) <= 2000 & year(date) >= 1980) |> # 1980-2000
+  group_by(year(date), month(date)) |>
+  summarize(monthly_flow = sum(`Mokelumne River`)) |> # summarize by month and year to fit into model array
+  pivot_wider(names_from = `year(date)`, values_from = monthly_flow) |>
+  select(-`month(date)`)
+
+prop_diverted_run_of_river["Mokelumne River",,] <- as.matrix(moke_2019)
+
+# create proportion diversion flows with both 2008-2009 biop and 2018-2019 biop/itp and run of river
 proportion_diverted <- list(biop_2008_2009 = prop_diverted_2008_2009,
-                       biop_itp_2018_2019 = prop_diverted_2019_biop_itp
+                       biop_itp_2018_2019 = prop_diverted_2019_biop_itp,
+                       run_of_river = prop_diverted_run_of_river
 )
 
 usethis::use_data(proportion_diverted, overwrite = TRUE)
@@ -407,13 +471,15 @@ generate_mean_flow <- function(bypass_flow, flow_cfs) {
     return(mean_flow)
 }
 
-# create mean flows with both 2008-2009 biop and 2018-2019 biop/itp
+# create mean flows with both 2008-2009 biop and 2018-2019 biop/itp and run of river
 # using bypass nodes that are activated the most for meanQ
 mean_flow_2008_2009 <- generate_mean_flow(bypass_flows$biop_2008_2009, flows_cfs$biop_2008_2009)
 mean_flow_2019_biop_itp <- generate_mean_flow(bypass_flows$biop_itp_2018_2019, flows_cfs$biop_itp_2018_2019) # missing moke
+mean_flow_run_of_river <- generate_mean_flow(bypass_flows$run_of_river, flows_cfs$run_of_river) # missing moke
 
 mean_flow <- list(biop_2008_2009 = mean_flow_2008_2009,
-                   biop_itp_2018_2019 = mean_flow_2019_biop_itp)
+                   biop_itp_2018_2019 = mean_flow_2019_biop_itp,
+                  run_of_river = mean_flow_run_of_river)
 
 usethis::use_data(mean_flow, overwrite = TRUE)
 
@@ -459,8 +525,22 @@ ds <- read_csv('data-raw/calsim_2019_BiOp_ITP/D100_D403.csv', skip = 1) |>
 
 misc_flows_2019_biop_itp <- generate_misc_flow_nodes(cs, ds)
 
+# run of river
+cs <- read_excel('data-raw/calsim_run_of_river/max_flow_data/CalSim/C1_C169.xlsx', skip = 1) |>
+  select(date = "...2", C134, C165, C116, C123, C124, C125, C109) |>
+  filter(!is.na(date)) |>
+  mutate(date = as.Date(date))
+
+ds <- read_excel('data-raw/calsim_run_of_river/max_flow_data/CalSim/D100_D403.xlsx', skip = 1) |>
+  select(date = "...2", D160, D166A, D117, D124, D125, D126) |>
+  filter(!is.na(date)) |>
+  mutate(date = as.Date(date))
+
+misc_flows_run_of_river <- generate_misc_flow_nodes(cs, ds)
+
 misc_flows <- list(biop_2008_2009 = misc_flows_2008_2009,
-                   biop_itp_2018_2019 = misc_flows_2019_biop_itp)
+                   biop_itp_2018_2019 = misc_flows_2019_biop_itp,
+                   run_of_river = misc_flows_run_of_river)
 
 # flow at Bend C109, CALSIMII units cfs, sit-model units cms
 # replaces upsacQ
@@ -485,9 +565,12 @@ generate_upper_sacramento_flows <- function(misc_flows) {
 
 upper_sacramento_flows_2008_2009 <- generate_upper_sacramento_flows(misc_flows$biop_2008_2009)
 upper_sacramento_flows_2019_biop_itp <- generate_upper_sacramento_flows(misc_flows$biop_itp_2018_2019)
+upper_sacramento_flows_run_of_river <- generate_upper_sacramento_flows(misc_flows$run_of_river)
+
 
 upper_sacramento_flows <- list(biop_2008_2009 = upper_sacramento_flows_2008_2009,
-                               biop_itp_2018_2019 = upper_sacramento_flows_2019_biop_itp)
+                               biop_itp_2018_2019 = upper_sacramento_flows_2019_biop_itp,
+                               run_of_river = upper_sacramento_flows_run_of_river)
 
 usethis::use_data(upper_sacramento_flows, overwrite = TRUE)
 
@@ -544,9 +627,11 @@ generate_proportion_flow_natal <- function(flow_cfs, tributary_junctions){
 
 proportion_flow_natal_2008_2009 <- generate_proportion_flow_natal(flows_cfs$biop_2008_2009, tributary_junctions)
 proportion_flow_natal_2019_biop_itp <- generate_proportion_flow_natal(flows_cfs$biop_itp_2018_2019, tributary_junctions)
+proportion_flow_natal_run_of_river <- generate_proportion_flow_natal(flows_cfs$run_of_river, tributary_junctions)
 
 proportion_flow_natal <- list(biop_2008_2009 = proportion_flow_natal_2008_2009,
-                              biop_itp_2018_2019 = proportion_flow_natal_2019_biop_itp)
+                              biop_itp_2018_2019 = proportion_flow_natal_2019_biop_itp,
+                              run_of_river = proportion_flow_natal_run_of_river)
 
 usethis::use_data(proportion_flow_natal, overwrite = TRUE)
 
@@ -582,11 +667,12 @@ generate_proportion_pulse_flows <- function(flow_cfs) {
 }
 
 proportion_pulse_flows_2008_2009 <- generate_proportion_pulse_flows(flows_cfs$biop_2008_2009)
-
 proportion_pulse_flows_2019_biop_itp <- generate_proportion_pulse_flows(flows_cfs$biop_itp_2018_2019)
+proportion_pulse_flows_run_of_river <- generate_proportion_pulse_flows(flows_cfs$run_of_river)
 
 proportion_pulse_flows <- list(biop_2008_2009 = proportion_pulse_flows_2008_2009,
-                              biop_itp_2018_2019 = proportion_pulse_flows_2019_biop_itp)
+                              biop_itp_2018_2019 = proportion_pulse_flows_2019_biop_itp,
+                              run_of_river = proportion_pulse_flows_run_of_river)
 
 usethis::use_data(proportion_pulse_flows, overwrite = TRUE)
 
@@ -641,9 +727,40 @@ rownames(delta_cross_channel_closed_2018_2019) <- c('count', 'proportion')
 delta_cross_channel_closed_2018_2019[ , "May"] <- c(28, 28/31)
 delta_cross_channel_closed_2018_2019[ , "Jun"] <- c(8, 8/30)
 
+# Generate for run of river
+# TODO: assuming the same logic as 2019 for the Run of River. Need to verify.
+# The followung guidance was provided to use for the update:
+# Per guidance from Reclamation’s CALSIM lead modeler (Derya Sumer), the same logic
+# used to represent days closed for the 2009 CALSIM model should be used for the 2019
+# CALSIM model. Specifically, there should be 28 days closed in May and 8 days closed
+# in June. It is important to note that DSM calibration would still require synthetic
+# monthly flows based on the 2009 CALSIM model ouputs that are representative of the
+# escapement period of record use for calibration.
+
+delta_cross_channel_closed_run_of_river <- read_csv('data-raw/delta_cross_channel_gates/DeltaCrossChannelTypicalOperations.csv', skip = 2) |>
+  mutate(Month = which(month.name == Month), prop_days_closed = `Days Closed` / days_in_month(Month)) |>
+  select(month = Month, days_closed = `Days Closed`, prop_days_closed) |>
+  pivot_longer(days_closed,
+               names_to = "metric",
+               values_to = "value") |>
+  pivot_wider(names_from = metric,
+              values_from = value) |>
+  select(-month) |>
+  select(days_closed, prop_days_closed) |>
+  as.matrix() |>
+  t()
+
+colnames(delta_cross_channel_closed_run_of_river) <- month.abb[1:12]
+rownames(delta_cross_channel_closed_run_of_river) <- c('count', 'proportion')
+
+# replace May and June values according to text above (from word doc proposal)
+delta_cross_channel_closed_run_of_river[ , "May"] <- c(28, 28/31)
+delta_cross_channel_closed_run_of_river[ , "Jun"] <- c(8, 8/30)
+
 # Combine into named list
 delta_cross_channel_closed <- list(biop_2008_2009 = delta_cross_channel_closed_2008_2009,
-                                   biop_itp_2018_2019 = delta_cross_channel_closed_2018_2019)
+                                   biop_itp_2018_2019 = delta_cross_channel_closed_2018_2019,
+                                   run_of_river = delta_cross_channel_closed_run_of_river)
 
 usethis::use_data(delta_cross_channel_closed, overwrite = TRUE)
 
@@ -677,9 +794,11 @@ generate_delta_flows <- function(calsim_data) {
 
 delta_flows_2008_2009 <- generate_delta_flows(calsim_2008_2009)
 delta_flows_2019_biop_itp <- generate_delta_flows(calsim_2019_biop_itp)
+delta_flows_run_of_river <- generate_delta_flows(calsim_run_of_river)
 
 delta_flows <- list(biop_2008_2009 = delta_flows_2008_2009,
-                    biop_itp_2018_2019 = delta_flows_2019_biop_itp)
+                    biop_itp_2018_2019 = delta_flows_2019_biop_itp,
+                    run_of_river = delta_flows_run_of_river)
 
 usethis::use_data(delta_flows, overwrite = TRUE)
 
@@ -709,9 +828,12 @@ generate_delta_inflows <- function(delta_flows) {
 
 delta_inflows_2008_2009 <- generate_delta_inflows(delta_flows$biop_2008_2009)
 delta_inflows_2019_biop_itp <- generate_delta_inflows(delta_flows$biop_itp_2018_2019)
+delta_inflows_run_of_river <- generate_delta_inflows(delta_flows$run_of_river)
+
 
 delta_inflow <- list(biop_2008_2009 = delta_inflows_2008_2009,
-                    biop_itp_2018_2019 = delta_inflows_2019_biop_itp)
+                    biop_itp_2018_2019 = delta_inflows_2019_biop_itp,
+                    run_of_river = delta_inflows_run_of_river)
 
 usethis::use_data(delta_inflow, overwrite = TRUE)
 
@@ -740,9 +862,12 @@ generate_delta_proportion_diverted <- function(delta_flows) {
 
 delta_proportion_diverted_2008_2009 <- generate_delta_proportion_diverted(delta_flows$biop_2008_2009)
 delta_proportion_diverted_2019_biop_itp <- generate_delta_proportion_diverted(delta_flows$biop_itp_2018_2019)
+delta_proportion_diverted_run_of_river <- generate_delta_proportion_diverted(delta_flows$run_of_river)
+
 
 delta_proportion_diverted <- list(biop_2008_2009 = delta_proportion_diverted_2008_2009,
-                                  biop_itp_2018_2019 = delta_proportion_diverted_2019_biop_itp)
+                                  biop_itp_2018_2019 = delta_proportion_diverted_2019_biop_itp,
+                                  run_of_river = delta_proportion_diverted_run_of_river)
 
 usethis::use_data(delta_proportion_diverted, overwrite = TRUE)
 
@@ -773,9 +898,12 @@ generate_delta_total_diverted <- function(delta_flows) {
 
 delta_total_diverted_2008_2009 <- generate_delta_total_diverted(delta_flows$biop_2008_2009)
 delta_total_diverted_2019_biop_itp <- generate_delta_total_diverted(delta_flows$biop_itp_2018_2019)
+delta_total_diverted_run_of_river <- generate_delta_total_diverted(delta_flows$run_of_river)
+
 
 delta_total_diverted <- list(biop_2008_2009 = delta_total_diverted_2008_2009,
-                             biop_itp_2018_2019 = delta_total_diverted_2019_biop_itp)
+                             biop_itp_2018_2019 = delta_total_diverted_2019_biop_itp,
+                             run_of_river = delta_total_diverted_run_of_river)
 
 usethis::use_data(delta_total_diverted, overwrite = TRUE)
 
@@ -811,9 +939,11 @@ generate_proportion_flow_bypasses <- function(misc_flows) {
 
 proportion_flow_bypasses_2008_2009 <- generate_proportion_flow_bypasses(misc_flows$biop_2008_2009)
 proportion_flow_bypasses_2019_biop_itp <- generate_proportion_flow_bypasses(misc_flows$biop_itp_2018_2019)
+proportion_flow_bypasses_run_of_river <- generate_proportion_flow_bypasses(misc_flows$run_of_river)
 
 proportion_flow_bypasses <- list(biop_2008_2009 = proportion_flow_bypasses_2008_2009,
-                                 biop_itp_2018_2019 = proportion_flow_bypasses_2019_biop_itp)
+                                 biop_itp_2018_2019 = proportion_flow_bypasses_2019_biop_itp,
+                                 run_of_river = proportion_flow_bypasses_run_of_river)
 
 usethis::use_data(proportion_flow_bypasses, overwrite = TRUE)
 
@@ -850,9 +980,12 @@ generate_gates_overtopped <- function(calsim_data) {
 
 gates_overtopped_2008_2009 <- generate_gates_overtopped(calsim_2008_2009)
 gates_overtopped_2019_biop_itp <- generate_gates_overtopped(calsim_2019_biop_itp)
+gates_overtopped_run_of_river <- generate_gates_overtopped(calsim_run_of_river)
+
 
 gates_overtopped <- list(biop_2008_2009 = gates_overtopped_2008_2009,
-                         biop_itp_2018_2019 = gates_overtopped_2019_biop_itp)
+                         biop_itp_2018_2019 = gates_overtopped_2019_biop_itp,
+                         run_of_river = gates_overtopped_run_of_river)
 
 usethis::use_data(gates_overtopped, overwrite = TRUE)
 
@@ -885,9 +1018,11 @@ generate_wilkins_flow <- function(calsim_data, wilkins_node) {
 
 wilkins_flow_2008_2009 <- generate_wilkins_flow(calsim_2008_2009, wilkins_node)
 wilkins_flow_2019_biop_itp <- generate_wilkins_flow(calsim_2019_biop_itp, wilkins_node)
+wilkins_flow_run_of_river <- generate_wilkins_flow(calsim_run_of_river, wilkins_node)
 
 wilkins_flow <- list(biop_2008_2009 = wilkins_flow_2008_2009,
-                     biop_itp_2018_2019 = wilkins_flow_2019_biop_itp)
+                     biop_itp_2018_2019 = wilkins_flow_2019_biop_itp,
+                     run_of_river = wilkins_flow_run_of_river)
 
 usethis::use_data(wilkins_flow, overwrite = TRUE)
 
@@ -918,9 +1053,11 @@ generate_freeport_flow <- function(calsim_data, freeport_node) {
 
 freeport_flow_2008_2009 <- generate_freeport_flow(calsim_2008_2009, freeport_node)
 freeport_flow_2019_biop_itp <- generate_freeport_flow(calsim_2019_biop_itp, freeport_node)
+freeport_flow_run_of_river <- generate_freeport_flow(calsim_run_of_river, freeport_node)
 
 freeport_flow <- list(biop_2008_2009 = freeport_flow_2008_2009,
-                      biop_itp_2018_2019 = freeport_flow_2019_biop_itp)
+                      biop_itp_2018_2019 = freeport_flow_2019_biop_itp,
+                      run_of_river = freeport_flow_run_of_river)
 
 usethis::use_data(freeport_flow, overwrite = TRUE)
 
@@ -951,9 +1088,11 @@ generate_vernalis_flow <- function(calsim_data, vernalis_node) {
 
 vernalis_flow_2008_2009 <- generate_vernalis_flow(calsim_2008_2009, vernalis_node)
 vernalis_flow_2019_biop_itp <- generate_vernalis_flow(calsim_2019_biop_itp, vernalis_node)
+vernalis_flow_run_of_river <- generate_vernalis_flow(calsim_run_of_river, vernalis_node)
 
 vernalis_flow <- list(biop_2008_2009 = vernalis_flow_2008_2009,
-                      biop_itp_2018_2019 = vernalis_flow_2019_biop_itp)
+                      biop_itp_2018_2019 = vernalis_flow_2019_biop_itp,
+                      run_of_river = vernalis_flow_run_of_river)
 
 usethis::use_data(vernalis_flow, overwrite = TRUE)
 
@@ -984,9 +1123,11 @@ generate_stockton_flow <- function(calsim_data, stockton_node) {
 
 stockton_flow_2008_2009 <- generate_stockton_flow(calsim_2008_2009, stockton_node)
 stockton_flow_2019_biop_itp <- generate_stockton_flow(calsim_2019_biop_itp, stockton_node)
+stockton_flow_run_of_river <- generate_stockton_flow(calsim_run_of_river, stockton_node)
 
 stockton_flow <- list(biop_2008_2009 = stockton_flow_2008_2009,
-                      biop_itp_2018_2019 = stockton_flow_2019_biop_itp)
+                      biop_itp_2018_2019 = stockton_flow_2019_biop_itp,
+                      run_of_river = stockton_flow_run_of_river)
 
 usethis::use_data(stockton_flow, overwrite = TRUE)
 
@@ -1017,8 +1158,11 @@ generate_cvp_exports <- function(calsim_data) {
 
 cvp_exports_2008_2009 <- generate_cvp_exports(calsim_2008_2009)
 cvp_exports_2019_biop_itp <- generate_cvp_exports(calsim_2019_biop_itp)
+cvp_exports_run_of_river <- generate_cvp_exports(calsim_2019_biop_itp) # TODO: do not have del_total_nodes.csv file, using 2019
+
 cvp_exports <- list(biop_2008_2009 = cvp_exports_2008_2009,
-                    biop_itp_2018_2019 = cvp_exports_2019_biop_itp)
+                    biop_itp_2018_2019 = cvp_exports_2019_biop_itp,
+                    run_of_river = cvp_exports_run_of_river)
 
 usethis::use_data(cvp_exports, overwrite = TRUE)
 
@@ -1048,8 +1192,10 @@ generate_swp_exports <- function(calsim_data) {
 
 swp_exports_2008_2009 <- generate_swp_exports(calsim_2008_2009)
 swp_exports_2019_biop_itp <- generate_swp_exports(calsim_2019_biop_itp)
+swp_exports_run_of_river <- generate_swp_exports(calsim_2019_biop_itp)
 
 swp_exports <- list(biop_2008_2009 = swp_exports_2008_2009,
-                    biop_itp_2018_2019 = swp_exports_2019_biop_itp)
+                    biop_itp_2018_2019 = swp_exports_2019_biop_itp,
+                    run_of_river = swp_exports_run_of_river)
 
 usethis::use_data(swp_exports, overwrite = TRUE)
