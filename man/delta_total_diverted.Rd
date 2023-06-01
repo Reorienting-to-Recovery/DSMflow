@@ -16,11 +16,12 @@ delta_total_diverted
 }
 \description{
 The total diverted of delta inflow in cubic meters per second from 1980-2000 from
-two different Calsim II BiOp runs. These can be accessed as separate elements of a named list named after
-the Calsim II BiOp run they came from:
+three different Calsim runs. These can be accessed as separate elements of a named list named after
+the Calsim run they came from:
 \itemize{
 \item biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 \item biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+\item calsim_run_of_river: output from the Calsim Run of River run.
 }
 }
 \details{

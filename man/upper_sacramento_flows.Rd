@@ -19,11 +19,12 @@ upper_sacramento_flows
 }
 \description{
 A named list where each component contains a dataset with the Upper Sacramento
-River flow in cubic meters per second. The components of the list contain output from two
-different Calsim II BiOp runs:
+River flow in cubic meters per second. The components of the list contain output from three
+different Calsim runs:
 \itemize{
 \item biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 \item biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+\item calsim_run_of_river: output from the Calsim Run of River run.
 }
 }
 \details{

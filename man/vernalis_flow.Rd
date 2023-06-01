@@ -17,12 +17,13 @@ A named list where each element contains a matrix with months (1-12) as rows and
 vernalis_flow
 }
 \description{
-flow in cms at Vernalis (CALSIM node C639) from two different Calsim II BiOp runs. Data
-from each Calsim II BiOp run are stored as elements in a named list, named after the Calsim II BiOp run
+flow in cms at Vernalis (CALSIM node C639) from three different Calsim runs. Data
+from each Calsim run are stored as elements in a named list, named after the Calsim run
 they came from:
 \itemize{
 \item biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 \item biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+\item calsim_run_of_river: output from the Calsim Run of River run.
 }
 }
 \details{

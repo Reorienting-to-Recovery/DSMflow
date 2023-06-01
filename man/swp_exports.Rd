@@ -18,12 +18,13 @@ years (1980-1999) as columns
 swp_exports
 }
 \description{
-Total exports for SWP in cms from two separate Calsim II BiOp runs. Values are
-obtained using CALSIM variable DEL_SWP_EXP. Data from each Calsim II BiOp run are stored as separate elements
-in a named list, named for the Calsim II BiOp run they came from:
+Total exports for SWP in cms from three separate Calsim runs. Values are
+obtained using CALSIM variable DEL_SWP_EXP. Data from each Calsim run are stored as separate elements
+in a named list, named for the Calsim  run they came from:
 \itemize{
 \item biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 \item biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+\item calsim_run_of_river: output from the Calsim Run of River run.
 }
 }
 \details{
