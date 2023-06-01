@@ -1158,7 +1158,7 @@ generate_cvp_exports <- function(calsim_data) {
 
 cvp_exports_2008_2009 <- generate_cvp_exports(calsim_2008_2009)
 cvp_exports_2019_biop_itp <- generate_cvp_exports(calsim_2019_biop_itp)
-cvp_exports_run_of_river <- generate_cvp_exports(calsim_2019_biop_itp) # TODO: do not have del_total_nodes.csv file, using 2019
+cvp_exports_run_of_river <- generate_cvp_exports(calsim_run_of_river)
 
 cvp_exports <- list(biop_2008_2009 = cvp_exports_2008_2009,
                     biop_itp_2018_2019 = cvp_exports_2019_biop_itp,
@@ -1192,7 +1192,7 @@ generate_swp_exports <- function(calsim_data) {
 
 swp_exports_2008_2009 <- generate_swp_exports(calsim_2008_2009)
 swp_exports_2019_biop_itp <- generate_swp_exports(calsim_2019_biop_itp)
-swp_exports_run_of_river <- generate_swp_exports(calsim_2019_biop_itp)
+swp_exports_run_of_river <- generate_swp_exports(calsim_run_of_river)
 
 swp_exports <- list(biop_2008_2009 = swp_exports_2008_2009,
                     biop_itp_2018_2019 = swp_exports_2019_biop_itp,
