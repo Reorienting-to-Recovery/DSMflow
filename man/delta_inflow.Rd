@@ -16,11 +16,12 @@ delta_inflow
 }
 \description{
 A named list containing delta inflow in cubic meters per second from 1980-1999
-from two different Calsim II BiOp runs. These are stored as elements in a list and named by the
-Calsim II BiOp run they came from:
+from three different Calsim runs. These are stored as elements in a list and named by the
+Calsim run they came from:
 \itemize{
 \item biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 \item biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+\item calsim_run_of_river: output from the Calsim Run of River run.
 }
 }
 \details{

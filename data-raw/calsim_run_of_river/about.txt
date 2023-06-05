@@ -1,0 +1,8 @@
+The Run of River Calsim Run was provided by Amanda Becker, file name: Reclamation_Exploratory_2035CT_EXP1_CALSIM_042522. More information on model run located here: https://docs.google.com/document/d/10f8LHkUgvEQMVJOilOoM0neyTru-wxKM_i9_T0zOsHw/edit?usp=sharing
+
+
+All the nodes from part C = 'FLOW-CHANNEL' or 'FLOW-DELIVERY' and part B starting with a 'C' or 'D' were copied
+into several csv's because the HEC viewer would crash when attempting to export all these nodes at once.
+Additionally the nodes from part B = 'DEL_SWP_TOTAL' and B = 'BEL_CVP_TOTAL' were copied into a csv.
+The 'clean_calsim.R' file is a script that will select the nodes of interest defined in 'cvpia_calsim_nodes.csv'
+and rename them to fit the needs of generating model inputs for the SIT model.

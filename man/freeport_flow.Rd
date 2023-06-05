@@ -17,11 +17,12 @@ A named list where each element contains a matrix with months (1-12) as rows and
 freeport_flow
 }
 \description{
-flow in cms at Freeport (CALSIM node C400) from two separate Calsim II BiOp runs. Data from
-each Calsim II BiOp run are stored as an element of a named list, named after the Calsim II BiOp run it came from:
+flow in cms at Freeport (CALSIM node C400) from three separate Calsim runs. Data from
+each Calsim run are stored as an element of a named list, named after the Calsim run it came from:
 \itemize{
 \item biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 \item biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+\item calsim_run_of_river: output from the Calsim Run of River run.
 }
 }
 \details{

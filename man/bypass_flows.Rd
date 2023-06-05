@@ -29,10 +29,11 @@ bypass_flows
 \description{
 A named list containing datasets with the flow within the bypasses for
 estimating available rearing habitat within the bypasses. Each component of the list
-contains this output from a different Calsim II BiOp run:
+contains this output from a different Calsim run:
 \itemize{
 \item biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 \item biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+\item calsim_run_of_river: output from the Calsim Run of River run.
 }
 }
 \details{

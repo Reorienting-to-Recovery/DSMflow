@@ -24,11 +24,12 @@ proportion_flow_bypasses
 \description{
 The monthly proportion of Sacramento River flow within the bypasses
 (years 1980-2000) for use with the CVPIA SIT Salmon Population Model to
-apportion fish onto the bypasses. Contains these data modeled with two Calsim II
+apportion fish onto the bypasses. Contains these data modeled with three Calsim
 model outputs stored as elements of a named list:
 \itemize{
 \item biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 \item biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
+\item calsim_run_of_river: output from the Calsim Run of River run.
 }
 }
 \details{
