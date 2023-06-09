@@ -143,7 +143,7 @@ generate_bypass_flows <- function(calsim_run) {
 
 bypass_2008_2009 <-  generate_bypass_flows(calsim_run = calsim_2008_2009)
 bypass_2019_biop_itp <- generate_bypass_flows(calsim_run = calsim_2019_biop_itp)
-run_of_river = generate_bypass_flows(calsim_run = calsim_run_of_river)
+run_of_river <-  generate_bypass_flows(calsim_run = calsim_run_of_river)
 
 # create bypass flows with both 2008-2009 biop and 2018-2019 biop/itp
 bypass_flows <- list(biop_2008_2009 = bypass_2008_2009,
@@ -526,6 +526,7 @@ ds <- read_csv('data-raw/calsim_2019_BiOp_ITP/D100_D403.csv', skip = 1) |>
 misc_flows_2019_biop_itp <- generate_misc_flow_nodes(cs, ds)
 
 # run of river
+# Note: must fix dates which are imported and off by 100 years, except for years 2000-2003
 cs_filter <- read_excel('data-raw/calsim_run_of_river/max_flow_data/CalSim/C1_C169.xlsx', skip = 1) |>
   select(date = "...2", C134, C165, C116, C123, C124, C125, C109) |>
   filter(!is.na(date)) |>
