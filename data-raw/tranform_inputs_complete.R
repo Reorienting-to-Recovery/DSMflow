@@ -401,7 +401,7 @@ prop_diverted_2008_2009["Mokelumne River", , ] <- as.matrix(moke) # add to 2008_
 prop_diverted_2019_biop_itp <- generate_proportion_diverted(calsim_data = calsim_2019_biop_itp,
                                                            nodes = all_div_nodes)
 # bring in Moke for 2019
-moke_2019 <- read_excel('data-raw/calsim_2019_BiOp_ITP/EBMUDSIM/CVPIA_SIT_Data_RequestUpdated2022.xlsx.',
+moke_2019 <- read_excel('data-raw/calsim_2019_BiOp_ITP/EBMUDSIM/CVPIA_SIT_Data_RequestUpdated2022.xlsx',
                    sheet = 'Tableau Clean-up') |>
   mutate(date = as_date(Date), `Mokelumne River` = (D503A + D503B + D503C + D502A + D502B) / C91) |>
   select(date, `Mokelumne River`) |>
@@ -420,7 +420,7 @@ prop_diverted_run_of_river <- generate_proportion_diverted(calsim_data = calsim_
                                                             nodes = all_div_nodes)
 # TODO: update if we get run of river for Moke
 # bring in Moke for 2019
-moke_2019 <- read_excel('data-raw/calsim_2019_BiOp_ITP/EBMUDSIM/CVPIA_SIT_Data_RequestUpdated2022.xlsx.',
+moke_2019 <- read_excel('data-raw/calsim_2019_BiOp_ITP/EBMUDSIM/CVPIA_SIT_Data_RequestUpdated2022.xlsx',
                         sheet = 'Tableau Clean-up') |>
   mutate(date = as_date(Date), `Mokelumne River` = (D503A + D503B + D503C + D502A + D502B) / C91) |>
   select(date, `Mokelumne River`) |>
@@ -526,15 +526,35 @@ ds <- read_csv('data-raw/calsim_2019_BiOp_ITP/D100_D403.csv', skip = 1) |>
 misc_flows_2019_biop_itp <- generate_misc_flow_nodes(cs, ds)
 
 # run of river
+cs_filter <- read_excel('data-raw/calsim_run_of_river/max_flow_data/CalSim/C1_C169.xlsx', skip = 1) |>
+  select(date = "...2", C134, C165, C116, C123, C124, C125, C109) |>
+  filter(!is.na(date)) |>
+  mutate(date = as.Date(date)) |>
+  filter(year(date) <= 2003)
+
 cs <- read_excel('data-raw/calsim_run_of_river/max_flow_data/CalSim/C1_C169.xlsx', skip = 1) |>
   select(date = "...2", C134, C165, C116, C123, C124, C125, C109) |>
   filter(!is.na(date)) |>
-  mutate(date = as.Date(date))
+  mutate(date = as.Date(date)) |>
+  filter(year(date) > 2003) |>
+  mutate(date = as.Date(date)-lubridate::years(100)) |>
+  bind_rows(cs_filter) |>
+  filter(year(date) >= 1922, year(date) <= 2002)
+
+ds_filter <- read_excel('data-raw/calsim_run_of_river/max_flow_data/CalSim/D100_D403.xlsx', skip = 1) |>
+  select(date = "...2", D160, D166A, D117, D124, D125, D126) |>
+  filter(!is.na(date)) |>
+  mutate(date = as.Date(date)) |>
+  filter(year(date) <= 2003)
 
 ds <- read_excel('data-raw/calsim_run_of_river/max_flow_data/CalSim/D100_D403.xlsx', skip = 1) |>
   select(date = "...2", D160, D166A, D117, D124, D125, D126) |>
   filter(!is.na(date)) |>
-  mutate(date = as.Date(date))
+  mutate(date = as.Date(date)) |>
+  filter(year(date) > 2003) |>
+  mutate(date = as.Date(date)-lubridate::years(100)) |>
+  bind_rows(ds_filter) |>
+  filter(year(date) >= 1922, year(date) <= 2002)
 
 misc_flows_run_of_river <- generate_misc_flow_nodes(cs, ds)
 
@@ -1199,3 +1219,4 @@ swp_exports <- list(biop_2008_2009 = swp_exports_2008_2009,
                     run_of_river = swp_exports_run_of_river)
 
 usethis::use_data(swp_exports, overwrite = TRUE)
+
