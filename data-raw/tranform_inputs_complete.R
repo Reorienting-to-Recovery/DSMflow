@@ -749,34 +749,15 @@ delta_cross_channel_closed_2018_2019[ , "May"] <- c(28, 28/31)
 delta_cross_channel_closed_2018_2019[ , "Jun"] <- c(8, 8/30)
 
 # Generate for run of river
-# TODO: assuming the same logic as 2019 for the Run of River. Need to verify.
-# The followung guidance was provided to use for the update:
-# Per guidance from Reclamation’s CALSIM lead modeler (Derya Sumer), the same logic
-# used to represent days closed for the 2009 CALSIM model should be used for the 2019
-# CALSIM model. Specifically, there should be 28 days closed in May and 8 days closed
-# in June. It is important to note that DSM calibration would still require synthetic
-# monthly flows based on the 2009 CALSIM model ouputs that are representative of the
-# escapement period of record use for calibration.
+# Based on discussion from SAT team should be closed 100% of time under Run of River
+days <- lubridate::days_in_month(c(1:12))
 
-delta_cross_channel_closed_run_of_river <- read_csv('data-raw/delta_cross_channel_gates/DeltaCrossChannelTypicalOperations.csv', skip = 2) |>
-  mutate(Month = which(month.name == Month), prop_days_closed = `Days Closed` / days_in_month(Month)) |>
-  select(month = Month, days_closed = `Days Closed`, prop_days_closed) |>
-  pivot_longer(days_closed,
-               names_to = "metric",
-               values_to = "value") |>
-  pivot_wider(names_from = metric,
-              values_from = value) |>
-  select(-month) |>
-  select(days_closed, prop_days_closed) |>
-  as.matrix() |>
-  t()
+delta_cross_channel_closed_run_of_river <- dplyr::tibble(days_closed = days,
+                                                         prop_days_closed = c(rep(1, 12))) |>
+  as.matrix() |> t()
 
 colnames(delta_cross_channel_closed_run_of_river) <- month.abb[1:12]
 rownames(delta_cross_channel_closed_run_of_river) <- c('count', 'proportion')
-
-# replace May and June values according to text above (from word doc proposal)
-delta_cross_channel_closed_run_of_river[ , "May"] <- c(28, 28/31)
-delta_cross_channel_closed_run_of_river[ , "Jun"] <- c(8, 8/30)
 
 # Combine into named list
 delta_cross_channel_closed <- list(biop_2008_2009 = delta_cross_channel_closed_2008_2009,
