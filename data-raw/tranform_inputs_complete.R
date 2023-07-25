@@ -690,6 +690,7 @@ generate_proportion_pulse_flows <- function(flow_cfs) {
 proportion_pulse_flows_2008_2009 <- generate_proportion_pulse_flows(flows_cfs$biop_2008_2009)
 proportion_pulse_flows_2019_biop_itp <- generate_proportion_pulse_flows(flows_cfs$biop_itp_2018_2019)
 proportion_pulse_flows_run_of_river <- generate_proportion_pulse_flows(flows_cfs$run_of_river)
+proportion_pulse_flows_run_of_river[is.nan(proportion_pulse_flows_run_of_river)] <- 0
 
 proportion_pulse_flows <- list(biop_2008_2009 = proportion_pulse_flows_2008_2009,
                               biop_itp_2018_2019 = proportion_pulse_flows_2019_biop_itp,
