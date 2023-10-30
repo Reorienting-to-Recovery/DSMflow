@@ -1,19 +1,16 @@
 title: DSMflow
-url: https://cvpia-osc.github.io/DSMflow/
+url: https://reorienting-to-recovery.github.io/DSMflow/
 template:
   params:
     bootswatch: yeti
 
 home:
   links:
-  - text: Fish and Wildlife Service's CVPIA website
-    href: https://www.fws.gov/lodi/anadromous_fish_restoration
-  - text: Bureau of Reclamation's CVPIA website
-    href: https://www.usbr.gov/mp/cvpia/
+  - text:
 
 reference:
 - title: CALSIM II Data Sets
-  desc: Flow related data sets used by the CVPIA Population Models
+  desc: Flow related data sets used by the R2R Life Cycle Models
   contents:
   - flows_cfs
   - bypass_flows
@@ -56,5 +53,5 @@ navbar:
 
 repo:
  url:
-  home: https://github.com/CVPIA-OSC/DSMflow
-  issue: https://github.com/CVPIA-OSC/DSMflow/issues/
+  home: https://github.com/Reorienting-to-Recovery/DSMflow
+  issue: https://github.com/Reorienting-to-Recovery/DSMflow/issues/

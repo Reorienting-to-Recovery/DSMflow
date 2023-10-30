@@ -1,18 +1,17 @@
 Package: DSMflow
 Type: Package
-Title: Modeled Flow Data for the CVPIA SIT Model
+Title: Modeled Flow Data for the R2R Salmonid Life Cycle Models
 Version: 2.0
 Authors@R: c(
-    person("Sadie", "Gill", email = "sgill@flowwest.com", role = c("aut", "cre")), 
+    person("Erin", "Cain", email = "ecain@flowwest.com", role = c("aut", "cre")), 
     person("Mark", "Tompkins", email = "mtompkins@flowwest.com", role = "aut"),
     person("Emanuel", "Rodriguez", email = "erodriguez@flowwest.com", role = "aut"), 
-    person("Erin", "Cain", email = "ecain@flowwest.com", role = "aut"))
 Description: This data package contains modeled flows and diversions for each of the watersheds 
-    within the CVPIA salmon life cycle model.
+    within the R2R salmon life cycle model.
 License: CC0
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.3
-URL: https://cvpia-osc.github.io/DSMflow/
+URL: https://reorienting-to-recovery.github.io/DSMflow/
 Depends: 
     R (>= 2.10)
