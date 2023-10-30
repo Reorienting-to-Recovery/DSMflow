@@ -67,40 +67,33 @@
       </header><div class="row">
   <div class="contents col-md-9">
 
-<p><img src="reference/figures/cvpia_logo.jpg" align="right" width="40%"></p>
 <div class="section level3">
-<h3 id="modeled-flow-data-for-the-cvpia-sit-model">Modeled Flow Data for the CVPIA SIT Model<a class="anchor" aria-label="anchor" href="#modeled-flow-data-for-the-cvpia-sit-model"></a>
+<h3 id="modeled-flow-data-for-the-reorienting-to-recovery-dsm-models">Modeled Flow Data for the Reorienting to Recovery DSM models<a class="anchor" aria-label="anchor" href="#modeled-flow-data-for-the-reorienting-to-recovery-dsm-models"></a>
 </h3>
-<p><em>This data package contains modeled flow and diversion data for each of the watersheds within the CVPIA SIT Salmon Life Cycle Model.</em></p>
+<p><em>This data package contains modeled flow and diversion data for each of the watersheds within the R2R Salmon Life Cycle Model. The R2R Salmon Life Cycle Models are derived and adapted from the CVPIA SIT DSMs.</em></p>
 <div class="section level4">
 <h4 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h4>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"CVPIA-OSC/DSMFlow"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"Reorienting-to-Recovery/DSMFlow"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h4>
-<p>This package provides flow related datasets to the <a href="https://github.com/CVPIA-OSC/fallRunDSM" class="external-link"><code>fallRunDSM,</code></a> <a href="https://github.com/CVPIA-OSC/springRunDSM" class="external-link"><code>springRunDSM,</code></a> <a href="https://github.com/CVPIA-OSC/winterRunDSM" class="external-link"><code>winterRunDSM,</code></a> and <a href="https://github.com/CVPIA-OSC/latefallRunDSM" class="external-link"><code>latefallRunDSM</code></a> packages.</p>
+<p>This package provides flow related datasets to the <a href="https://github.com/Reorienting-to-Recovery/fallRunDSM" class="external-link"><code>fallRunDSM,</code></a> <a href="https://github.com/Reorienting-to-Recovery/springRunDSM" class="external-link"><code>springRunDSM,</code></a> <a href="https://github.com/Reorienting-to-Recovery/winterRunDSM" class="external-link"><code>winterRunDSM,</code></a>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># datasets within the package</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span>package <span class="op">=</span> <span class="st">'DSMflow'</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># explore CALSIM II modeled flow mapped to CVPIA tributaries metadata</span></span>
+<span><span class="co"># explore CALSIM II modeled flow mapped to tributaries metadata</span></span>
 <span><span class="op">?</span><span class="fu">DSMflow</span><span class="fu">::</span><span class="va"><a href="reference/flows_cfs.html">flows_cfs</a></span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="about-the-models">About the Models<a class="anchor" aria-label="anchor" href="#about-the-models"></a>
 </h4>
 <p>Output from the CALSIM II operational model is used to generate hydrologic inputs for the CVPIA Decision Support Model (DSM). CALSIM II is the model used to simulate California State Water Project (SWP) / Central Valley Project (CVP) operations. CALSIM II was developed in the Water Resource Integrated Modeling System (WRIMS model engine or WRIMS), a generalized water resources modeling system for evaluating operational alternatives of large, complex river basins.</p>
-<p>The 2017 DSM uses existing conditions simulated from CalSim-II Draft SWP Delivery Reliability Studies. There are two versions of the simulated conditions that can be used: the 2009 CalSim-II Draft SWP Delivery Reliability Studies and the 2019 CalSim-II Draft SWP Delivery Reliability Studies. Results of these simulations are stored in data objects with both versions named by the year of the CalSim-II run (2008-2009 or 2018-2019). The CalSim-II run is a Reclamation product used to replicate current operations for comparison with proposed adjustments under an ongoing Endangered Species Act consultation with the National Marine Fisheries Service.</p>
-<p>A current NMFS Biological Opinion concluded that, as proposed, CVP and SWP operations were likely to jeopardize the continued existence of four federally- listed anadromous fish species:<br>
-- Sacramento River winter-run Chinook salmon<br>
-- Central Valley spring-run Chinook salmon<br>
-- California Central Valley steelhead<br>
-- Southern distinct population segment of the North American green sturgeon</p>
-<p>Data objects in this package contain information from a CalSim II run from 2009 and a CalSim II run from 2019, both spanning the years 1980-2000. See documentation for more information how to access data objects from each run.</p>
+<p>Data objects in this package contain information from a CalSim II run from 2009 and a CalSim II run from 2019, and an exploratory Run of River CalSim run. All datasets produced using CalSim outputs are filtered to the years 1980-2000 to match the timeserries of the Life Cycle Models. See documentation for more information how to access data objects from each run.</p>
 <p>This CalSim II run was used as the basis of comparison for other potential operations that could offset impacts to listed species.</p>
 <p><a href="https://water.ca.gov/Library/Modeling-and-Analysis/Central-Valley-models-and-tools/CalSim-II" class="external-link">More information on CALSIM II</a><br><a href="https://s3-us-west-2.amazonaws.com/cvpiaflow-r-package/BST_CALSIMII_schematic_040110.jpg" class="external-link">CALSIM II Schematic</a></p>
 </div>
@@ -108,7 +101,7 @@
 <div class="section level3">
 <h3 id="dependencies">Dependencies<a class="anchor" aria-label="anchor" href="#dependencies"></a>
 </h3>
-<p>The <code>DSMFlow</code> package provides data for several other packages within the <a href="https://github.com/CVPIA-OSC" class="external-link">CVPIA Open Science Collaborative</a>. These relationships are visualized in the dependency graph below.</p>
+<p>The <code>DSMFlow</code> package provides data for several other packages within the <a href="https://github.com/Reorienting-to-Recovery" class="external-link">Reorienting to Recovery GitHub Organization</a>. These relationships are visualized in the dependency graph below.</p>
 <p><img src="reference/figures/dependencyChain.svg" width="100%"></p>
 <div style="margin-top: 40px;">
 <p>Data Assembled and Maintained by <a href="http://www.flowwest.com/" target="_blank" class="external-link"> <img src="reference/figures/TransLogoTreb.png" width="150px"></a></p>
@@ -166,7 +159,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>
