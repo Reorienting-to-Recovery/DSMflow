@@ -4,10 +4,6 @@ template:
   params:
     bootswatch: yeti
 
-home:
-  links:
-  - text:
-
 reference:
 - title: CALSIM II Data Sets
   desc: Flow related data sets used by the R2R Life Cycle Models
@@ -48,8 +44,11 @@ navbar:
   left:
   - text: 'Reference'
     href: reference/index.html
-  - text: 'News'
-    href: news/index.html
+  - text: 'Articles'
+    menu:
+    - text: "Effective Functional Flows"
+      href: articles/EFF.html
+
 
 repo:
  url:

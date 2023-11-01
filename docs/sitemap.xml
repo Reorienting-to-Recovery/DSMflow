@@ -1,93 +1,99 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://cvpia-osc.github.io/DSMflow/404.html</loc>
+    <loc>https://reorienting-to-recovery.github.io/DSMflow/404.html</loc>
   </url>
   <url>
-    <loc>https://cvpia-osc.github.io/DSMflow/LICENSE.html</loc>
+    <loc>https://reorienting-to-recovery.github.io/DSMflow/LICENSE.html</loc>
   </url>
   <url>
-    <loc>https://cvpia-osc.github.io/DSMflow/authors.html</loc>
+    <loc>https://reorienting-to-recovery.github.io/DSMflow/articles/EFF.html</loc>
   </url>
   <url>
-    <loc>https://cvpia-osc.github.io/DSMflow/index.html</loc>
+    <loc>https://reorienting-to-recovery.github.io/DSMflow/articles/index.html</loc>
   </url>
   <url>
-    <loc>https://cvpia-osc.github.io/DSMflow/news/index.html</loc>
+    <loc>https://reorienting-to-recovery.github.io/DSMflow/authors.html</loc>
   </url>
   <url>
-    <loc>https://cvpia-osc.github.io/DSMflow/reference/bypass_flows.html</loc>
+    <loc>https://reorienting-to-recovery.github.io/DSMflow/index.html</loc>
   </url>
   <url>
-    <loc>https://cvpia-osc.github.io/DSMflow/reference/cfs_to_cms.html</loc>
+    <loc>https://reorienting-to-recovery.github.io/DSMflow/news/index.html</loc>
   </url>
   <url>
-    <loc>https://cvpia-osc.github.io/DSMflow/reference/create_model_array.html</loc>
+    <loc>https://reorienting-to-recovery.github.io/DSMflow/reference/bypass_flows.html</loc>
   </url>
   <url>
-    <loc>https://cvpia-osc.github.io/DSMflow/reference/cvp_exports.html</loc>
+    <loc>https://reorienting-to-recovery.github.io/DSMflow/reference/cfs_to_cms.html</loc>
   </url>
   <url>
-    <loc>https://cvpia-osc.github.io/DSMflow/reference/delta_cross_channel_closed.html</loc>
+    <loc>https://reorienting-to-recovery.github.io/DSMflow/reference/create_model_array.html</loc>
   </url>
   <url>
-    <loc>https://cvpia-osc.github.io/DSMflow/reference/delta_flows.html</loc>
+    <loc>https://reorienting-to-recovery.github.io/DSMflow/reference/cvp_exports.html</loc>
   </url>
   <url>
-    <loc>https://cvpia-osc.github.io/DSMflow/reference/delta_inflow.html</loc>
+    <loc>https://reorienting-to-recovery.github.io/DSMflow/reference/delta_cross_channel_closed.html</loc>
   </url>
   <url>
-    <loc>https://cvpia-osc.github.io/DSMflow/reference/delta_proportion_diverted.html</loc>
+    <loc>https://reorienting-to-recovery.github.io/DSMflow/reference/delta_flows.html</loc>
   </url>
   <url>
-    <loc>https://cvpia-osc.github.io/DSMflow/reference/delta_total_diverted.html</loc>
+    <loc>https://reorienting-to-recovery.github.io/DSMflow/reference/delta_inflow.html</loc>
   </url>
   <url>
-    <loc>https://cvpia-osc.github.io/DSMflow/reference/flows_cfs.html</loc>
+    <loc>https://reorienting-to-recovery.github.io/DSMflow/reference/delta_proportion_diverted.html</loc>
   </url>
   <url>
-    <loc>https://cvpia-osc.github.io/DSMflow/reference/freeport_flow.html</loc>
+    <loc>https://reorienting-to-recovery.github.io/DSMflow/reference/delta_total_diverted.html</loc>
   </url>
   <url>
-    <loc>https://cvpia-osc.github.io/DSMflow/reference/gates_overtopped.html</loc>
+    <loc>https://reorienting-to-recovery.github.io/DSMflow/reference/flows_cfs.html</loc>
   </url>
   <url>
-    <loc>https://cvpia-osc.github.io/DSMflow/reference/index.html</loc>
+    <loc>https://reorienting-to-recovery.github.io/DSMflow/reference/freeport_flow.html</loc>
   </url>
   <url>
-    <loc>https://cvpia-osc.github.io/DSMflow/reference/mean_flow.html</loc>
+    <loc>https://reorienting-to-recovery.github.io/DSMflow/reference/gates_overtopped.html</loc>
   </url>
   <url>
-    <loc>https://cvpia-osc.github.io/DSMflow/reference/proportion_diverted.html</loc>
+    <loc>https://reorienting-to-recovery.github.io/DSMflow/reference/index.html</loc>
   </url>
   <url>
-    <loc>https://cvpia-osc.github.io/DSMflow/reference/proportion_flow_bypasses.html</loc>
+    <loc>https://reorienting-to-recovery.github.io/DSMflow/reference/mean_flow.html</loc>
   </url>
   <url>
-    <loc>https://cvpia-osc.github.io/DSMflow/reference/proportion_flow_natal.html</loc>
+    <loc>https://reorienting-to-recovery.github.io/DSMflow/reference/proportion_diverted.html</loc>
   </url>
   <url>
-    <loc>https://cvpia-osc.github.io/DSMflow/reference/proportion_pulse_flows.html</loc>
+    <loc>https://reorienting-to-recovery.github.io/DSMflow/reference/proportion_flow_bypasses.html</loc>
   </url>
   <url>
-    <loc>https://cvpia-osc.github.io/DSMflow/reference/stockton_flow.html</loc>
+    <loc>https://reorienting-to-recovery.github.io/DSMflow/reference/proportion_flow_natal.html</loc>
   </url>
   <url>
-    <loc>https://cvpia-osc.github.io/DSMflow/reference/swp_exports.html</loc>
+    <loc>https://reorienting-to-recovery.github.io/DSMflow/reference/proportion_pulse_flows.html</loc>
   </url>
   <url>
-    <loc>https://cvpia-osc.github.io/DSMflow/reference/total_diverted.html</loc>
+    <loc>https://reorienting-to-recovery.github.io/DSMflow/reference/stockton_flow.html</loc>
   </url>
   <url>
-    <loc>https://cvpia-osc.github.io/DSMflow/reference/upper_sacramento_flows.html</loc>
+    <loc>https://reorienting-to-recovery.github.io/DSMflow/reference/swp_exports.html</loc>
   </url>
   <url>
-    <loc>https://cvpia-osc.github.io/DSMflow/reference/vernalis_flow.html</loc>
+    <loc>https://reorienting-to-recovery.github.io/DSMflow/reference/total_diverted.html</loc>
   </url>
   <url>
-    <loc>https://cvpia-osc.github.io/DSMflow/reference/watershed_ordering.html</loc>
+    <loc>https://reorienting-to-recovery.github.io/DSMflow/reference/upper_sacramento_flows.html</loc>
   </url>
   <url>
-    <loc>https://cvpia-osc.github.io/DSMflow/reference/wilkins_flow.html</loc>
+    <loc>https://reorienting-to-recovery.github.io/DSMflow/reference/vernalis_flow.html</loc>
+  </url>
+  <url>
+    <loc>https://reorienting-to-recovery.github.io/DSMflow/reference/watershed_ordering.html</loc>
+  </url>
+  <url>
+    <loc>https://reorienting-to-recovery.github.io/DSMflow/reference/wilkins_flow.html</loc>
   </url>
 </urlset>
