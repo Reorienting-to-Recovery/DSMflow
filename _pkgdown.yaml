@@ -2,7 +2,14 @@ title: DSMflow
 url: https://reorienting-to-recovery.github.io/DSMflow/
 template:
   params:
-    bootswatch: yeti
+    bootswatch: flatly
+
+home:
+  links:
+  - text: Reorienting to Recovery Project Website
+    href: https://csamp.baydeltalive.com/recovery/reorienting-to-recovery
+  - text: Reorienting to Recovery Modeling Overview Website
+    href: https://reorienting-to-recovery.gitbook.io/documentation-site/zCZ2Z2yqFYMUQrtZdTlg/
 
 reference:
 - title: CALSIM II Data Sets

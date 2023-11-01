@@ -88,6 +88,8 @@ represenative_dry_years <- water_year_types |>
 
 ```
 
+### Proposed Model EFF {.tabset}
+
 #### Wet Year EFF
 
 The table below shows monthly flow CFS for a wet year model EFF on the Sacramento River. This table was constructed using the Natural Flows database and model survival thresholds.
@@ -267,6 +269,10 @@ compare_total_flow_volumne(dry_year,
 
 ### Creating a synthetic flow timeserries
 
+In order to incorporate these EFF into the model data inputs we combined wet and dry years to make a synthetic timeserries over the full 20 year period. We started by classifying years as "Dry" or "Wet" based on DWR water year type classifications. All "Dry", "Critical", or "Below Normal" years fall into the "Dry" category and all "Wet" or "Above Normal" years fall into the "Wet" category. 
+
+The plot below shows this synthetic timeserries for the Sacramento River over the 20 year simmulation period.
+
 ```{r, echo = FALSE, warning=FALSE, message=FALSE}
 # Wet dry sequence 
 new_year_types <- water_year_types |> 
@@ -300,3 +306,12 @@ synthetic_eff_sac |>
        y = "", 
        title = "Synthetic Model Effective Functional Flows for Sacramento River") 
 ```
+```{r, echo = FALSE}
+# Process data objects for use in modeling 
+# TODO - pull in logic from transform_inputs_complete.R, create all objects with Sac EFF
+# TODO think about how to scale EFF to different sac nodes - maybe utalize existing scaling 
+sac_eff <- DSMflow::flows_cfs
+
+
+```
+
