@@ -8,7 +8,9 @@ hatchery_to_watershed_lookup <- c(
   merced = "Merced River"
 )
 
-hatchery_oct_nov_flows <- flows_cfs$biop_itp_2018_2019 |>
+hatchery_oct_nov_flows <- vector(mode = "list")
+
+hatchery_oct_nov_flows$biop_itp_2018_2019 <- flows_cfs$biop_itp_2018_2019 |>
   select(date, tidyselect::all_of(as.character(hatchery_to_watershed_lookup))) |>
   filter(month(date) %in% 10:11) |>
   pivot_longer(-date, names_to = "watershed", values_to = "flow_cfs") |>
@@ -25,7 +27,9 @@ hatchery_oct_nov_flows <- flows_cfs$biop_itp_2018_2019 |>
 usethis::use_data(hatchery_oct_nov_flows, overwrite = TRUE)
 
 
-hatchery_apr_may_flows <- flows_cfs$biop_itp_2018_2019 |>
+hatchery_apr_may_flows <- vector(mode = "list")
+
+hatchery_apr_may_flows$biop_itp_2018_2019 <- flows_cfs$biop_itp_2018_2019 |>
   select(date, tidyselect::all_of(as.character(hatchery_to_watershed_lookup))) |>
   filter(month(date) %in% 4:5) |>
   pivot_longer(-date, names_to = "watershed", values_to = "flow_cfs") |>
