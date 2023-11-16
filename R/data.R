@@ -723,3 +723,23 @@
 #' @source James T. Peterson \email{jt.peterson@@oregonstate.edu}
 #'
 "watershed_ordering"
+
+
+#' Hatchery Flows
+#' @description
+#' Flows in cfs for watersheds downstream of a hatchery.
+#' @details
+#' Flows are derived from the `DSMflows::flows_cfs` dataset. Flows by year and watershed using the `mean`. These dataset are
+#' used by the stray rate model in the DSM.
+#'
+#' @md
+#' @name hatchery_flows
+
+
+#' @rdname hatchery_flows
+#' @format NULL
+"hatchery_apr_may_flows"
+
+#' @rdname hatchery_flows
+#' @format NULL
+"hatchery_oct_nov_flows"
