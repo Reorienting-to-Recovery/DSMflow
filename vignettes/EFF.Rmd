@@ -61,7 +61,7 @@ compare_total_flow_volumne <- function(calsim_flows, natural_flow_flows, propose
 
 # Find Representative water year types
 water_year_types <- waterYearType::water_year_indices |> 
-  filter(location == "Sacramento Valley", WY %in% c(1979:2000)) |> 
+  filter(location == "Sacramento Valley", WY %in% c(1922:2000)) |> 
   select(year = WY, index = Index, year_type = Yr_type) 
 
 
@@ -296,7 +296,21 @@ dry_years <- new_year_types|>
   full_join(dry) 
 
 synthetic_eff_sac <- bind_rows(wet_years, dry_years) |> 
-  mutate(date = as_date(paste0(year, "-", month, "-01"))) 
+  mutate(date = as_date(paste0(year, "-", month, "-", lubridate::days_in_month(month)))) |> 
+  select(-year, -year_type, -month, -description, "Upper Sacramento River EFF" = flow_cfs, date) |> glimpse()
+
+up_sac_flows_eff_as_matrix <- synthetic_eff_sac |> 
+    mutate(upsacQcms = DSMflow::cfs_to_cms(`Upper Sacramento River EFF`),
+          year = year(date),
+          month = month(date)) |>
+    filter(year >= 1980, year <= 2000) |>
+    select(-date, -`Upper Sacramento River EFF`) |>
+    pivot_wider(names_from = year,
+                values_from = upsacQcms) |>
+    select(-month) |>
+    as.matrix()
+rownames(up_sac_flows_eff_as_matrix) <- month.abb[1:12]
+
 
 synthetic_eff_sac |> 
   ggplot(aes(x = date, y = flow_cfs)) +
@@ -307,11 +321,6 @@ synthetic_eff_sac |>
        title = "Synthetic Model Effective Functional Flows for Sacramento River") 
 ```
 ```{r, echo = FALSE}
-# Process data objects for use in modeling 
-# TODO - pull in logic from transform_inputs_complete.R, create all objects with Sac EFF
-# TODO think about how to scale EFF to different sac nodes - maybe utalize existing scaling 
-sac_eff <- DSMflow::flows_cfs
-
-
+# Process data objects for use in modeling, data then used to create a scenario in transform_inputs_complete.R, source this file in transform_inputs_complete.R
 ```
 
