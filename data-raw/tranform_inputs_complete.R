@@ -111,6 +111,7 @@ eff_sac_2019_biop_elsewhere <- flow_cfs_2019_biop_itp |>
          `Lower Sacramento River` = `Lower Sacramento River` + flow_change) |>
   select(-`Upper Sacramento River EFF`, -flow_change) |> glimpse()
 
+View(eff_sac_2019_biop_elsewhere)
 # Add run of river
 calsim_run_of_river <- read_rds('data-raw/calsim_run_of_river/run_of_river_r2r_calsim.rds')
 

@@ -296,7 +296,7 @@ dry_years <- new_year_types|>
   full_join(dry) 
 
 synthetic_eff_sac <- bind_rows(wet_years, dry_years) |> 
-  mutate(date = as_date(paste0(year, "-", month, "-", lubridate::days_in_month(month)))) |> 
+  mutate(date = as_date(paste0(year, "-", month, "-", ifelse(month == 2 & leap_year(year), 29, lubridate::days_in_month(month))))) |> 
   select(-year, -year_type, -month, -description, "Upper Sacramento River EFF" = flow_cfs, date) |> glimpse()
 
 up_sac_flows_eff_as_matrix <- synthetic_eff_sac |> 
