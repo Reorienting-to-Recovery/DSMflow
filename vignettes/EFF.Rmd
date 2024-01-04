@@ -41,7 +41,13 @@ For more information on EFF please refer to additional sources:
 
 EFF are hypothesized to be the best flows for salmon in our historical system. However, our system is highly managed so we may need to alter EFF slightly from their historical values to maximize benefit to salmon.
 
-The R2R techncial team developed proposed EFF monthly flows by combining the [Natural Flows Database](https://ceff.ucdavis.edu/sites/g/files/dgvnsk5566/files/media/documents/CEFF%20Technical%20Report%20Ver%201.0%20Mar_31_2021_DRAFT_FINAL%20for%20web.pdf) values with critical flow to survival migratory thresholds on the Sacramento River (from [Michel 2021](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.3498)).
+The R2R techncial team developed proposed EFF monthly flows by combining the [Natural Flows Database](https://ceff.ucdavis.edu/sites/g/files/dgvnsk5566/files/media/documents/CEFF%20Technical%20Report%20Ver%201.0%20Mar_31_2021_DRAFT_FINAL%20for%20web.pdf) values with critical flow to survival migratory thresholds on the Sacramento River (from [Michel 2021](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.3498)). This original attempt did not maximize habitat so the technical team revised their approach to maximize modeled habitat and survival using the following principles: 
+
+1) Optimize spawning habitat during full spawning timeframe (October, November, and December)
+2) Fix dry season base flow at a low value to maximize water for Juveniles, use Natural Flows Database as a guide (August, September)
+3) Optimize outmigration survival in last 3 model outmigration months (May, June, July). If water volume allows set migratory survival above 50%. If volume of water limited, set migratory survival above 20% (based on migratory survival flow survival thresholds on the Sacramento River (from [Michel 2021](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.3498)). 
+4) Utilize additional flows for maximizing FP habitat in (January, February, March & April)
+
 
 ```{r, echo=FALSE}
 # Helper / Set Up Code
@@ -126,31 +132,31 @@ sac_wet_natural_flows_database_eff <- tibble(month = factor(month.abb[1:12],
 sac_functional_flows_for_model_wet <- tibble(month = factor(month.abb[1:12], 
                                                         levels = month.abb[c(10, 11, 12, 1:9)]),
                            # month_name = month.abb[month],
-                           flow_cfs = c(35000, # Jan Wet season base flow, based on wet year monthly Natural Flows 
-                                        62000, # March Wet season base flow + Peak Magnitude flows, based on wet year monthly Natural Flows 
-                                        35000, # March Wet season base flow, based on wet year monthly Natural Flows 
-                                        35000, # April Wet season base flow, based on wet year monthly Natural Flows 
+                           flow_cfs = c(40000, # Jan 
+                                        40000, # March 
+                                        40000, # March 
+                                        40000, # April 
                                         10700, # May Spring recession flow (10,700 for mig surv ~50%)
                                         10700, # June Spring recession flow (10,700 for mig surv ~50%)
-                                        7500, # July half way between dry season baseflow and mig surv 50% threshold
-                                        4308, # Aug - dry season baseflow 1 (keep migratory surv at ~20%), 
-                                        1280, # Sept - All fall runs juves have left system, use Natural Flows dry season base flow
-                                        3760, # oct - dry season baseflow, add some pulse flow in 
-                                        10000, # Nov add fall pulse flow, based on wet year monthly Natural Flows, bring back down for 10000 for spawn hab benefit 
-                                        10000 # Dec Begin wet season baseflow and medium flow, based on wet year monthly Natural Flows,bring back down for 10000 for spawn hab benefit 
+                                        10700, # July (10,700 for mig surv ~50%)
+                                        1000, # Aug 
+                                        1000, # Sept 
+                                        4750, # oct 
+                                        4750, # Nov 
+                                        4750 # Dec  
                                          ),
-                           description = c("Wet season base flow, based on wet year monthly Natural Flows",
-                                           "Wet season base flow + Peak Magnitude flows, based on wet year monthly Natural Flows",
-                                           "Wet season base flow, based on wet year monthly Natural Flows",
-                                           "Wet season base flow, based on wet year monthly Natural Flows",
-                                           "Spring recession flow (10,700 for mig surv ~50%)",
-                                           "Spring recession flow (10,700 for mig surv ~50%)", # TODO could update to give more recessional flow
-                                           "Half way between Enhanced Survival dry season baseflow and mig surv 50% threshold",
-                                           "Enhanced Survival Dry season baseflow (keep migratory surv at ~20%)",
-                                           "All fall runs juves have left system, use Natural Flows dry season base flow",
-                                           "Dry season baseflow, add in some fall pulse flows",
-                                           "Fall pulse flow, set at 10000 for increased spawning habitat",
-                                           "Set at 10000 for increased spawning habitat")) 
+                           description = c("Utalize remaining water for FP habitat", # Try for fp rearing hab, less important - dependent on acre ft 
+                                           "Utalize remaining water for FP habitat", # Optimize for  fp rearing habitat 
+                                           "Utalize remaining water for FP habitat", # Optimize for  fp rearing habitat 
+                                           "Utalize remaining water for FP habitat", # Optimize for fp rearing habitat 
+                                           "Optimize for migratory survival (10,700 for mig surv ~50%)", # 
+                                           "Optimize for migratory survival (10,700 for mig surv ~50%)", # Optimize for migratory survival (keep as high as possible but above mig surv thresholds)
+                                           "Optimize for migratory survival (10,700 for mig surv ~50%)", # Optimize for migratory survival (keep as high as possible but above mig surv thresholds)
+                                           "Set at 1000 to incrase acerage for avaliable for Juv flows", # set at 1000 to 
+                                           "Set at 1000 to incrase acerage for avaliable for Juv flows",
+                                           "Optimize for spawning habitat based on flow area WUA ", # Optimize for spawning habitat based on flow area WUA 
+                                           "Optimize for spawning habitat based on flow area WUA ", # Optimize for spawning habitat 
+                                           "Optimize for spawning habitat based on flow area WUA ")) # Optimize for spawning habitat 
 
 # write_csv(functional_flows, "functional_flows_wet_year.csv")
 knitr::kable(sac_functional_flows_for_model_wet)
@@ -210,33 +216,31 @@ sac_dry_natural_flows_database_eff <- tibble(month = factor(month.abb[1:12],
 sac_functional_flows_for_model_dry <- tibble(month = factor(month.abb[1:12], 
                                                         levels = month.abb[c(10, 11, 12, 1:9)]),
                            # month_name = month.abb[month],
-                           flow_cfs = c(14100, # Jan Wet season base flow + Peak Magnitude flows, based on dry year monthly Natural Flows 
-                                        14100, # Feb Wet season base flow + Peak Magnitude flows, based on dry year monthly Natural Flows 
-                                        9560, # March Wet season base flow, based on dry year monthly Natural Flows 
-                                        9560, # April Wet season base flow, based on dry year monthly Natural Flows 
-                                        4908, # May Spring recession flow (keep migratory surv at ~20%)
-                                        4708, # June Spring recession flow (keep migratory surv at ~20%)
-                                        4508, # July half way between dry season baseflow and mig surv 20% threshold
-                                        4308, # Aug - dry season baseflow 1 (keep migratory surv at ~20%), 
-                                        564, # Sept - All fall runs juves have left system, use Natural Flows dry season base flow
-                                        2230, # oct - dry season baseflow, add some pulse flow in 
-                                        6060, # Nov add fall pulse flow, based on dry year monthly Natural Flows
-                                        10100 # Dec Begin dry season baseflow and medium flow, based on dry year monthly Natural Flows
+                           flow_cfs = c(18500, # Jan Wet season base flow + Peak Magnitude flows, based on dry year monthly Natural Flows 
+                                        18500, # Feb Wet season base flow + Peak Magnitude flows, based on dry year monthly Natural Flows 
+                                        18500, # March Wet season base flow, based on dry year monthly Natural Flows 
+                                        18500, # April Wet season base flow, based on dry year monthly Natural Flows 
+                                        4500, # May Spring recession flow (keep migratory surv at ~20%)
+                                        4500, # June Spring recession flow (keep migratory surv at ~20%)
+                                        4500, # July half way between dry season baseflow and mig surv 20% threshold
+                                        500, # Aug - dry season baseflow 1 (keep migratory surv at ~20%), 
+                                        500, # Sept - All fall runs juves have left system, use Natural Flows dry season base flow
+                                        4750, # oct - dry season baseflow, add some pulse flow in 
+                                        4750, # Nov add fall pulse flow, based on dry year monthly Natural Flows
+                                        4750 # Dec Begin dry season baseflow and medium flow, based on dry year monthly Natural Flows
                                          ),
-                           description = c(
-                             "Wet season base flow + Peak Magnitude flows, based on dry year monthly Natural Flows",
-                             "Wet season base flow + Peak Magnitude flows, based on dry year monthly Natural Flows",
-                             "Wet season base flow, based on dry year monthly Natural Flows",
-                             "Wet season base flow, based on dry year monthly Natural Flows",
-                             "Spring recession flow (keep migratory surv at ~20%)",
-                             "Spring recession flow (keep migratory surv at ~20%)",
-                             "Half way between dry season baseflow and mig surv 20% threshold",
-                             "Dry season baseflow 1 (keep migratory surv at ~20%)",
-                             "All fall runs juves have left system, use Natural Flows dry season base flow",
-                             "Dry season baseflow with some fall pulse flow",
-                             "Add fall pulse flow, based on dry year monthly Natural Flows",
-                             "Begin dry season baseflow and medium flow, based on dry year monthly Natural Flows"
-                             )) 
+                            description = c("Utalize remaining water for FP habitat", # Try for fp rearing hab, less important - dependent on acre ft 
+                                           "Utalize remaining water for FP habitat", # Optimize for  fp rearing habitat 
+                                           "Utalize remaining water for FP habitat", # Optimize for  fp rearing habitat 
+                                           "Utalize remaining water for FP habitat", # Optimize for fp rearing habitat 
+                                           "Keep high for migratory survival (4,350 for mig surv ~20%)", # 
+                                           "Keep high for migratory survival (4,350 for mig surv ~20%)", # Optimize for migratory survival (keep as high as possible but above mig surv thresholds)
+                                           "Keep high for migratory survival (4,350 for mig surv ~20%)", # Optimize for migratory survival (keep as high as possible but above mig surv thresholds)
+                                           "Set summer base flow to 550 based on Natural flows tool and to incrase acerage for avaliable for Juv flows", # set at 1000 to 
+                                           "Set summer base flow to 550 based on Natural flows tool and to incrase acerage for avaliable for Juv flows",
+                                           "Optimize for spawning habitat based on flow area WUA ", # Optimize for spawning habitat based on flow area WUA 
+                                           "Optimize for spawning habitat based on flow area WUA ", # Optimize for spawning habitat 
+                                           "Optimize for spawning habitat based on flow area WUA ")) # Optimize for spawning habitat 
 
 knitr::kable(sac_functional_flows_for_model_dry)
 
