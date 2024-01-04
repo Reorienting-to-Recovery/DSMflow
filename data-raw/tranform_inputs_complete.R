@@ -100,7 +100,7 @@ flow_cfs_2019_biop_itp <- flow_cfs_2019_biop_itp |>
   select(date:`Cosumnes River`, `Mokelumne River`, `Merced River`:`San Joaquin River`) # reorder
 
 # EFF run
-source("vignettes/EFF.Rmd")
+load("data/synthetic_eff_sac.rda")
 eff_sac_2019_biop_elsewhere <- flow_cfs_2019_biop_itp |>
   left_join(synthetic_eff_sac) |>
   mutate(flow_change = `Upper Sacramento River EFF` - `Upper Sacramento River`,
@@ -603,7 +603,21 @@ generate_upper_sacramento_flows <- function(misc_flows) {
 upper_sacramento_flows_2008_2009 <- generate_upper_sacramento_flows(misc_flows$biop_2008_2009)
 upper_sacramento_flows_2019_biop_itp <- generate_upper_sacramento_flows(misc_flows$biop_itp_2018_2019)
 upper_sacramento_flows_run_of_river <- generate_upper_sacramento_flows(misc_flows$run_of_river)
-upper_sac_flows_eff <- up_sac_flows_eff_as_matrix # must source EFF.RMD vignette to run this.
+
+up_sac_flows_eff_as_matrix <- synthetic_eff_sac |>
+  mutate(upsacQcms = DSMflow::cfs_to_cms(`Upper Sacramento River EFF`),
+         year = year(date),
+         month = month(date)) |>
+  filter(year >= 1980, year <= 2000) |>
+  arrange(date, ascending = TRUE) |>
+  select(-date, -`Upper Sacramento River EFF`) |>
+  pivot_wider(names_from = year,
+              values_from = upsacQcms) |>
+  select(-month) |>
+  as.matrix()
+rownames(up_sac_flows_eff_as_matrix) <- month.abb[1:12]
+
+upper_sac_flows_eff <- up_sac_flows_eff_as_matrix # copied code from EFF vignette above
 
 upper_sacramento_flows <- list(biop_2008_2009 = upper_sacramento_flows_2008_2009,
                                biop_itp_2018_2019 = upper_sacramento_flows_2019_biop_itp,

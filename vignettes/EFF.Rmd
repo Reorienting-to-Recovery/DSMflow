@@ -126,8 +126,8 @@ sac_wet_natural_flows_database_eff <- tibble(month = factor(month.abb[1:12],
 sac_functional_flows_for_model_wet <- tibble(month = factor(month.abb[1:12], 
                                                         levels = month.abb[c(10, 11, 12, 1:9)]),
                            # month_name = month.abb[month],
-                           flow_cfs = c(62000, # Jan Wet season base flow + Peak Magnitude flows, based on wet year monthly Natural Flows 
-                                        62000, # Feb Wet season base flow + Peak Magnitude flows, based on wet year monthly Natural Flows 
+                           flow_cfs = c(35000, # Jan Wet season base flow, based on wet year monthly Natural Flows 
+                                        62000, # March Wet season base flow + Peak Magnitude flows, based on wet year monthly Natural Flows 
                                         35000, # March Wet season base flow, based on wet year monthly Natural Flows 
                                         35000, # April Wet season base flow, based on wet year monthly Natural Flows 
                                         10700, # May Spring recession flow (10,700 for mig surv ~50%)
@@ -136,10 +136,10 @@ sac_functional_flows_for_model_wet <- tibble(month = factor(month.abb[1:12],
                                         4308, # Aug - dry season baseflow 1 (keep migratory surv at ~20%), 
                                         1280, # Sept - All fall runs juves have left system, use Natural Flows dry season base flow
                                         3760, # oct - dry season baseflow, add some pulse flow in 
-                                        11600, # Nov add fall pulse flow, based on wet year monthly Natural Flows
-                                        35000 # Dec Begin wet season baseflow and medium flow, based on wet year monthly Natural Flows
+                                        10000, # Nov add fall pulse flow, based on wet year monthly Natural Flows, bring back down for 10000 for spawn hab benefit 
+                                        10000 # Dec Begin wet season baseflow and medium flow, based on wet year monthly Natural Flows,bring back down for 10000 for spawn hab benefit 
                                          ),
-                           description = c("Wet season base flow + Peak Magnitude flows, based on wet year monthly Natural Flows",
+                           description = c("Wet season base flow, based on wet year monthly Natural Flows",
                                            "Wet season base flow + Peak Magnitude flows, based on wet year monthly Natural Flows",
                                            "Wet season base flow, based on wet year monthly Natural Flows",
                                            "Wet season base flow, based on wet year monthly Natural Flows",
@@ -149,8 +149,8 @@ sac_functional_flows_for_model_wet <- tibble(month = factor(month.abb[1:12],
                                            "Enhanced Survival Dry season baseflow (keep migratory surv at ~20%)",
                                            "All fall runs juves have left system, use Natural Flows dry season base flow",
                                            "Dry season baseflow, add in some fall pulse flows",
-                                           "Fall pulse flow, based on wet year monthly Natural Flows",
-                                           "Begin wet season baseflow and medium flow, based on wet year monthly Natural Flows")) 
+                                           "Fall pulse flow, set at 10000 for increased spawning habitat",
+                                           "Set at 10000 for increased spawning habitat")) 
 
 # write_csv(functional_flows, "functional_flows_wet_year.csv")
 knitr::kable(sac_functional_flows_for_model_wet)
@@ -297,25 +297,26 @@ dry_years <- new_year_types|>
 
 synthetic_eff_sac <- bind_rows(wet_years, dry_years) |> 
   mutate(date = as_date(paste0(year, "-", month, "-", ifelse(month == 2 & leap_year(year), 29, lubridate::days_in_month(month))))) |> 
+  filter(year >= 1980, year <= 2000) |> 
   select(-year, -year_type, -month, -description, "Upper Sacramento River EFF" = flow_cfs, date) |>
-filter(!is.na(date)) |> 
-glimpse() 
+  filter(!is.na(date)) 
 
 up_sac_flows_eff_as_matrix <- synthetic_eff_sac |> 
     mutate(upsacQcms = DSMflow::cfs_to_cms(`Upper Sacramento River EFF`),
           year = year(date),
           month = month(date)) |>
-    filter(year >= 1980, year <= 2000) |>
+    filter(year >= 1980, year <= 2000) |> 
+    arrange(date, ascending = TRUE) |> 
     select(-date, -`Upper Sacramento River EFF`) |>
     pivot_wider(names_from = year,
-                values_from = upsacQcms) |>
+                values_from = upsacQcms) |> 
     select(-month) |>
     as.matrix()
 rownames(up_sac_flows_eff_as_matrix) <- month.abb[1:12]
 
-
+usethis::use_data(synthetic_eff_sac)
 synthetic_eff_sac |> 
-  ggplot(aes(x = date, y = "Upper Sacramento River EFF")) +
+  ggplot(aes(x = date, y = `Upper Sacramento River EFF`)) +
   geom_line(color = "blue4") + 
   theme_minimal() +
   labs(x = "Flow CFS", 
