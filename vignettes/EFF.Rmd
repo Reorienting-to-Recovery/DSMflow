@@ -296,8 +296,8 @@ dry_years <- new_year_types|>
   full_join(dry) 
 
 synthetic_eff_sac <- bind_rows(wet_years, dry_years) |> 
-  mutate(date = as_date(paste0(year, "-", month, "-", ifelse(month == 2 & leap_year(year), 29, lubridate::days_in_month(month))))) |> 
-  filter(year >= 1980, year <= 2000) |> 
+  mutate(date = as_date(paste0(year, "-", month, "-", ifelse(month == 2 & leap_year(year), 29,        lubridate::days_in_month(month))))) |> 
+  # filter(year >= 1980, year <= 2000) |> 
   select(-year, -year_type, -month, -description, "Upper Sacramento River EFF" = flow_cfs, date) |>
   filter(!is.na(date)) 
 
@@ -314,8 +314,9 @@ up_sac_flows_eff_as_matrix <- synthetic_eff_sac |>
     as.matrix()
 rownames(up_sac_flows_eff_as_matrix) <- month.abb[1:12]
 
-usethis::use_data(synthetic_eff_sac)
+usethis::use_data(synthetic_eff_sac, overwrite = TRUE)
 synthetic_eff_sac |> 
+  filter(year(date) >= 1979, year(date) <= 2000) |> 
   ggplot(aes(x = date, y = `Upper Sacramento River EFF`)) +
   geom_line(color = "blue4") + 
   theme_minimal() +
