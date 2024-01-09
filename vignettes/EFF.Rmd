@@ -165,13 +165,14 @@ knitr::kable(sac_functional_flows_for_model_wet)
 The plot below shows the CalSIM modeled flows for the Sacramento River of an existing representative wet year: 1996. 1996 has the median water year index as provided by DWR out of all the "Wet" and "Above Normal" years within our model time frame.
 
 ```{r, echo = FALSE}
-sac_functional_flows_for_model_wet |> 
-  ggplot(aes(x = month, y = flow_cfs, group = 1)) + 
-  geom_line(color = "lightblue") + 
-  geom_line(data = sac_wet_natural_flows_database_eff, 
-            aes(x = month, y = flow_cfs, group = 1), color = "gray") +
-  geom_line(data = wet_year, aes(x = month, y = flow_cfs), color = "black") +
+combined_data <- bind_rows((sac_functional_flows_for_model_wet |> mutate(Type = "Model EFF Wet Year")), 
+                  (sac_wet_natural_flows_database_eff |> mutate(Type = "Natural Flows EFF")),
+                  (wet_year |> mutate(Type = "CalSim")))
+combined_data |> 
+  ggplot(aes(x = month, y = flow_cfs, color = Type, group = Type)) + 
+  geom_line() +
   theme_minimal() + 
+  scale_color_manual(values = c("black", "lightblue", "gray")) +
   labs(x = "Month", 
        y = "Flow CFS", 
        title = "Wet Year - Model Functional Montly Flows")
@@ -250,13 +251,14 @@ The plot below shows the CalSIM modeled flows for the Sacramento River of an exi
 
 
 ```{r, echo = FALSE}
-sac_functional_flows_for_model_dry |> 
-  ggplot(aes(x = month, y = flow_cfs, group = 1)) + 
-  geom_line(color = "lightblue") + 
-  geom_line(data = sac_dry_natural_flows_database_eff, 
-            aes(x = month, y = flow_cfs, group = 1), color = "gray") +
-  geom_line(data = dry_year, aes(x = month, y = flow_cfs), color = "black") +
+combined_data_dry <- bind_rows((sac_functional_flows_for_model_dry |> mutate(Type = "Model EFF Wet Year")), 
+                  (sac_dry_natural_flows_database_eff |> mutate(Type = "Natural Flows EFF")),
+                  (dry_year |> mutate(Type = "CalSim")))
+combined_data_dry |> 
+  ggplot(aes(x = month, y = flow_cfs, color = Type, group = Type)) + 
+  geom_line() +
   theme_minimal() + 
+  scale_color_manual(values = c("black", "lightblue", "gray")) +
   labs(x = "Month", 
        y = "Flow CFS", 
        title = "Dry Year - Model Functional Montly Flows")

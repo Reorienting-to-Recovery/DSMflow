@@ -36,6 +36,7 @@ reference:
   - wilkins_flow
   - cvp_exports
   - swp_exports
+  - hatchery_flows
 - title: Helpers
   desc: Functions and datasets for convenience
   contents:
