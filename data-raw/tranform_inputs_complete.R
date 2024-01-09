@@ -99,6 +99,19 @@ flow_cfs_2019_biop_itp <- flow_cfs_2019_biop_itp |>
   left_join(moke_2019) |> # add in Moke
   select(date:`Cosumnes River`, `Mokelumne River`, `Merced River`:`San Joaquin River`) # reorder
 
+# EFF run
+load("data/synthetic_eff_sac.rda")
+eff_sac_2019_biop_elsewhere <- flow_cfs_2019_biop_itp |>
+  left_join(synthetic_eff_sac) |>
+  mutate(flow_change = `Upper Sacramento River EFF` - `Upper Sacramento River`,
+         `Upper Sacramento River` = `Upper Sacramento River EFF`,
+         `Upper-mid Sacramento River` = `Upper-mid Sacramento River` + flow_change,
+         `Lower-mid Sacramento River1` = `Lower-mid Sacramento River1` + flow_change,
+         `Lower-mid Sacramento River2` = `Lower-mid Sacramento River2` + flow_change,
+         `Lower Sacramento River` = `Lower Sacramento River` + flow_change) |>
+  select(-`Upper Sacramento River EFF`, -flow_change) |> glimpse()
+
+View(eff_sac_2019_biop_elsewhere)
 # Add run of river
 calsim_run_of_river <- read_rds('data-raw/calsim_run_of_river/run_of_river_r2r_calsim.rds')
 
@@ -118,7 +131,8 @@ flow_cfs_run_of_river <- flow_cfs_run_of_river |>
 # create flow_cfs with both 2008-2009 biop and 2018-2019 biop/itp and run of river ---------------
 flows_cfs <- list(biop_2008_2009 = flows_cfs_2008_2009,
                   biop_itp_2018_2019 = flow_cfs_2019_biop_itp,
-                  run_of_river = flow_cfs_run_of_river
+                  run_of_river = flow_cfs_run_of_river,
+                  eff_sac = eff_sac_2019_biop_elsewhere
 )
 
 # Write flow cfs data object
@@ -476,10 +490,12 @@ generate_mean_flow <- function(bypass_flow, flow_cfs) {
 mean_flow_2008_2009 <- generate_mean_flow(bypass_flows$biop_2008_2009, flows_cfs$biop_2008_2009)
 mean_flow_2019_biop_itp <- generate_mean_flow(bypass_flows$biop_itp_2018_2019, flows_cfs$biop_itp_2018_2019) # missing moke
 mean_flow_run_of_river <- generate_mean_flow(bypass_flows$run_of_river, flows_cfs$run_of_river) # missing moke
+mean_flow_eff <- generate_mean_flow(bypass_flows$biop_itp_2018_2019, flows_cfs$eff_sac)
 
 mean_flow <- list(biop_2008_2009 = mean_flow_2008_2009,
                    biop_itp_2018_2019 = mean_flow_2019_biop_itp,
-                  run_of_river = mean_flow_run_of_river)
+                  run_of_river = mean_flow_run_of_river,
+                  eff_sac = mean_flow_eff)
 
 usethis::use_data(mean_flow, overwrite = TRUE)
 
@@ -588,10 +604,25 @@ upper_sacramento_flows_2008_2009 <- generate_upper_sacramento_flows(misc_flows$b
 upper_sacramento_flows_2019_biop_itp <- generate_upper_sacramento_flows(misc_flows$biop_itp_2018_2019)
 upper_sacramento_flows_run_of_river <- generate_upper_sacramento_flows(misc_flows$run_of_river)
 
+up_sac_flows_eff_as_matrix <- synthetic_eff_sac |>
+  mutate(upsacQcms = DSMflow::cfs_to_cms(`Upper Sacramento River EFF`),
+         year = year(date),
+         month = month(date)) |>
+  filter(year >= 1980, year <= 2000) |>
+  arrange(date, ascending = TRUE) |>
+  select(-date, -`Upper Sacramento River EFF`) |>
+  pivot_wider(names_from = year,
+              values_from = upsacQcms) |>
+  select(-month) |>
+  as.matrix()
+rownames(up_sac_flows_eff_as_matrix) <- month.abb[1:12]
+
+upper_sac_flows_eff <- up_sac_flows_eff_as_matrix # copied code from EFF vignette above
 
 upper_sacramento_flows <- list(biop_2008_2009 = upper_sacramento_flows_2008_2009,
                                biop_itp_2018_2019 = upper_sacramento_flows_2019_biop_itp,
-                               run_of_river = upper_sacramento_flows_run_of_river)
+                               run_of_river = upper_sacramento_flows_run_of_river,
+                               eff_sac = upper_sac_flows_eff)
 
 usethis::use_data(upper_sacramento_flows, overwrite = TRUE)
 
@@ -649,10 +680,12 @@ generate_proportion_flow_natal <- function(flow_cfs, tributary_junctions){
 proportion_flow_natal_2008_2009 <- generate_proportion_flow_natal(flows_cfs$biop_2008_2009, tributary_junctions)
 proportion_flow_natal_2019_biop_itp <- generate_proportion_flow_natal(flows_cfs$biop_itp_2018_2019, tributary_junctions)
 proportion_flow_natal_run_of_river <- generate_proportion_flow_natal(flows_cfs$run_of_river, tributary_junctions)
+proportion_flow_natal_eff_sac <- generate_proportion_flow_natal(flows_cfs$eff_sac, tributary_junctions)
 
 proportion_flow_natal <- list(biop_2008_2009 = proportion_flow_natal_2008_2009,
                               biop_itp_2018_2019 = proportion_flow_natal_2019_biop_itp,
-                              run_of_river = proportion_flow_natal_run_of_river)
+                              run_of_river = proportion_flow_natal_run_of_river,
+                              eff_sac = proportion_flow_natal_eff_sac)
 
 usethis::use_data(proportion_flow_natal, overwrite = TRUE)
 
@@ -691,10 +724,13 @@ proportion_pulse_flows_2008_2009 <- generate_proportion_pulse_flows(flows_cfs$bi
 proportion_pulse_flows_2019_biop_itp <- generate_proportion_pulse_flows(flows_cfs$biop_itp_2018_2019)
 proportion_pulse_flows_run_of_river <- generate_proportion_pulse_flows(flows_cfs$run_of_river)
 proportion_pulse_flows_run_of_river[is.nan(proportion_pulse_flows_run_of_river)] <- 0
+proportion_pulse_flows_eff_sac <- generate_proportion_pulse_flows(flows_cfs$eff_sac)
+proportion_pulse_flows_eff_sac[is.na(proportion_pulse_flows_eff_sac)] <- 0
 
 proportion_pulse_flows <- list(biop_2008_2009 = proportion_pulse_flows_2008_2009,
                               biop_itp_2018_2019 = proportion_pulse_flows_2019_biop_itp,
-                              run_of_river = proportion_pulse_flows_run_of_river)
+                              run_of_river = proportion_pulse_flows_run_of_river,
+                              eff_sac = proportion_pulse_flows_eff_sac)
 
 usethis::use_data(proportion_pulse_flows, overwrite = TRUE)
 
