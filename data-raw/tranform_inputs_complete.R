@@ -100,15 +100,16 @@ flow_cfs_2019_biop_itp <- flow_cfs_2019_biop_itp |>
   select(date:`Cosumnes River`, `Mokelumne River`, `Merced River`:`San Joaquin River`) # reorder
 
 # EFF run
+# Sometime flow change to eff on upper sac leads to negative flows downstream, set these to bottom out at 100 CFS
 load("data/synthetic_eff_sac.rda")
 eff_sac_2019_biop_elsewhere <- flow_cfs_2019_biop_itp |>
   left_join(synthetic_eff_sac) |>
   mutate(flow_change = `Upper Sacramento River EFF` - `Upper Sacramento River`,
          `Upper Sacramento River` = `Upper Sacramento River EFF`,
-         `Upper-mid Sacramento River` = `Upper-mid Sacramento River` + flow_change,
-         `Lower-mid Sacramento River1` = `Lower-mid Sacramento River1` + flow_change,
-         `Lower-mid Sacramento River2` = `Lower-mid Sacramento River2` + flow_change,
-         `Lower Sacramento River` = `Lower Sacramento River` + flow_change) |>
+         `Upper-mid Sacramento River` = ifelse(`Upper-mid Sacramento River` + flow_change < 0, 100, `Upper-mid Sacramento River` + flow_change),
+         `Lower-mid Sacramento River1` = ifelse(`Lower-mid Sacramento River1` + flow_change < 0, 100, `Lower-mid Sacramento River1` + flow_change),
+         `Lower-mid Sacramento River2` = ifelse(`Lower-mid Sacramento River2` + flow_change < 0, 100, `Lower-mid Sacramento River1` + flow_change),
+         `Lower Sacramento River` = ifelse(`Lower Sacramento River` + flow_change < 0, 100, `Lower Sacramento River` + flow_change)) |>
   select(-`Upper Sacramento River EFF`, -flow_change) |> glimpse()
 
 View(eff_sac_2019_biop_elsewhere)
