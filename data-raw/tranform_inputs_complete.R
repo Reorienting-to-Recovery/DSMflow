@@ -108,7 +108,7 @@ eff_sac_2019_biop_elsewhere <- flow_cfs_2019_biop_itp |>
          `Upper Sacramento River` = `Upper Sacramento River EFF`,
          `Upper-mid Sacramento River` = ifelse(`Upper-mid Sacramento River` + flow_change < 0, 100, `Upper-mid Sacramento River` + flow_change),
          `Lower-mid Sacramento River1` = ifelse(`Lower-mid Sacramento River1` + flow_change < 0, 100, `Lower-mid Sacramento River1` + flow_change),
-         `Lower-mid Sacramento River2` = ifelse(`Lower-mid Sacramento River2` + flow_change < 0, 100, `Lower-mid Sacramento River1` + flow_change),
+         `Lower-mid Sacramento River2` = ifelse(`Lower-mid Sacramento River2` + flow_change < 0, 100, `Lower-mid Sacramento River2` + flow_change),
          `Lower Sacramento River` = ifelse(`Lower Sacramento River` + flow_change < 0, 100, `Lower Sacramento River` + flow_change)) |>
   select(-`Upper Sacramento River EFF`, -flow_change) |> glimpse()
 
