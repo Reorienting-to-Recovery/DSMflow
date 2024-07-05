@@ -1,5 +1,5 @@
 ---
-title: "Functional Flow Analysis for the Sacramento River"
+title: "Functional Flow Analysis for the San Joaquin River"
 output: html_document
 ---
 
@@ -10,48 +10,78 @@ library(tidyverse)
 
 ## Incorperating Effective Functional Flows into R2R
 
-The Reorienting to Recovery Structured Decision Making group proposed a effective functional flow (EFF) scenario. To date, there is no available CalSIM EFF run so we cannot model full EFF on the entire system. This document outlines our approach to piloting an EFF on the Sacramento River constructed to maximize salmonid survival. 
+The Reorienting to Recovery Structured Decision Making group proposed a effective functional flow (EFF) scenario. To date, there is no available CalSIM EFF run so we cannot model full EFF on the entire system. This document outlines our approach to piloting an EFF on the San Joaquin River constructed to maximize salmonid survival.
 
-We call this modified EFF approach a Constructed Salmonid Flow (CSF).
+This analysis is based on the analysis performed for the Sacramento River (`vignettes/EFF.Rmd`) and we do not replicate the methods here except to explain where they deviate for the San Joaquin.
 
-**Pilot CSF Approach on the Sacramento River**
+### Review of Sacramento River EFF methods
 
-The R2R technical team is worked collaboratively with a flow subgroup to develop a CSF hydrograph for the Sacramento River. We built off of the Nature Conservancy's Natural Flows Database to develop a wet and dry year monthly EFF hydrograph and compiled these into a 20 year synthetic time series based on the historical water year types represented in the R2R model time frame (1980-2000). 
+A synthetic EFF hydrograph was developed for the Sacramento River using the following high-level steps: 
 
-**Planned Improvements and Next Steps**
+* Using the [Natural Flows Database](https://ceff.ucdavis.edu/sites/g/files/dgvnsk5566/files/media/documents/CEFF%20Technical%20Report%20Ver%201.0%20Mar_31_2021_DRAFT_FINAL%20for%20web.pdf), [California Environmental Flows Framework](https://ceff.ucdavis.edu/sites/g/files/dgvnsk5566/files/media/documents/CEFF%20Technical%20Report%20Ver%201.0%20Mar_31_2021_DRAFT_FINAL%20for%20web.pdf), and [Modeling Functional Flows in California's Rivers](https://www.frontiersin.org/articles/10.3389/fenvs.2022.787473/full#:~:text=Functional%20flow%20components%20in%20California,ecological%20processes%20in%20riverine%20ecosystems) as a basis, a monthly hydrograph was simulated to mimic  unimpaired historical flows
 
--   The technical team is working to review existing literature on pulse flows and expand pulse flow routing logic in the model. This will increase the granularity of flow related model effects despite the monthly timestep of our CalSim flow input data and the model.
+* Following this initial exercise, our synthetic hydrograph was further modified to maximize salmonid survival by accounting for flow-to-surivval thresholds for Chinook salmon as outlined in [Michel 2021](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.3498)
 
--   The technical team is also working with MBK to incorperate EFF logic into a CalSIM Run that we can use directly in the model.
+* Because this initial approach did not maximize *habitat* for salmon, the hydrograph was further modified to a) maximize spawning habitat from Oct-Dec, b) set a base flow for dry season (Aug-Sep) juvenile survival, c) optimize flows during the last three months of outmigration (May-July) using [Michel 2021](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.3498), and d) utilize additional flows for maximizing floodplain habitat from Jan-April.
 
-- The technical team is working to apply the rulesets for the Sacramento CSF to develop a San Joaquin CSF time series.
+### Adapting the Sacramento River EFF for the San Joaquin River
 
-### What is an EFF
+Our goals for developing an EFF hydrograph for the San Joaquin River were to maximize habitat and survival and reduce minimum flows when salmonids are not in the system.
 
-California's EFF include 5 distinct components of a natural flow regime: fall pulse flows, wet season peak flows, wet season base flows, spring recession flows, and dry season baseflows.
+In order to adapt the Sacramento EFF methodology, we need a flow-survival relationship for salmonids. Steps include: 
 
-![](images/Screenshot 2023-09-21 at 11.00.45 AM.png)
+- scaling the existing flow-survival thresholds calculated by [Michel 2021](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.3498) for the Sacramento the San Joaquin
+- modify the SJ survival model logic to be flow-based instead of temperature-based (so that the EFF has an effect)
 
-For more information on EFF please refer to additional sources:
+The steps then become: 
 
--   [Modeling Functional Flows in California's Rivers](https://www.frontiersin.org/articles/10.3389/fenvs.2022.787473/full#:~:text=Functional%20flow%20components%20in%20California,ecological%20processes%20in%20riverine%20ecosystems.)
+- scale the Sacramento flow:survival relationship to produce flow-to-survival thresholds for salmonids in the San Joaquin
+- use the Sacramento EFF logic with the SJ flow-to-survival thresholds 
+- produce a synthetic EFF hydrograph for the SJ
 
--   [California Environmental Flows Framework](https://ceff.ucdavis.edu/sites/g/files/dgvnsk5566/files/media/documents/CEFF%20Technical%20Report%20Ver%201.0%20Mar_31_2021_DRAFT_FINAL%20for%20web.pdf)
+### Methods
 
--   [Natural Flows Database](https://ceff.ucdavis.edu/sites/g/files/dgvnsk5566/files/media/documents/CEFF%20Technical%20Report%20Ver%201.0%20Mar_31_2021_DRAFT_FINAL%20for%20web.pdf)
+#### Scale flow-to-survival relationships
 
-### Tailoring EFF to our system
+- plot SJ flow and Sacramento flow with Sacramento migratory thresholds
+- "scale" them
 
-EFF are hypothesized to be the best flows for salmon in our historical system. However, our system is highly managed so altered EFF slightly from their historical values to maximize benefit to salmon (creating what we are calling Constructed Salmonid Flows).
+```{r, echo = FALSE}
+DSMflow::flows_cfs$biop_itp_2018_2019 |> 
+  select(date, `Upper-mid Sacramento River`, `San Joaquin River`) |> 
+  mutate(flow_relationship = `San Joaquin River` / `Upper-mid Sacramento River`) |> pivot_longer(`Upper-mid Sacramento River`:`San Joaquin River`,
+               names_to = "watershed", values_to = "flow_cfs") |> 
+  ggplot(aes(x = date, y = flow_cfs, color = watershed)) + 
+  geom_line() +
+  theme_minimal()
 
-The R2R techncial team developed proposed CSF monthly flows by combining the [Natural Flows Database](https://ceff.ucdavis.edu/sites/g/files/dgvnsk5566/files/media/documents/CEFF%20Technical%20Report%20Ver%201.0%20Mar_31_2021_DRAFT_FINAL%20for%20web.pdf) values with critical flow to survival migratory thresholds on the Sacramento River (from [Michel 2021](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.3498)). 
+scale_thresholds <- DSMflow::flows_cfs$biop_itp_2018_2019 |> 
+  select(date, `Upper-mid Sacramento River`, `San Joaquin River`) |> 
+  mutate(flow_relationship = `San Joaquin River` / `Upper-mid Sacramento River`) |> pivot_longer(`Upper-mid Sacramento River`:`San Joaquin River`,
+               names_to = "watershed", values_to = "flow_cfs") |> 
+  filter(watershed == "San Joaquin River") |> 
+  glimpse()
 
-This original attempt did not maximize habitat so the technical team revised their approach to maximize modeled habitat and survival using the following principles: 
+scale_thresholds |> 
+  ggplot(aes(x = date, y = flow_relationship)) + 
+  geom_line() +
+  theme_minimal() 
+# ranges from 0:1, 3 in some later years and model years
 
-1) Optimize spawning habitat during full spawning time frame (October, November, and December)
-2) Fix dry season base flow at a low value to maximize water for Juveniles, use Natural Flows Database as a guide (August, September)
-3) Optimize outmigration survival in last 3 model outmigration months (May, June, July). If water volume allows set migratory survival above 50%. If volume of water limited, set migratory survival above 20% (based on migratory survival flow survival thresholds on the Sacramento River (from [Michel 2021](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.3498)). 
-4) Utilize additional flows for maximizing FP habitat in (January, February, March & April)
+# filter to model years and then average to get scaling factor
+san_joaquin_scaling_factor <- scale_thresholds |> 
+  filter(year(date) %in% 1980:2000) |> 
+  summarise(scaling_factor = mean(flow_relationship)) |> 
+  pull(scaling_factor)
+
+# now calculate flow required for survival using the scaling factor to
+# adjust flows
+flow_to_survival_thresholds <- tibble("Survival" = c(3, 18.9, 50.8),
+                                      "Sacramento Flow Threshold" = c(4279, 10712, 22872)) |> 
+  mutate(`San Joaquin Flow Threshold` = round(`Sacramento Flow Threshold` * san_joaquin_scaling_factor, 0))
+
+knitr::kable(flow_to_survival_thresholds)
+```
 
 ```{r, echo=FALSE}
 # Helper / Set Up Code
