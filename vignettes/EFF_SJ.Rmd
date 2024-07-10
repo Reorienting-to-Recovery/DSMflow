@@ -12,39 +12,32 @@ library(tidyverse)
 
 The Reorienting to Recovery Structured Decision Making group proposed a effective functional flow (EFF) scenario. To date, there is no available CalSIM EFF run so we cannot model full EFF on the entire system. This document outlines our approach to piloting an EFF on the San Joaquin River constructed to maximize salmonid survival.
 
-This analysis is based on the analysis performed for the Sacramento River (`vignettes/EFF.Rmd`) and we do not replicate the methods here except to explain where they deviate for the San Joaquin.
+This analysis is based on the methods for the Sacramento River EFF (`vignettes/EFF.Rmd`) and we do not reiterate the methods in detail here except to explain where they deviate for the San Joaquin.
 
 ### Review of Sacramento River EFF methods
 
 A synthetic EFF hydrograph was developed for the Sacramento River using the following high-level steps: 
 
-* Using the [Natural Flows Database](https://ceff.ucdavis.edu/sites/g/files/dgvnsk5566/files/media/documents/CEFF%20Technical%20Report%20Ver%201.0%20Mar_31_2021_DRAFT_FINAL%20for%20web.pdf), [California Environmental Flows Framework](https://ceff.ucdavis.edu/sites/g/files/dgvnsk5566/files/media/documents/CEFF%20Technical%20Report%20Ver%201.0%20Mar_31_2021_DRAFT_FINAL%20for%20web.pdf), and [Modeling Functional Flows in California's Rivers](https://www.frontiersin.org/articles/10.3389/fenvs.2022.787473/full#:~:text=Functional%20flow%20components%20in%20California,ecological%20processes%20in%20riverine%20ecosystems) as a basis, a monthly hydrograph was simulated to mimic  unimpaired historical flows
+* Using the [Natural Flows Database](https://ceff.ucdavis.edu/sites/g/files/dgvnsk5566/files/media/documents/CEFF%20Technical%20Report%20Ver%201.0%20Mar_31_2021_DRAFT_FINAL%20for%20web.pdf), [California Environmental Flows Framework](https://ceff.ucdavis.edu/sites/g/files/dgvnsk5566/files/media/documents/CEFF%20Technical%20Report%20Ver%201.0%20Mar_31_2021_DRAFT_FINAL%20for%20web.pdf), and [Modeling Functional Flows in California's Rivers](https://www.frontiersin.org/articles/10.3389/fenvs.2022.787473/full#:~:text=Functional%20flow%20components%20in%20California,ecological%20processes%20in%20riverine%20ecosystems) as a basis, a monthly hydrograph was created to mimic unimpaired historical flows
 
-* Following this initial exercise, our synthetic hydrograph was further modified to maximize salmonid survival by accounting for flow-to-surivval thresholds for Chinook salmon as outlined in [Michel 2021](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.3498)
+* Following this initial exercise, our synthetic hydrograph was modified to prioritize maximizing salmonid survival by accounting for flow-to-survival thresholds as outlined in [Michel 2021](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.3498).
 
-* Because this initial approach did not maximize *habitat* for salmon, the hydrograph was further modified to a) maximize spawning habitat from Oct-Dec, b) set a base flow for dry season (Aug-Sep) juvenile survival, c) optimize flows during the last three months of outmigration (May-July) using [Michel 2021](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.3498), and d) utilize additional flows for maximizing floodplain habitat from Jan-April.
+* Because this initial approach did not maximize *habitat* for salmon, the hydrograph was further modified to a) maximize spawning habitat from Oct-Dec as defined [here](https://reorienting-to-recovery.github.io/DSMhabitat/reference/sacramento_habitat.html), b) set a base flow for dry season (Aug-Sep) juvenile survival informed by the Natural Flows database, c) optimize flows during the last three months of outmigration (May-July) using [Michel 2021](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.3498), and d) utilize additional flows for maximizing floodplain habitat from Jan-April.
 
 ### Adapting the Sacramento River EFF for the San Joaquin River
 
 Our goals for developing an EFF hydrograph for the San Joaquin River were to maximize habitat and survival and reduce minimum flows when salmonids are not in the system.
 
-In order to adapt the Sacramento EFF methodology, we need a flow-survival relationship for salmonids. Steps include: 
+In order to adapt the Sacramento EFF methodology, we need a flow-survival relationship for salmonids like those outlined in [Michel 2021](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.3498). Steps include: 
 
 - scaling the existing flow-survival thresholds calculated by [Michel 2021](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.3498) for the Sacramento the San Joaquin
 - modify the SJ survival model logic to be flow-based instead of temperature-based (so that the EFF has an effect)
-
-The steps then become: 
-
-- scale the Sacramento flow:survival relationship to produce flow-to-survival thresholds for salmonids in the San Joaquin
-- use the Sacramento EFF logic with the SJ flow-to-survival thresholds 
-- produce a synthetic EFF hydrograph for the SJ
 
 ### Methods
 
 #### Scale flow-to-survival relationships
 
-- plot SJ flow and Sacramento flow with Sacramento migratory thresholds
-- "scale" them
+We compared the flows for the `Upper-mid Sacramento River` and `San Joaquin River` produced by the 2019 BiOp and calculated a monthly ratio of San Joaquin flows to Upper-mid Sacrmaento flows (`San Joaquin River flows / Upper-mid Sacramento River flows`). We then averaged that monthly proportion over the years modeled in the DSM (`1980:2000`). We used this proportion to scale the flow values required for survival rates of `3%`, `18.9%`, and `50.8%` for the San Joaquin.
 
 ```{r, echo = FALSE}
 DSMflow::flows_cfs$biop_itp_2018_2019 |> 
@@ -68,12 +61,12 @@ scale_thresholds <- DSMflow::flows_cfs$biop_itp_2018_2019 |>
 scale_thresholds |> 
   ggplot(aes(x = date, y = flow_relationship)) + 
   geom_line() +
-  geom_vline(aes(xintercept = c(1980)), linetype = "dashed", color = "blue") +
+  # geom_vline(aes(xintercept = c(1980)), linetype = "dashed", color = "blue") +
   theme_minimal() +
   theme(legend.position = "bottom") +
   labs(y = "Ratio", 
        x = "",
-       title = "San Joaquin : Sacramento flow ratio")
+       title = "San Joaquin :Sacramento flow ratio")
 # ranges from 0:1, 3 in some later years and model years
 
 # filter to model years and then average to get scaling factor
@@ -85,8 +78,8 @@ san_joaquin_scaling_factor <- scale_thresholds |>
 # now calculate flow required for survival using the scaling factor to
 # adjust flows
 flow_to_survival_thresholds <- tibble("Survival" = c(3, 18.9, 50.8),
-                                      "Sacramento Flow Threshold" = c(4279, 10712, 22872)) |> 
-  mutate(`San Joaquin Flow Threshold` = round(`Sacramento Flow Threshold` * san_joaquin_scaling_factor, 0))
+                                      "Sacramento Flow Threshold (cfs)" = c(4279, 10712, 22872)) |> 
+  mutate(`San Joaquin Flow Threshold` = round(`Sacramento Flow Threshold (cfs)` * san_joaquin_scaling_factor, 0))
 
 knitr::kable(flow_to_survival_thresholds)
 ```
@@ -97,7 +90,7 @@ knitr::kable(flow_to_survival_thresholds)
 compare_total_flow_volumne <- function(calsim_flows, natural_flow_flows, proposed_eff){
   all_flows <- bind_rows(calsim_flows |> mutate(type = "calsim"), 
                          natural_flow_flows |> mutate(type = "Natural flows Database flows"),
-                         proposed_eff |> mutate(type = "Proposed Model CSF")) |> 
+                         proposed_eff |> mutate(type = "Proposed Model EFF")) |> 
     select(month, flow_cfs, type) |> 
     mutate(acre_ft_per_month = flow_cfs * 60.3707) |> #TODO confirm conversion 
     group_by(type) |> 
@@ -134,11 +127,11 @@ representative_dry_years <- water_year_types |>
 
 ```
 
-### Proposed Model Constructed Salmonid Flows (CSF) {.tabset}
+### Proposed Model EFF {.tabset}
 
-#### Wet Year CSF
+#### Wet Year EFF
 
-The table below shows monthly flow CFS for a wet year model CSF on the San Joaquin River. This table was constructed using the Natural Flows database and model survival thresholds.
+The table below shows monthly flow EFF for a wet year model EFF on the San Joaquin River. This table was constructed using the Natural Flows database and model survival thresholds.
 
 ```{r, echo = FALSE}
 # WET YEAR EFF 
@@ -189,7 +182,7 @@ sj_wet_natural_flows_database_eff <- tibble(month = factor(month.abb[1:12],
 
 # leftover from what? wet year?
 # assuming the "allotment" is the total flow from the biop wet year
-sum(wet_year$flow_cfs)
+# sum(wet_year$flow_cfs)
 
 # DSMhabitat::san_joaquin_river_instream |>
 #   ggplot(aes(flow_cfs, y = FR_spawn_wua)) +
@@ -232,7 +225,7 @@ knitr::kable(sj_functional_flows_for_model_wet)
 The plot below shows the CalSIM modeled flows for the Sacramento River of an existing representative wet year: 1983. 1983 has the median water year index as provided by DWR out of all the "Wet" and "Above Normal" years within our model time frame.
 
 ```{r, echo = FALSE}
-combined_data <- bind_rows((sj_functional_flows_for_model_wet |> mutate(Type = "Model CSF Wet Year")), 
+combined_data <- bind_rows((sj_functional_flows_for_model_wet |> mutate(Type = "Model EFF Wet Year")), 
                   (sj_wet_natural_flows_database_eff |> mutate(Type = "Natural Flows EFF")),
                   (wet_year |> mutate(Type = "CalSim")))
 combined_data |> 
@@ -245,7 +238,7 @@ combined_data |>
        title = "Wet Year - Model Constructed Salmonid Monthly Flows")
 ```
 
-The table below shows the annual total volume of water needed for each flow scenario. The wet year CSF uses more water than the Natural Flows database EFF and then the representative CalSIM year. 
+The table below shows the annual total volume of water needed for each flow scenario. The wet year EFF uses more water than the Natural Flows database EFF and then the representative CalSIM year. 
 
 ```{r, echo = FALSE}
 compare_total_flow_volumne(wet_year, 
@@ -254,9 +247,9 @@ compare_total_flow_volumne(wet_year,
 
 ```
 
-#### Dry Year CSF
+#### Dry Year EFF
 
-The table below shows monthly flow CFS for a dry year model CSF on the Sacramento River. This table was constructed using the Natural Flows database and model survival thresholds.
+The table below shows monthly flow CFS for a dry year model EFF on the Sacramento River. This table was constructed using the Natural Flows database and model survival thresholds.
 
 ```{r, echo = FALSE}
 # DRY YEAR EFF 
@@ -288,7 +281,7 @@ sj_dry_natural_flows_database_eff <- tibble(month = factor(month.abb[1:12],
 # Build Functional flow curve 
 # see notes on wet year for my method
 # assuming the "allotment" is the total flow from the biop dry year
-sum(dry_year$flow_cfs)
+# sum(dry_year$flow_cfs)
 
 sj_functional_flows_for_model_dry <- tibble(month = factor(month.abb[1:12], 
                                                         levels = month.abb[c(10, 11, 12, 1:9)]),
@@ -323,11 +316,11 @@ knitr::kable(sj_functional_flows_for_model_dry)
 
 ```
 
-The plot below shows the CalSIM modeled flows for the Sacramento River of an existing representative dry year: 1959. 1959 has the median water year index as provided by DWR out of all the "Critical", "Dry", and "Below Normal" years within our model time frame.
+The plot below shows the CalSIM modeled flows for the San Joaquin River of an existing representative dry year: 1959. 1959 has the median water year index as provided by DWR out of all the "Critical", "Dry", and "Below Normal" years within our model time frame.
 
 
 ```{r, echo = FALSE}
-combined_data_dry <- bind_rows((sj_functional_flows_for_model_dry |> mutate(Type = "Model CSF Wet Year")), 
+combined_data_dry <- bind_rows((sj_functional_flows_for_model_dry |> mutate(Type = "Model EFF Wet Year")), 
                   (sj_dry_natural_flows_database_eff |> mutate(Type = "Natural Flows EFF")),
                   (dry_year |> mutate(Type = "CalSim")))
 combined_data_dry |> 
@@ -340,7 +333,7 @@ combined_data_dry |>
        title = "Dry Year - Model Constructed Salmonid Monthly Flows")
 ```
 
-The table below shows the annual total volume of water needed for each flow scenario. The dry year CSF uses less water than the Natural Flows database EFF and than the representative CalSIM year. 
+The table below shows the annual total volume of water needed for each flow scenario. The dry year EFF uses less water than the Natural Flows database EFF and than the representative CalSIM year. 
 
 ```{r, echo = FALSE}
 compare_total_flow_volumne(dry_year, 
@@ -350,9 +343,9 @@ compare_total_flow_volumne(dry_year,
 
 ### Creating a synthetic flow time series
 
-In order to incorporate these CSF into the model data inputs we combined wet and dry years to make a synthetic time series over the full 20 year period. We started by classifying years as "Dry" or "Wet" based on DWR water year type classifications. All "Dry", "Critical", or "Below Normal" years fall into the "Dry" category and all "Wet" or "Above Normal" years fall into the "Wet" category. 
+In order to incorporate these EFF into the model data inputs we combined wet and dry years to make a synthetic time series over the full 20 year period. We started by classifying years as "Dry" or "Wet" based on DWR water year type classifications. All "Dry", "Critical", or "Below Normal" years fall into the "Dry" category and all "Wet" or "Above Normal" years fall into the "Wet" category. 
 
-The plot below shows this synthetic time series for the Sacramento River over the 20 year simulation period.
+The plot below shows this synthetic time series for the San Joaquin River over the 20 year simulation period.
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE}
 # Wet dry sequence 
@@ -403,7 +396,7 @@ synthetic_eff_sj |>
   theme_minimal() +
   labs(y = "Flow CFS", 
        x = "", 
-       title = "Synthetic Model Constructed Salmonid Flows for Sacramento River") 
+       title = "Synthetic Model Constructed Salmonid Flows for San Joaquin River") 
 ```
 ```{r, echo = FALSE}
 # Process data objects for use in modeling, data then used to create a scenario in transform_inputs_complete.R, source this file in transform_inputs_complete.R

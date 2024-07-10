@@ -10,21 +10,17 @@ library(tidyverse)
 
 ## Incorperating Effective Functional Flows into R2R
 
-The Reorienting to Recovery Structured Decision Making group proposed a effective functional flow (EFF) scenario. To date, there is no available CalSIM EFF run so we cannot model full EFF on the entire system. This document outlines our approach to piloting an EFF on the Sacramento River constructed to maximize salmonid survival. 
+The Reorienting to Recovery Structured Decision Making group proposed an effective functional flow (EFF) scenario. To date, there is no available CalSIM EFF run so we cannot model full EFF on the entire system. This document outlines our approach to piloting an EFF on the Sacramento River constructed to maximize salmonid survival, which differs from the California EFF.
 
-We call this modified EFF approach a Constructed Salmonid Flow (CSF).
+**Pilot EFF Approach on the Sacramento River**
 
-**Pilot CSF Approach on the Sacramento River**
-
-The R2R technical team is worked collaboratively with a flow subgroup to develop a CSF hydrograph for the Sacramento River. We built off of the Nature Conservancy's Natural Flows Database to develop a wet and dry year monthly EFF hydrograph and compiled these into a 20 year synthetic time series based on the historical water year types represented in the R2R model time frame (1980-2000). 
+The R2R technical team met with a flow subgroup to determine the best way to model EFFs. The team started by looking at the Nature Conservancy's Natural Flows Database to understand dynamics in the Upper Sacramento system. Acknowledging that modifying flows will only affect parts of the decision support model (DSM) that use flow-based relationships, we decided to use flow-to-habitat and flow-to-survival relationships to determine when and how much flow we wanted in the Sacramento river. We compared this to the Natural Flows tool and the Calsim 2019 BiOp to provide some comparison of total flow volumes in these scenarios. This produced a wet and dry year monthly EFF hydrograph, compiled into a 20-year synthetic time series based on the historical water year types represented in the R2R model time frame (1980-2000).
 
 **Planned Improvements and Next Steps**
 
 -   The technical team is working to review existing literature on pulse flows and expand pulse flow routing logic in the model. This will increase the granularity of flow related model effects despite the monthly timestep of our CalSim flow input data and the model.
 
--   The technical team is also working with MBK to incorperate EFF logic into a CalSIM Run that we can use directly in the model.
-
-- The technical team is working to apply the rulesets for the Sacramento CSF to develop a San Joaquin CSF time series.
+-  The technical team is working with the COllaboratory for EQuity in Water ALlocations (COEQWAL) to incorporate EFF logic into a CalSIM run.
 
 ### What is an EFF
 
@@ -42,13 +38,13 @@ For more information on EFF please refer to additional sources:
 
 ### Tailoring EFF to our system
 
-EFF are hypothesized to be the best flows for salmon in our historical system. However, our system is highly managed so altered EFF slightly from their historical values to maximize benefit to salmon (creating what we are calling Constructed Salmonid Flows).
+EFF are hypothesized to be the best flows for salmon in our historical system. However, our system is highly managed so we needed to alter the salmonid EFF to maximize benefit to salmon.
 
-The R2R techncial team developed proposed CSF monthly flows by combining the [Natural Flows Database](https://ceff.ucdavis.edu/sites/g/files/dgvnsk5566/files/media/documents/CEFF%20Technical%20Report%20Ver%201.0%20Mar_31_2021_DRAFT_FINAL%20for%20web.pdf) values with critical flow to survival migratory thresholds on the Sacramento River (from [Michel 2021](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.3498)). 
+The R2R techncial team developed proposed EFF monthly flows by combining characteristics of the [Natural Flows Database](https://ceff.ucdavis.edu/sites/g/files/dgvnsk5566/files/media/documents/CEFF%20Technical%20Report%20Ver%201.0%20Mar_31_2021_DRAFT_FINAL%20for%20web.pdf) with critical flow to survival migratory thresholds on the Sacramento River (from [Michel 2021](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.3498)). 
 
 This original attempt did not maximize habitat so the technical team revised their approach to maximize modeled habitat and survival using the following principles: 
 
-1) Optimize spawning habitat during full spawning time frame (October, November, and December)
+1) Optimize spawning habitat during full spawning time frame (October, November, and December) based on the Upper-mid Sacramento flow-to-suitable-habitat curves documented [here](https://reorienting-to-recovery.github.io/DSMhabitat/reference/sacramento_habitat.html).
 2) Fix dry season base flow at a low value to maximize water for Juveniles, use Natural Flows Database as a guide (August, September)
 3) Optimize outmigration survival in last 3 model outmigration months (May, June, July). If water volume allows set migratory survival above 50%. If volume of water limited, set migratory survival above 20% (based on migratory survival flow survival thresholds on the Sacramento River (from [Michel 2021](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.3498)). 
 4) Utilize additional flows for maximizing FP habitat in (January, February, March & April)
@@ -59,7 +55,7 @@ This original attempt did not maximize habitat so the technical team revised the
 compare_total_flow_volumne <- function(calsim_flows, natural_flow_flows, proposed_eff){
   all_flows <- bind_rows(calsim_flows |> mutate(type = "calsim"), 
                          natural_flow_flows |> mutate(type = "Natural flows Database flows"),
-                         proposed_eff |> mutate(type = "Proposed Model CSF")) |> 
+                         proposed_eff |> mutate(type = "Proposed Model EFF")) |> 
     select(month, flow_cfs, type) |> 
     mutate(acre_ft_per_month = flow_cfs * 60.3707) |> #TODO confirm conversion 
     group_by(type) |> 
@@ -98,11 +94,11 @@ represenative_dry_years <- water_year_types |>
 
 ```
 
-### Proposed Model Constructed Salmonid Flows (CSF) {.tabset}
+### Proposed Model EFFs {.tabset}
 
-#### Wet Year CSF
+#### Wet Year EFF
 
-The table below shows monthly flow CFS for a wet year model CSF on the Sacramento River. This table was constructed using the Natural Flows database and model survival thresholds.
+The table below shows monthly flow EFF for a wet year model EFF on the Sacramento River. This table was constructed using the Natural Flows database and model survival thresholds.
 
 ```{r, echo = FALSE}
 # WET YEAR EFF 
@@ -169,7 +165,7 @@ knitr::kable(sac_functional_flows_for_model_wet)
 The plot below shows the CalSIM modeled flows for the Sacramento River of an existing representative wet year: 1996. 1996 has the median water year index as provided by DWR out of all the "Wet" and "Above Normal" years within our model time frame.
 
 ```{r, echo = FALSE}
-combined_data <- bind_rows((sac_functional_flows_for_model_wet |> mutate(Type = "Model CSF Wet Year")), 
+combined_data <- bind_rows((sac_functional_flows_for_model_wet |> mutate(Type = "Model EFF Wet Year")), 
                   (sac_wet_natural_flows_database_eff |> mutate(Type = "Natural Flows EFF")),
                   (wet_year |> mutate(Type = "CalSim")))
 combined_data |> 
@@ -182,7 +178,7 @@ combined_data |>
        title = "Wet Year - Model Constructed Salmonid Monthly Flows")
 ```
 
-The table below shows the annual total volume of water needed for each flow scenario. The wet year CSF uses more water than the Natural Flows database EFF and then the representative CalSIM year. 
+The table below shows the annual total volume of water needed for each flow scenario. The wet year EFF uses more water than the Natural Flows database EFF and then the representative CalSIM year. 
 
 ```{r, echo = FALSE}
 compare_total_flow_volumne(wet_year, 
@@ -191,9 +187,9 @@ compare_total_flow_volumne(wet_year,
 
 ```
 
-#### Dry Year CSF
+#### Dry Year EFF
 
-The table below shows monthly flow CFS for a dry year model CSF on the Sacramento River. This table was constructed using the Natural Flows database and model survival thresholds.
+The table below shows monthly flow CFS for a dry year model EFF on the Sacramento River. This table was constructed using the Natural Flows database and model survival thresholds.
 
 ```{r, echo = FALSE}
 # DRY YEAR EFF 
@@ -255,7 +251,7 @@ The plot below shows the CalSIM modeled flows for the Sacramento River of an exi
 
 
 ```{r, echo = FALSE}
-combined_data_dry <- bind_rows((sac_functional_flows_for_model_dry |> mutate(Type = "Model CSF Wet Year")), 
+combined_data_dry <- bind_rows((sac_functional_flows_for_model_dry |> mutate(Type = "Model EFF Wet Year")), 
                   (sac_dry_natural_flows_database_eff |> mutate(Type = "Natural Flows EFF")),
                   (dry_year |> mutate(Type = "CalSim")))
 combined_data_dry |> 
@@ -268,7 +264,7 @@ combined_data_dry |>
        title = "Dry Year - Model Constructed Salmonid Monthly Flows")
 ```
 
-The table below shows the annual total volume of water needed for each flow scenario. The dry year CSF uses less water than the Natural Flows database EFF and than the representative CalSIM year. 
+The table below shows the annual total volume of water needed for each flow scenario. The dry year EFF uses less water than the Natural Flows database EFF and than the representative CalSIM year. 
 
 ```{r, echo = FALSE}
 compare_total_flow_volumne(dry_year, 
@@ -279,7 +275,7 @@ compare_total_flow_volumne(dry_year,
 
 ### Creating a synthetic flow timeserries
 
-In order to incorporate these CSF into the model data inputs we combined wet and dry years to make a synthetic time series over the full 20 year period. We started by classifying years as "Dry" or "Wet" based on DWR water year type classifications. All "Dry", "Critical", or "Below Normal" years fall into the "Dry" category and all "Wet" or "Above Normal" years fall into the "Wet" category. 
+In order to incorporate these EFF into the model data inputs we combined wet and dry years to make a synthetic time series over the full 20 year period. We started by classifying years as "Dry" or "Wet" based on DWR water year type classifications. All "Dry", "Critical", or "Below Normal" years fall into the "Dry" category and all "Wet" or "Above Normal" years fall into the "Wet" category. 
 
 The plot below shows this synthetic time series for the Sacramento River over the 20 year simulation period.
 
