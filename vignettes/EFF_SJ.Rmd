@@ -293,18 +293,18 @@ sum(dry_year$flow_cfs)
 sj_functional_flows_for_model_dry <- tibble(month = factor(month.abb[1:12], 
                                                         levels = month.abb[c(10, 11, 12, 1:9)]),
                            # month_name = month.abb[month],
-                           flow_cfs = c(2000, # Jan Wet season base flow + Peak Magnitude flows, based on dry year monthly Natural Flows 
-                                        2000, # Feb Wet season base flow + Peak Magnitude flows, based on dry year monthly Natural Flows 
-                                        2000, # March Wet season base flow, based on dry year monthly Natural Flows 
-                                        2000, # April Wet season base flow, based on dry year monthly Natural Flows 
-                                        1500, # May Spring recession flow (keep migratory surv at ~20%)
-                                        1500, # June Spring recession flow (keep migratory surv at ~20%)
-                                        1500, # July half way between dry season baseflow and mig surv 20% threshold
-                                        1200, # Aug - dry season baseflow 1 (keep migratory surv at ~20%), 
-                                        280, # Sept - All fall runs juves have left system, use Natural Flows dry season base flow
-                                        400, # oct - dry season baseflow, add some pulse flow in 
-                                        400, # Nov add fall pulse flow, based on dry year monthly Natural Flows
-                                        400 # Dec Begin dry season baseflow and medium flow, based on dry year monthly Natural Flows
+                           flow_cfs = c(4000, # Jan Wet season base flow + Peak Magnitude flows, based on dry year monthly Natural Flows 
+                                        4000, # Feb Wet season base flow + Peak Magnitude flows, based on dry year monthly Natural Flows 
+                                        4000, # March Wet season base flow, based on dry year monthly Natural Flows 
+                                        4000, # April Wet season base flow, based on dry year monthly Natural Flows 
+                                        3069, # May Spring recession flow (keep migratory surv at ~20%)
+                                        3069, # June Spring recession flow (keep migratory surv at ~20%)
+                                        3069, # July half way between dry season baseflow and mig surv 20% threshold
+                                        2000, # Aug - dry season baseflow 1 (keep migratory surv at ~20%), 
+                                        300, # Sept - All fall runs juves have left system, use Natural Flows dry season base flow
+                                        300, # oct - dry season baseflow, add some pulse flow in 
+                                        300, # Nov add fall pulse flow, based on dry year monthly Natural Flows
+                                        300 # Dec Begin dry season baseflow and medium flow, based on dry year monthly Natural Flows
                                          ),
                             description = c("Utilize remaining water for FP habitat", # Try for fp rearing hab, less important - dependent on acre ft 
                                            "Utilize remaining water for FP habitat", # Optimize for  fp rearing habitat 
@@ -313,8 +313,8 @@ sj_functional_flows_for_model_dry <- tibble(month = factor(month.abb[1:12],
                                            "Keep high for migratory survival (3,069 for mig surv ~20%)", # 
                                            "Keep high for migratory survival (3,069 for mig surv ~20%)", # Optimize for migratory survival (keep as high as possible but above mig surv thresholds)
                                            "Keep high for migratory survival (3,069 for mig surv ~20%)", # Optimize for migratory survival (keep as high as possible but above mig surv thresholds)
-                                           "Set summer base flow to 550 based on Natural flows tool and to incrase acreage for avaliable for Juv flows", # set at 1000 to 
-                                           "Set summer base flow to 1200 based on Natural flows tool and to incrase acreage for avaliable for Juv flows",
+                                           "Set summer base flow to 300 based on Natural flows tool and to incrase acreage for avaliable for Juv flows", # set at 1000 to 
+                                           "Set summer base flow to 300 based on Natural flows tool and to incrase acreage for avaliable for Juv flows",
                                            "Optimize for spawning habitat based on flow area WUA ", # Optimize for spawning habitat based on flow area WUA 
                                            "Optimize for spawning habitat based on flow area WUA ", # Optimize for spawning habitat 
                                            "Optimize for spawning habitat based on flow area WUA ")) # Optimize for spawning habitat 
@@ -407,5 +407,25 @@ synthetic_eff_sj |>
 ```
 ```{r, echo = FALSE}
 # Process data objects for use in modeling, data then used to create a scenario in transform_inputs_complete.R, source this file in transform_inputs_complete.R
+```
+
+```{r, echo = FALSE}
+# compare to san joaquin calsim hydrograph, shape looks the same
+
+# calsim_compare <- DSMflow::flows_cfs$biop_itp_2018_2019 |> 
+#   select(date, flow_cfs = `San Joaquin River`) |>   
+#   mutate(water_year = as.Date(ifelse(month(date) %in% 10:12, date,
+#                                      as.Date(paste0(year(date) + 1, "-", month(date), "-", day(date))))),
+#          month = factor(month.abb[month(date)], levels = month.abb[c(10, 11, 12, 1:9)])) |> 
+#   mutate(water_year = ifelse(is.na(water_year), as.Date("1996-02-28"), water_year),
+#          water_year = as.Date(water_year),
+#          year = year(water_year)) |> 
+#   left_join(new_year_types, by = c("year"))
+# 
+# calsim_compare |> 
+#   filter(year >= 1979, year <= 2000) |> 
+#   ggplot(aes(x = water_year, y = flow_cfs, color = year_type)) +
+#   geom_line() + 
+#   theme_minimal()
 ```
 
