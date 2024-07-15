@@ -129,11 +129,15 @@ flow_cfs_run_of_river <- flow_cfs_run_of_river |>
   left_join(moke_2019) |> # #TODO: update with updated Moke data
   select(date:`Cosumnes River`, `Mokelumne River`, `Merced River`:`San Joaquin River`) # reorder
 
+# Calsim 3
+flow_cfs_lto_12a <- readr::read_rds("data-raw/calsim3/calsim3-flow-baseline.rds")
+
 # create flow_cfs with both 2008-2009 biop and 2018-2019 biop/itp and run of river ---------------
 flows_cfs <- list(biop_2008_2009 = flows_cfs_2008_2009,
                   biop_itp_2018_2019 = flow_cfs_2019_biop_itp,
                   run_of_river = flow_cfs_run_of_river,
-                  eff_sac = eff_sac_2019_biop_elsewhere
+                  eff_sac = eff_sac_2019_biop_elsewhere,
+                  LTO_12a = flow_cfs_lto_12a
 )
 
 # Write flow cfs data object

@@ -62,11 +62,53 @@ names(nodes_to_watershed) <- as.character(watershed_to_nodes)
 calsim_flow <- calsim_data |> filter(node %in% watershed_to_nodes) |>
   mutate(watershed = nodes_to_watershed[node]) |>
   select(-B, -node) |>
-  pivot_wider(names_from = "watershed", values_from = "flow_cfs")
+  pivot_wider(names_from = "watershed", values_from = "flow_cfs") |>
+  mutate(date = as_date(date))
 
 calsim_flow |> View()
 
+write_rds(calsim_flow, "data-raw/calsim3/calsim3-flow-baseline.rds")
 
 
+# bypass flows ----------------------------------------
+nodes_df <- data.frame(inputs=c("sutter1",
+                                "sutter1",
+                                "sutter1",
+                                "sutter2",
+                                "sutter3",
+                                "sutter4",
+                                "yolo1",
+                                "yolo2"),
+                       nodes=c("SP_SAC193_BTC003",
+                               "SP_SAC188_BTC003",
+                               "SP_SAC178_BTC003",
+                               "C_BTC003",
+                               "C_SBP024",
+                               "C_SSL001",
+                               "SP_SAC083_YBP037",
+                               "C_CSL005"),
+                       type=c(rep("RIVER-SPILLS",3),rep("CHANNEL",3),
+                              "RIVER-SPILLS","CHANNEL"))
 
+bypass_nodes <- nodes_df$inputs
+names(bypass_nodes) <- nodes_df$nodes
+
+lto_calsim3_bypass_flows <- calsim_data |> filter(node %in% names(bypass_nodes)) |>
+  mutate(bypass = bypass_nodes[node]) |>
+  select(-B, -node) |>
+  group_by(date, bypass) |>
+  summarise(
+    flow_cfs = sum(flow_cfs)
+  ) |>
+  ungroup() |>
+  pivot_wider(names_from = bypass, values_from = flow_cfs) |>
+  mutate(date = as_date(date))
+
+readr::write_rds(lto_calsim3_bypass_flows, "data-raw/calsim3/calsim3-lto-bypass-flows.rds")
+
+# proportion diverted ---------------------------------
+
+# Mean flows -------------------------------------------
+
+# misc flow nodes --------------------------------------
 
