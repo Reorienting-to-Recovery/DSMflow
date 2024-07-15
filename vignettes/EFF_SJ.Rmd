@@ -71,7 +71,8 @@ scale_thresholds |>
 
 # filter to model years and then average to get scaling factor
 san_joaquin_scaling_factor <- scale_thresholds |> 
-  filter(year(date) %in% 1980:2000) |> 
+  filter(year(date) %in% 1980:2000,
+         month(date) %in% 5:7) |> 
   summarise(scaling_factor = mean(flow_relationship)) |> 
   pull(scaling_factor)
 
@@ -196,9 +197,9 @@ sj_functional_flows_for_model_wet <- tibble(month = factor(month.abb[1:12],
                                         45500, # March 
                                         45500, # March 
                                         45500, # April 
-                                        6553, # May Spring recession flow (6,553 for mig surv ~50%)
-                                        6553, # June Spring recession flow (6,553 for mig surv ~50%)
-                                        6553, # July (6,553 for mig surv ~50%)
+                                        1733, # May Spring recession flow (6,553 for mig surv ~50%)
+                                        1733, # June Spring recession flow (6,553 for mig surv ~50%)
+                                        1733, # July (6,553 for mig surv ~50%)
                                         2000, # Aug (50th percentile all years dry seasn baseflow from natural flows tool)
                                         2000, # Sept 
                                         300, # oct 
@@ -290,9 +291,9 @@ sj_functional_flows_for_model_dry <- tibble(month = factor(month.abb[1:12],
                                         4000, # Feb Wet season base flow + Peak Magnitude flows, based on dry year monthly Natural Flows 
                                         4000, # March Wet season base flow, based on dry year monthly Natural Flows 
                                         4000, # April Wet season base flow, based on dry year monthly Natural Flows 
-                                        3069, # May Spring recession flow (keep migratory surv at ~20%)
-                                        3069, # June Spring recession flow (keep migratory surv at ~20%)
-                                        3069, # July half way between dry season baseflow and mig surv 20% threshold
+                                        4339, # May Spring recession flow (keep migratory surv at ~20%)
+                                        4339, # June Spring recession flow (keep migratory surv at ~20%)
+                                        4339, # July half way between dry season baseflow and mig surv 20% threshold
                                         2000, # Aug - dry season baseflow 1 (keep migratory surv at ~20%), 
                                         300, # Sept - All fall runs juves have left system, use Natural Flows dry season base flow
                                         300, # oct - dry season baseflow, add some pulse flow in 
