@@ -28,7 +28,7 @@ A synthetic EFF hydrograph was developed for the Sacramento River using the foll
 
 Our goals for developing an EFF hydrograph for the San Joaquin River were to maximize habitat and survival and reduce minimum flows when salmonids are not in the system.
 
-In order to adapt the Sacramento EFF methodology, we need a flow-survival relationship for salmonids like those outlined in [Michel 2021](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.3498). Steps include: 
+In order to adapt the Sacramento EFF methodology, we need a flow-habitat relationship ([found here](https://reorienting-to-recovery.github.io/DSMhabitat/reference/habitat_data.html)) and a flow-survival relationship for salmonids like those outlined in [Michel 2021](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.3498). Steps include: 
 
 - scaling the existing flow-survival thresholds calculated by [Michel 2021](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.3498) for the Sacramento the San Joaquin
 - modify the SJ survival model logic to be flow-based instead of temperature-based (so that the EFF has an effect)
@@ -37,7 +37,7 @@ In order to adapt the Sacramento EFF methodology, we need a flow-survival relati
 
 #### Scale flow-to-survival relationships
 
-We compared the flows for the `Upper-mid Sacramento River` and `San Joaquin River` produced by the 2019 BiOp and calculated a monthly ratio of San Joaquin flows to Upper-mid Sacrmaento flows (`San Joaquin River flows / Upper-mid Sacramento River flows`). We then averaged that monthly proportion over the years modeled in the DSM (`1980:2000`). We used this proportion to scale the flow values required for survival rates of `3%`, `18.9%`, and `50.8%` for the San Joaquin.
+We compared the flows for the `Upper-mid Sacramento River` and `San Joaquin River` produced by the 2019 BiOp and calculated a monthly ratio of San Joaquin flows to Upper-mid Sacrmaento flows (`San Joaquin River flows / Upper-mid Sacramento River flows`). We then averaged that monthly proportion over migratory months (`May-August`) and years modeled in the DSM (`1980:2000`). We used this proportion to scale the flow values required for survival rates of `3%`, `18.9%`, and `50.8%` for the San Joaquin.
 
 ```{r, echo = FALSE}
 DSMflow::flows_cfs$biop_itp_2018_2019 |> 
