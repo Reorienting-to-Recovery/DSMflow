@@ -164,10 +164,13 @@ bypass_2008_2009 <-  generate_bypass_flows(calsim_run = calsim_2008_2009)
 bypass_2019_biop_itp <- generate_bypass_flows(calsim_run = calsim_2019_biop_itp)
 run_of_river <-  generate_bypass_flows(calsim_run = calsim_run_of_river)
 
+lto_calsim3_bypass_flows <- readr::read_rds("data-raw/calsim3/calsim3-lto-bypass-flows.rds")
+
 # create bypass flows with both 2008-2009 biop and 2018-2019 biop/itp
 bypass_flows <- list(biop_2008_2009 = bypass_2008_2009,
                      biop_itp_2018_2019 = bypass_2019_biop_itp,
-                     run_of_river = run_of_river
+                     run_of_river = run_of_river,
+                     LTO_12a = lto_calsim3_bypass_flows
 )
 
 usethis::use_data(bypass_flows, overwrite = TRUE)
