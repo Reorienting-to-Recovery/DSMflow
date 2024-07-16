@@ -174,7 +174,7 @@ calsim_diversions_wide <- calsim_data |> filter(node %in% calsim3_diversion_node
   pivot_wider(names_from = node, values_from = flow_cfs)
 
 
-calsim_diversions_wide |>
+lto_prop_diverted <- calsim_diversions_wide |>
   transmute(
     `Upper Sacramento River` = (D_SAC296_WTPFTH + D_SAC296_02_SA + D_SAC294_WTPBLV + D_SAC294_03_PA + D_SAC289_03_SA + D_SAC281_02_NA + D_SAC273_03_NA) / C_SAC273,
     `Antelope Creek` = D_ANT010_05_NA / C_ANT010,
@@ -206,6 +206,9 @@ calsim_diversions_wide |>
     `Tuolumne River` = (D_TUO047_61_NA3 + D_TUO047_62_NA4 + D_TUO015_61_NA3 + D_TUO015_62_NA4) / C_TUO054,
     `San Joaquin River` = (D_SJR062_50_PA1 + D_SJR090_71_NA2 + D_SJR081_61_NA5 + D_SJR116_72_NA1) / (D_SJR062_50_PA1 + D_SJR090_71_NA2 + D_SJR081_61_NA5 + D_SJR116_72_NA1 + C_SJR072)
     )
+
+
+write_rds(lto_prop_diverted, "data-raw/calsim3/lto-proportion-diverted.rds")
 
 # Mean flows -------------------------------------------
 
