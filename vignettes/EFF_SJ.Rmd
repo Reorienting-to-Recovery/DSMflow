@@ -18,7 +18,7 @@ This analysis is based on the methods for the Sacramento River EFF (`vignettes/E
 
 A synthetic EFF hydrograph was developed for the Sacramento River using the following high-level steps: 
 
-* Using the [Natural Flows Database](https://ceff.ucdavis.edu/sites/g/files/dgvnsk5566/files/media/documents/CEFF%20Technical%20Report%20Ver%201.0%20Mar_31_2021_DRAFT_FINAL%20for%20web.pdf), [California Environmental Flows Framework](https://ceff.ucdavis.edu/sites/g/files/dgvnsk5566/files/media/documents/CEFF%20Technical%20Report%20Ver%201.0%20Mar_31_2021_DRAFT_FINAL%20for%20web.pdf), and [Modeling Functional Flows in California's Rivers](https://www.frontiersin.org/articles/10.3389/fenvs.2022.787473/full#:~:text=Functional%20flow%20components%20in%20California,ecological%20processes%20in%20riverine%20ecosystems) as a basis, a monthly hydrograph was created to mimic unimpaired historical flows
+* Using the [Natural Flows Database](https://rivers.codefornature.org/#/map), [California Environmental Flows Framework](https://ceff.ucdavis.edu/sites/g/files/dgvnsk5566/files/media/documents/CEFF%20Technical%20Report%20Ver%201.0%20Mar_31_2021_DRAFT_FINAL%20for%20web.pdf), and [Modeling Functional Flows in California's Rivers](https://www.frontiersin.org/articles/10.3389/fenvs.2022.787473/full#:~:text=Functional%20flow%20components%20in%20California,ecological%20processes%20in%20riverine%20ecosystems) as a basis, a monthly hydrograph was created to mimic unimpaired historical flows
 
 * Following this initial exercise, our synthetic hydrograph was modified to prioritize maximizing salmonid survival by accounting for flow-to-survival thresholds as outlined in [Michel 2021](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.3498).
 
@@ -39,10 +39,24 @@ In order to adapt the Sacramento EFF methodology, we need a flow-habitat relatio
 
 We compared the flows for the `Upper-mid Sacramento River` and `San Joaquin River` produced by the 2019 BiOp and calculated a monthly ratio of San Joaquin flows to Upper-mid Sacrmaento flows (`San Joaquin River flows / Upper-mid Sacramento River flows`). We then averaged that monthly proportion over migratory months (`May-August`) and years modeled in the DSM (`1980:2000`). We used this proportion to scale the flow values required for survival rates of `3%`, `18.9%`, and `50.8%` for the San Joaquin.
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+# try node right above merced confluence
+# Node C614
+names <- read_csv("data-raw/calsim_2019_BiOp_ITP/C422_C843.csv", skip = 1) |> names()
+C614 <- read_csv("data-raw/calsim_2019_BiOp_ITP/C422_C843.csv", skip = 7, 
+                 col_names = names) |> 
+  rename(date = `...2`) |> 
+  mutate(date = dmy(date)) |> 
+  filter(year(date) >= 1922, year(date) <= 2002) |> 
+  select(date, C614) |> 
+  glimpse()
+
 DSMflow::flows_cfs$biop_itp_2018_2019 |> 
   select(date, `Upper-mid Sacramento River`, `San Joaquin River`) |> 
-  mutate(flow_relationship = `San Joaquin River` / `Upper-mid Sacramento River`) |> pivot_longer(`Upper-mid Sacramento River`:`San Joaquin River`,
+  left_join(C614) |> 
+  mutate(flow_relationship_original = `San Joaquin River` / `Upper-mid Sacramento River`,
+         flow_relationship_C614 = C614 / `Upper-mid Sacramento River`) |> 
+  pivot_longer(`Upper-mid Sacramento River`:`C614`,
                names_to = "watershed", values_to = "flow_cfs") |> 
   ggplot(aes(x = date, y = flow_cfs, color = watershed)) + 
   geom_line() +
@@ -54,12 +68,18 @@ DSMflow::flows_cfs$biop_itp_2018_2019 |>
 
 scale_thresholds <- DSMflow::flows_cfs$biop_itp_2018_2019 |> 
   select(date, `Upper-mid Sacramento River`, `San Joaquin River`) |> 
-  mutate(flow_relationship = `San Joaquin River` / `Upper-mid Sacramento River`) |> pivot_longer(`Upper-mid Sacramento River`:`San Joaquin River`,
-               names_to = "watershed", values_to = "flow_cfs") |> 
-  filter(watershed == "San Joaquin River")
+  left_join(C614) |> 
+  mutate(flow_relationship_SJ = `San Joaquin River` / `Upper-mid Sacramento River`,
+         flow_relationship_C614 = C614 / `Upper-mid Sacramento River`) |>
+  pivot_longer(flow_relationship_SJ:flow_relationship_C614,
+               names_to = "node",
+               values_to = "ratio") 
+  # pivot_longer(`Upper-mid Sacramento River`:`C614`,
+  #              names_to = "watershed", values_to = "flow_cfs") |> 
+  # filter(watershed %in% c("San Joaquin River", "C614"))
 
 scale_thresholds |> 
-  ggplot(aes(x = date, y = flow_relationship)) + 
+  ggplot(aes(x = date, y = ratio, color = node)) + 
   geom_line() +
   # geom_vline(aes(xintercept = c(1980)), linetype = "dashed", color = "blue") +
   theme_minimal() +
@@ -72,8 +92,10 @@ scale_thresholds |>
 # filter to model years and then average to get scaling factor
 san_joaquin_scaling_factor <- scale_thresholds |> 
   filter(year(date) %in% 1980:2000,
-         month(date) %in% 5:7) |> 
-  summarise(scaling_factor = mean(flow_relationship)) |> 
+         month(date) %in% 5:7,
+           # TODO change here to go back and forth for which node to use to build scaling factor
+         node == "flow_relationship_C614") |> 
+  summarise(scaling_factor = mean(ratio)) |> 
   pull(scaling_factor)
 
 # now calculate flow required for survival using the scaling factor to
@@ -95,7 +117,8 @@ compare_total_flow_volumne <- function(calsim_flows, natural_flow_flows, propose
     select(month, flow_cfs, type) |> 
     mutate(acre_ft_per_month = flow_cfs * 60.3707) |> #TODO confirm conversion 
     group_by(type) |> 
-    summarise(annual_acre_feet = sum(acre_ft_per_month)) |> 
+    summarise(annual_acre_feet = sum(acre_ft_per_month), 
+              annual_acre_feet = format(round(annual_acre_feet, 0), big.mark = ',', drop = FALSE)) |> 
     rename(Scenario = type, "Annual Acre Ft Water" = annual_acre_feet) 
   
   return(knitr::kable(all_flows))
@@ -184,11 +207,20 @@ sj_wet_natural_flows_database_eff <- tibble(month = factor(month.abb[1:12],
 # leftover from what? wet year?
 # assuming the "allotment" is the total flow from the biop wet year
 # sum(wet_year$flow_cfs)
-
+# 
 # DSMhabitat::san_joaquin_river_instream |>
-#   ggplot(aes(flow_cfs, y = FR_spawn_wua)) +
+#   ggplot(aes(flow_cfs, y = FR_spawn_wua)) + # 5,000
 #   geom_line() +
 #   geom_vline(aes(xintercept = 300), linetype = "dashed")
+
+# DSMhabitat::upper_san_joaquin_floodplain |> 
+#   ggplot(aes(x = flow_cfs, y = SR_floodplain_acres)) + 
+#   geom_line() + 
+#   geom_vline(aes(xintercept = 4500), linetype = "dashed")
+
+flow_threshold_50 <- flow_to_survival_thresholds |> 
+  filter(Survival == 50.8) |> 
+  pull(`San Joaquin Flow Threshold`)
 
 sj_functional_flows_for_model_wet <- tibble(month = factor(month.abb[1:12], 
                                                         levels = month.abb[c(10, 11, 12, 1:9)]),
@@ -197,9 +229,9 @@ sj_functional_flows_for_model_wet <- tibble(month = factor(month.abb[1:12],
                                         45500, # March 
                                         45500, # March 
                                         45500, # April 
-                                        1733, # May Spring recession flow (6,553 for mig surv ~50%)
-                                        1733, # June Spring recession flow (6,553 for mig surv ~50%)
-                                        1733, # July (6,553 for mig surv ~50%)
+                                        flow_threshold_50, # May Spring recession flow (3,258 for mig surv ~50%)
+                                        flow_threshold_50, # June Spring recession flow (3,258 for mig surv ~50%)
+                                        flow_threshold_50, # July (3,258 for mig surv ~50%)
                                         2000, # Aug (50th percentile all years dry seasn baseflow from natural flows tool)
                                         2000, # Sept 
                                         300, # oct 
@@ -210,9 +242,9 @@ sj_functional_flows_for_model_wet <- tibble(month = factor(month.abb[1:12],
                                            "Utilize remaining water for FP habitat", # Optimize for  fp rearing habitat 
                                            "Utilize remaining water for FP habitat", # Optimize for  fp rearing habitat 
                                            "Utilize remaining water for FP habitat", # Optimize for fp rearing habitat 
-                                           "Optimize for migratory survival (6,553 for mig surv ~50%)", # 
-                                           "Optimize for migratory survival (6,553 for mig surv ~50%)", # Optimize for migratory survival (keep as high as possible but above mig surv thresholds)
-                                           "Optimize for migratory survival (6,553 for mig surv ~50%)", # Optimize for migratory survival (keep as high as possible but above mig surv thresholds)
+                                           "Optimize for migratory survival (3,258 for mig surv ~50%)", # 
+                                           "Optimize for migratory survival (3,258 for mig surv ~50%)", # Optimize for migratory survival (keep as high as possible but above mig surv thresholds)
+                                           "Optimize for migratory survival (3,258 for mig surv ~50%)", # Optimize for migratory survival (keep as high as possible but above mig surv thresholds)
                                            "Set at 2000 to incrase acreage for avaliable for Juv flows", # set at 1000 to 
                                            "Set at 2000 to incrase acreage for avaliable for Juv flows",
                                            "Optimize for spawning habitat based on flow area WUA ", # Optimize for spawning habitat based on flow area WUA 
@@ -284,16 +316,20 @@ sj_dry_natural_flows_database_eff <- tibble(month = factor(month.abb[1:12],
 # assuming the "allotment" is the total flow from the biop dry year
 # sum(dry_year$flow_cfs)
 
+flow_threshold_20 <- flow_to_survival_thresholds |> 
+  filter(Survival == 18.9) |> 
+  pull(`San Joaquin Flow Threshold`)
+
 sj_functional_flows_for_model_dry <- tibble(month = factor(month.abb[1:12], 
                                                         levels = month.abb[c(10, 11, 12, 1:9)]),
                            # month_name = month.abb[month],
-                           flow_cfs = c(4000, # Jan Wet season base flow + Peak Magnitude flows, based on dry year monthly Natural Flows 
-                                        4000, # Feb Wet season base flow + Peak Magnitude flows, based on dry year monthly Natural Flows 
-                                        4000, # March Wet season base flow, based on dry year monthly Natural Flows 
-                                        4000, # April Wet season base flow, based on dry year monthly Natural Flows 
-                                        4339, # May Spring recession flow (keep migratory surv at ~20%)
-                                        4339, # June Spring recession flow (keep migratory surv at ~20%)
-                                        4339, # July half way between dry season baseflow and mig surv 20% threshold
+                           flow_cfs = c(5000, # Jan Wet season base flow + Peak Magnitude flows, based on dry year monthly Natural Flows 
+                                        5000, # Feb Wet season base flow + Peak Magnitude flows, based on dry year monthly Natural Flows 
+                                        5000, # March Wet season base flow, based on dry year monthly Natural Flows 
+                                        5000, # April Wet season base flow, based on dry year monthly Natural Flows 
+                                        flow_threshold_20, # May Spring recession flow (keep migratory surv at ~20%)
+                                        flow_threshold_20, # June Spring recession flow (keep migratory surv at ~20%)
+                                        flow_threshold_20, # July half way between dry season baseflow and mig surv 20% threshold
                                         2000, # Aug - dry season baseflow 1 (keep migratory surv at ~20%), 
                                         300, # Sept - All fall runs juves have left system, use Natural Flows dry season base flow
                                         300, # oct - dry season baseflow, add some pulse flow in 
@@ -304,9 +340,9 @@ sj_functional_flows_for_model_dry <- tibble(month = factor(month.abb[1:12],
                                            "Utilize remaining water for FP habitat", # Optimize for  fp rearing habitat 
                                            "Utilize remaining water for FP habitat", # Optimize for  fp rearing habitat 
                                            "Utilize remaining water for FP habitat", # Optimize for fp rearing habitat 
-                                           "Keep high for migratory survival (3,069 for mig surv ~20%)", # 
-                                           "Keep high for migratory survival (3,069 for mig surv ~20%)", # Optimize for migratory survival (keep as high as possible but above mig surv thresholds)
-                                           "Keep high for migratory survival (3,069 for mig surv ~20%)", # Optimize for migratory survival (keep as high as possible but above mig surv thresholds)
+                                           "Keep high for migratory survival (1,526 for mig surv ~20%)", # 
+                                           "Keep high for migratory survival (1,526 for mig surv ~20%)", # Optimize for migratory survival (keep as high as possible but above mig surv thresholds)
+                                           "Keep high for migratory survival (1,526 for mig surv ~20%)", # Optimize for migratory survival (keep as high as possible but above mig surv thresholds)
                                            "Set summer base flow to 300 based on Natural flows tool and to incrase acreage for avaliable for Juv flows", # set at 1000 to 
                                            "Set summer base flow to 300 based on Natural flows tool and to incrase acreage for avaliable for Juv flows",
                                            "Optimize for spawning habitat based on flow area WUA ", # Optimize for spawning habitat based on flow area WUA 
@@ -321,7 +357,7 @@ The plot below shows the CalSIM modeled flows for the San Joaquin River of an ex
 
 
 ```{r, echo = FALSE}
-combined_data_dry <- bind_rows((sj_functional_flows_for_model_dry |> mutate(Type = "Model EFF Wet Year")), 
+combined_data_dry <- bind_rows((sj_functional_flows_for_model_dry |> mutate(Type = "Model EFF Dry Year")), 
                   (sj_dry_natural_flows_database_eff |> mutate(Type = "Natural Flows EFF")),
                   (dry_year |> mutate(Type = "CalSim")))
 combined_data_dry |> 

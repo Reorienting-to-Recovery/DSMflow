@@ -34,7 +34,7 @@ For more information on EFF please refer to additional sources:
 
 -   [California Environmental Flows Framework](https://ceff.ucdavis.edu/sites/g/files/dgvnsk5566/files/media/documents/CEFF%20Technical%20Report%20Ver%201.0%20Mar_31_2021_DRAFT_FINAL%20for%20web.pdf)
 
--   [Natural Flows Database](https://ceff.ucdavis.edu/sites/g/files/dgvnsk5566/files/media/documents/CEFF%20Technical%20Report%20Ver%201.0%20Mar_31_2021_DRAFT_FINAL%20for%20web.pdf)
+-   [Natural Flows Database](https://rivers.codefornature.org/#/map)
 
 ### Tailoring EFF to our system
 
@@ -251,7 +251,7 @@ The plot below shows the CalSIM modeled flows for the Sacramento River of an exi
 
 
 ```{r, echo = FALSE}
-combined_data_dry <- bind_rows((sac_functional_flows_for_model_dry |> mutate(Type = "Model EFF Wet Year")), 
+combined_data_dry <- bind_rows((sac_functional_flows_for_model_dry |> mutate(Type = "Model EFF Dry Year")), 
                   (sac_dry_natural_flows_database_eff |> mutate(Type = "Natural Flows EFF")),
                   (dry_year |> mutate(Type = "CalSim")))
 combined_data_dry |> 
