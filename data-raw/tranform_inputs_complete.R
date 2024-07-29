@@ -320,6 +320,8 @@ moke_2019_run_of_river <- readxl::read_excel('data-raw/calsim_2019_BiOp_ITP/EBMU
 
 diversion_run_of_river["Mokelumne River",,] <- as.matrix(moke_2019_run_of_river)
 
+# total diverted LTO12a
+
 
 # create diversion flows with both 2008-2009 biop and 2018-2019 biop/itp
 total_diverted <- list(biop_2008_2009 = diversion_2008_2009, # has moke
@@ -454,10 +456,14 @@ moke_2019 <- read_excel('data-raw/calsim_2019_BiOp_ITP/EBMUDSIM/CVPIA_SIT_Data_R
 
 prop_diverted_run_of_river["Mokelumne River",,] <- as.matrix(moke_2019)
 
+# LTO calsim 3 prop diverted
+lto_12a_proportion_diverted = readr::read_rds("data-raw/calsim3/lto-proportion-diverted.rds")
+
 # create proportion diversion flows with both 2008-2009 biop and 2018-2019 biop/itp and run of river
 proportion_diverted <- list(biop_2008_2009 = prop_diverted_2008_2009,
                        biop_itp_2018_2019 = prop_diverted_2019_biop_itp,
-                       run_of_river = prop_diverted_run_of_river
+                       run_of_river = prop_diverted_run_of_river,
+                       lto_12a = lto_12a_proportion_diverted
 )
 
 usethis::use_data(proportion_diverted, overwrite = TRUE)
@@ -499,11 +505,13 @@ mean_flow_2008_2009 <- generate_mean_flow(bypass_flows$biop_2008_2009, flows_cfs
 mean_flow_2019_biop_itp <- generate_mean_flow(bypass_flows$biop_itp_2018_2019, flows_cfs$biop_itp_2018_2019) # missing moke
 mean_flow_run_of_river <- generate_mean_flow(bypass_flows$run_of_river, flows_cfs$run_of_river) # missing moke
 mean_flow_eff <- generate_mean_flow(bypass_flows$biop_itp_2018_2019, flows_cfs$eff_sac)
+mean_flow_lto12a <- readr::read_rds("data-raw/calsim3/calsim3-mean-flow.rds")
 
 mean_flow <- list(biop_2008_2009 = mean_flow_2008_2009,
                    biop_itp_2018_2019 = mean_flow_2019_biop_itp,
                   run_of_river = mean_flow_run_of_river,
-                  eff_sac = mean_flow_eff)
+                  eff_sac = mean_flow_eff,
+                  lto_12a = mean_flow_lto12a)
 
 usethis::use_data(mean_flow, overwrite = TRUE)
 
@@ -704,7 +712,7 @@ generate_proportion_pulse_flows <- function(flow_cfs) {
     filter(between(year(date), 1980, 1999)) |>
     mutate(`Lower-mid Sacramento River` = 35.6/58 * `Lower-mid Sacramento River1` + 22.4/58 *`Lower-mid Sacramento River2`) |>
     select(-`Lower-mid Sacramento River1`, -`Lower-mid Sacramento River2`) |>
-    pivot_longer(`Upper Sacramento River`:`Lower-mid Sacramento River`,
+    pivot_longer(-date,
                  names_to = "watershed",
                  values_to = "flow") |>
     group_by(month = month(date), watershed) |>
@@ -731,14 +739,18 @@ generate_proportion_pulse_flows <- function(flow_cfs) {
 proportion_pulse_flows_2008_2009 <- generate_proportion_pulse_flows(flows_cfs$biop_2008_2009)
 proportion_pulse_flows_2019_biop_itp <- generate_proportion_pulse_flows(flows_cfs$biop_itp_2018_2019)
 proportion_pulse_flows_run_of_river <- generate_proportion_pulse_flows(flows_cfs$run_of_river)
+proportion_pulse_flows_lto_12a <- generate_proportion_pulse_flows(flows_cfs$LTO_12a)
+
 proportion_pulse_flows_run_of_river[is.nan(proportion_pulse_flows_run_of_river)] <- 0
 proportion_pulse_flows_eff_sac <- generate_proportion_pulse_flows(flows_cfs$eff_sac)
 proportion_pulse_flows_eff_sac[is.na(proportion_pulse_flows_eff_sac)] <- 0
+proportion_pulse_flows_lto_12a[is.na(proportion_pulse_flows_lto_12a)] <- 0
 
 proportion_pulse_flows <- list(biop_2008_2009 = proportion_pulse_flows_2008_2009,
                               biop_itp_2018_2019 = proportion_pulse_flows_2019_biop_itp,
                               run_of_river = proportion_pulse_flows_run_of_river,
-                              eff_sac = proportion_pulse_flows_eff_sac)
+                              eff_sac = proportion_pulse_flows_eff_sac,
+                              lto_12a = proportion_pulse_flows_lto_12a)
 
 usethis::use_data(proportion_pulse_flows, overwrite = TRUE)
 
