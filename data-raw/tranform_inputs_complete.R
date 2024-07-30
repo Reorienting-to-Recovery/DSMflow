@@ -1021,6 +1021,11 @@ rownames(delta_cross_channel_closed_run_of_river) <- c('count', 'proportion')
 
 # lto12a
 # based on their script no changes required
+# TODO: review if we want to pick option 3 instead.
+# Multiple options
+# 1. Use existing values, based on 2009 BiOp
+# 2. Use expected values from 2019 BiOp
+# 3. Use updated CalSim outputs, either averaged across years (A) or year-specific (B)
 
 
 # Combine into named list
