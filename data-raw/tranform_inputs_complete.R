@@ -1575,11 +1575,22 @@ cvp_exports_2019_biop_itp <- generate_cvp_exports(calsim_2019_biop_itp)
 cvp_exports_run_of_river <- generate_cvp_exports(calsim_run_of_river)
 
 # calsim 3
-calsim3_data |> filter(node %in% c("DEL_CVP_TOTAL_N", "DEL_CVP_TOTAL_S"))
+cvp_exports_lto <- calsim3_data |> filter(node %in% c("DEL_CVP_TOTAL_N", "DEL_CVP_TOTAL_S"),
+                       year(date) >= 1980, year(date) <= 2000) |>
+  group_by(date = as_date(date)) |>
+  summarise(
+    cvpExportsQcms = cfs_to_cms(sum(flow_cfs))
+  ) |> ungroup() |>
+  transmute(year =year(date), month = month(date), cvpExportsQcms) |>
+  pivot_wider(names_from = year,
+              values_from = cvpExportsQcms) |>
+  select(-month) |>
+  as.matrix()
 
 cvp_exports <- list(biop_2008_2009 = cvp_exports_2008_2009,
                     biop_itp_2018_2019 = cvp_exports_2019_biop_itp,
-                    run_of_river = cvp_exports_run_of_river)
+                    run_of_river = cvp_exports_run_of_river,
+                    LTO_12a = cvp_exports_lto)
 
 usethis::use_data(cvp_exports, overwrite = TRUE)
 
@@ -1611,9 +1622,23 @@ swp_exports_2008_2009 <- generate_swp_exports(calsim_2008_2009)
 swp_exports_2019_biop_itp <- generate_swp_exports(calsim_2019_biop_itp)
 swp_exports_run_of_river <- generate_swp_exports(calsim_run_of_river)
 
+swp_exports_lto <- calsim3_data |> filter(node %in% c("DEL_SWP_PMI", "DEL_SWP_PAG", "DEL_SWP_PIN"),
+                                          year(date) >= 1980, year(date) <= 2000) |>
+  group_by(date = as_date(date)) |>
+  summarise(
+    swpExportsQcms = cfs_to_cms(sum(flow_cfs))
+  ) |> ungroup() |>
+  transmute(year =year(date), month = month(date), swpExportsQcms) |>
+  pivot_wider(names_from = year,
+              values_from = swpExportsQcms) |>
+  select(-month) |>
+  as.matrix()
+
+
 swp_exports <- list(biop_2008_2009 = swp_exports_2008_2009,
                     biop_itp_2018_2019 = swp_exports_2019_biop_itp,
-                    run_of_river = swp_exports_run_of_river)
+                    run_of_river = swp_exports_run_of_river,
+                    LTO_12a = swp_exports_lto)
 
 usethis::use_data(swp_exports, overwrite = TRUE)
 
