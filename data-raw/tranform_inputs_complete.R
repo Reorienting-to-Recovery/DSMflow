@@ -18,6 +18,25 @@ usethis::use_data(watershed_ordering, overwrite = TRUE)
 cvpia_nodes <- read_csv('data-raw/calsim_2008_2009/MikeWrightCalSimOct2017/cvpia_calsim_nodes.csv', skip = 1)
 watersheds <- cvpia_nodes$watershed
 
+process_dss_output <- function(file) {
+  raw_data <- readxl::read_excel(file)
+  raw_data |>
+    pivot_longer(-c(B, date), values_to = "flow_cfs", names_to = "node") |>
+    mutate(
+      date = date - years(
+        case_when(
+          year(date) >= 2022 ~ 100,
+          year(date) == 2021 & month(date) %in% 10:12 ~ 100,
+          TRUE ~ 0
+        )
+      )
+    ) |>
+    filter(!is.na(flow_cfs))
+}
+
+calsim3_data <- map_df(list.files("data-raw/calsim3/", pattern = ".xlsx", full.names = TRUE), process_dss_output)
+
+
 need_split_habitat <- cvpia_nodes$calsim_habitat_flow |> str_detect(', ')
 habitat_split <- cvpia_nodes$calsim_habitat_flow[need_split_habitat] |> str_split(', ') |> flatten_chr()
 habitat_node <- c(cvpia_nodes$calsim_habitat_flow[!need_split_habitat], habitat_split, 'C134', 'C160')[-20]
@@ -129,11 +148,37 @@ flow_cfs_run_of_river <- flow_cfs_run_of_river |>
   left_join(moke_2019) |> # #TODO: update with updated Moke data
   select(date:`Cosumnes River`, `Mokelumne River`, `Merced River`:`San Joaquin River`) # reorder
 
+# Calsim 3
+watershed_to_nodes <- c(`Upper Sacramento River` = "C_SAC273", `Antelope Creek` = "C_ANT010",
+                        `Battle Creek` = "C_BTL006", `Bear Creek` = "C_BCN005", `Big Chico Creek` = "C_BCC004",
+                        `Butte Creek` = "C_BTC012", `Clear Creek` = "C_CLR009", `Cottonwood Creek` = "C_CWD003",
+                        `Cow Creek` = "C_COW003", `Deer Creek` = "C_DRC005", `Elder Creek` = "C_ELD005",
+                        `Mill Creek` = "C_MLC004", `Paynes Creek` = "C_PYN001", `Stony Creek` = "C_STN004",
+                        `Thomes Creek` = "C_THM005", `Upper-mid Sacramento River` = "C_SAC193",
+                        `Bear River` = "C_CMPFW", `Feather River` = "C_FTR059", `Yuba River` = "C_YUB002",
+                        `Lower-mid Sacramento River1` = "C_SAC093", `Lower-mid Sacramento River2` = "C_SAC048",
+                        `American River` = "C_NTOMA", `Lower Sacramento River` = "C_SAC063",
+                        `Calaveras River` = "C_NHGAN", `Cosumnes River` = "C_CSM005",
+                        `Mokelumne River` = "C_CMCHE", `Merced River` = "C_MCD050", `Stanislaus River` = "C_STS059",
+                        `Tuolumne River` = "C_TUO054", `San Joaquin River` = "C_SJR081"
+)
+
+nodes_to_watershed <- names(watershed_to_nodes)
+names(nodes_to_watershed) <- as.character(watershed_to_nodes)
+
+
+lto_calsim3_flows <- calsim_data |> filter(node %in% watershed_to_nodes) |>
+  mutate(watershed = nodes_to_watershed[node]) |>
+  select(-B, -node) |>
+  pivot_wider(names_from = "watershed", values_from = "flow_cfs") |>
+  mutate(date = as_date(date))
+
 # create flow_cfs with both 2008-2009 biop and 2018-2019 biop/itp and run of river ---------------
 flows_cfs <- list(biop_2008_2009 = flows_cfs_2008_2009,
                   biop_itp_2018_2019 = flow_cfs_2019_biop_itp,
                   run_of_river = flow_cfs_run_of_river,
-                  eff_sac = eff_sac_2019_biop_elsewhere
+                  eff_sac = eff_sac_2019_biop_elsewhere,
+                  LTO_12a = lto_calsim3_flows
 )
 
 # Write flow cfs data object
@@ -160,10 +205,46 @@ bypass_2008_2009 <-  generate_bypass_flows(calsim_run = calsim_2008_2009)
 bypass_2019_biop_itp <- generate_bypass_flows(calsim_run = calsim_2019_biop_itp)
 run_of_river <-  generate_bypass_flows(calsim_run = calsim_run_of_river)
 
+# calsim 3
+calsim3_bypass_nodes <- data.frame(inputs=c("sutter1",
+                                "sutter1",
+                                "sutter1",
+                                "sutter2",
+                                "sutter3",
+                                "sutter4",
+                                "yolo1",
+                                "yolo2"),
+                       nodes=c("SP_SAC193_BTC003",
+                               "SP_SAC188_BTC003",
+                               "SP_SAC178_BTC003",
+                               "C_BTC003",
+                               "C_SBP024",
+                               "C_SSL001",
+                               "SP_SAC083_YBP037",
+                               "C_CSL005"),
+                       type=c(rep("RIVER-SPILLS",3),rep("CHANNEL",3),
+                              "RIVER-SPILLS","CHANNEL"))
+
+bypass_nodes <- calsim3_bypass_nodes$inputs
+names(bypass_nodes) <- calsim3_bypass_nodes$nodes
+
+lto_calsim3_bypass_flows <- calsim_data |> filter(node %in% names(bypass_nodes)) |>
+  mutate(bypass = bypass_nodes[node]) |>
+  select(-B, -node) |>
+  group_by(date, bypass) |>
+  summarise(
+    flow_cfs = sum(flow_cfs)
+  ) |>
+  ungroup() |>
+  pivot_wider(names_from = bypass, values_from = flow_cfs) |>
+  mutate(date = as_date(date))
+
+
 # create bypass flows with both 2008-2009 biop and 2018-2019 biop/itp
 bypass_flows <- list(biop_2008_2009 = bypass_2008_2009,
                      biop_itp_2018_2019 = bypass_2019_biop_itp,
-                     run_of_river = run_of_river
+                     run_of_river = run_of_river,
+                     LTO_12a = lto_calsim3_bypass_flows
 )
 
 usethis::use_data(bypass_flows, overwrite = TRUE)
@@ -313,12 +394,126 @@ moke_2019_run_of_river <- readxl::read_excel('data-raw/calsim_2019_BiOp_ITP/EBMU
 
 diversion_run_of_river["Mokelumne River",,] <- as.matrix(moke_2019_run_of_river)
 
+# total diverted LTO12a
+calsim3_diversion_nodes <- c("D_SAC296_WTPFTH", "D_SAC296_02_SA", "D_SAC294_WTPBLV", "D_SAC294_03_PA",
+                             "D_SAC289_03_SA", "D_SAC281_02_NA", "D_SAC273_03_NA", "D_ANT010_05_NA",
+                             "D_BTC045_ESL008", "D_BTC043_10_NA", "D_BTC036_10_NA", "D_BTC012_09_SA2",
+                             "D_BTC012_CRK005", "D_DRC010_05_NA", "D_DRC005_05_NA", "D_ELD012_04_NA",
+                             "D_MLC006_05_NA", "D_STN021_06_PA", "D_THM012_04_NA", "D_SAC240_TCC001",
+                             "D_SAC240_05_NA", "D_SAC224_04_NA", "D_SAC207_GCC007", "D_SAC196_MTC000",
+                             "D_SAC185_08N_NA", "D_SAC185_09_NA", "D_SAC178_08N_SA1", "D_SAC162_09_SA2",
+                             "D_SAC159_08S_SA1", "D_SAC159_08N_SA1", "D_SAC146_08S_NA1", "D_SAC136_18_NA",
+                             "D_SAC136_18_SA", "D_SAC129_08S_NA2", "D_SAC122_19_SA", "D_BRR017_23_NA",
+                             "D_THRMF_12_NU1", "D_THRMF_11_NU1", "D_THRMA_WEC000", "D_THRMA_RVC000",
+                             "D_THRMA_JBC000", "D_YUB011_15S_NA2", "D_SAC121_08S_SA3", "D_SAC115_19_SA",
+                             "D_SAC109_08S_SA3", "D_SAC109_19_SA", "D_SAC099_19_SA", "D_SAC091_19_SA",
+                             "D_SAC083_21_SA", "D_SAC082_22_SA1", "D_SAC081_21_NA", "D_SAC078_22_SA1",
+                             "D_SAC075_22_NA", "D_SAC074_21_SA", "D_SAC065_WTPBTB", "D_AMR007_WTPFBN",
+                             "D_SAC050_FPT013", "D_SAC062_WTPSAC", "D_LJC022_60S_PA1", "D_CLV037_CACWD",
+                             "D_CLV026_60S_PA1", "D_CLV026_WTPWDH", "D_MOK050_60N_NA3", "D_MOK050_60N_NA5",
+                             "D_MOK039_60N_NA5", "D_MOK035_60N_NA4", "D_MOK035_60N_NU1", "D_MOK035_WTPDWS",
+                             "D_MOK033_60N_NA5", "D_MCD042_63_NA2", "D_MCD021_63_NA4", "D_STS030_61_NA4",
+                             "D_STS004_61_NA6", "D_TUO047_61_NA3", "D_TUO047_62_NA4", "D_TUO015_61_NA3",
+                             "D_TUO015_62_NA4", "D_SJR062_50_PA1", "D_SJR090_71_NA2", "D_SJR081_61_NA5",
+                             "D_SJR116_72_NA1", "C_SAC273", "C_ANT010", "D_BTC045_ESL008",
+                             "D_BTC043_10_NA", "D_BTC036_10_NA", "D_BTC012_09_SA2", "D_BTC012_CRK005",
+                             "C_BTC012", "C_DRC005", "C_ELD005", "C_MLC004", "C_STN026", "C_THM005",
+                             "C_SAC247", "C_CMPFW", "D_BRR017_23_NA", "C_OROVL", "C_YUB002",
+                             "D_YUB011_15S_NA2", "C_SAC120", "C_NTOMA", "C_SAC063", "C_NHGAN",
+                             "C_CMCHE", "C_MCD050", "C_STS059", "C_TUO054", "D_SJR062_50_PA1",
+                             "D_SJR090_71_NA2", "D_SJR081_61_NA5", "D_SJR116_72_NA1", "C_SJR072"
+)
+
+
+calsim_diversions_wide <- calsim_data |> filter(node %in% calsim3_diversion_nodes) |>
+  select(-B) |>
+  pivot_wider(names_from = node, values_from = flow_cfs)
+
+
+lto_total_diverted <-
+  calsim_diversions_wide |>
+  mutate(
+    `div_final_Upper Sacramento River` = sum(D_SAC296_WTPFTH, D_SAC296_02_SA, D_SAC294_WTPBLV, D_SAC294_03_PA, D_SAC289_03_SA, D_SAC281_02_NA, D_SAC273_03_NA),
+    `div_final_Antelope Creek` = D_ANT010_05_NA,
+    `div_final_Battle Cree` = 0,
+    `div_final_Bear Creek` = 0,
+    `div_final_Big Chico Creek` = 0,
+    `div_final_Butte Creek` = (D_BTC045_ESL008 + D_BTC043_10_NA + D_BTC036_10_NA + D_BTC012_09_SA2 + D_BTC012_CRK005),
+    `div_final_Clear Creek` = 0,
+    `div_final_Cottonwood Creek` = 0,
+    `div_final_Cow Creek` = 0,
+    `div_final_Deer Creek` = (D_DRC010_05_NA + D_DRC005_05_NA),
+    `div_final_Elder Creek` = D_ELD012_04_NA,
+    `div_final_Mill Creek` = D_MLC006_05_NA,
+    `div_final_Paynes Creek` = 0,
+    `div_final_Stony Creek` = D_STN021_06_PA,
+    `div_final_Thomes Creek` = D_THM012_04_NA,
+    `div_final_Upper-mid Sacramento River` = (D_SAC240_TCC001 + D_SAC240_05_NA + D_SAC224_04_NA + D_SAC196_MTC000 + D_SAC185_08N_NA + D_SAC185_09_NA + D_SAC178_08N_SA1 + D_SAC162_09_SA2 + D_SAC159_08S_SA1 + D_SAC159_08N_SA1 + D_SAC146_08S_NA1 + D_SAC136_18_NA + D_SAC136_18_SA + D_SAC129_08S_NA2 + D_SAC122_19_SA),
+    `div_final_Bear River` = D_BRR017_23_NA,
+    `div_final_Feather River` = (D_THRMF_12_NU1 + D_THRMF_11_NU1 + D_THRMA_WEC000 + D_THRMA_RVC000 + D_THRMA_JBC000),
+    `div_final_Yuba River` = D_YUB011_15S_NA2,
+    `div_final_Lower-mid Sacramento River` = (D_SAC121_08S_SA3 + D_SAC115_19_SA + D_SAC109_08S_SA3 + D_SAC109_19_SA + D_SAC099_19_SA + D_SAC091_19_SA + D_SAC083_21_SA + D_SAC082_22_SA1 + D_SAC081_21_NA + D_SAC078_22_SA1 + D_SAC075_22_NA + D_SAC074_21_SA + D_SAC065_WTPBTB),
+    `div_final_American River` = D_AMR007_WTPFBN,
+    `div_final_Lower Sacramento River` = (D_SAC050_FPT013 + D_SAC062_WTPSAC),
+    `div_final_Calaveras River` = (D_LJC022_60S_PA1 + D_CLV037_CACWD + D_CLV026_60S_PA1 + D_CLV026_WTPWDH),
+    `div_final_Cosumnes River` = 0,
+    `div_final_Mokelumne River` = (D_MOK050_60N_NA3 + D_MOK050_60N_NA5 + D_MOK039_60N_NA5 + D_MOK035_60N_NA4 + D_MOK035_60N_NU1 + D_MOK035_WTPDWS + D_MOK033_60N_NA5),
+    `div_final_Merced River` = (D_MCD042_63_NA2 + D_MCD021_63_NA4),
+    `div_final_Stanislaus River` = (D_STS030_61_NA4 + D_STS004_61_NA6),
+    `div_final_Tuolumne River` = (D_TUO047_61_NA3 + D_TUO047_62_NA4 + D_TUO015_61_NA3 + D_TUO015_62_NA4),
+    `div_final_San Joaquin River` = (D_SJR062_50_PA1 + D_SJR090_71_NA2 + D_SJR081_61_NA5 + D_SJR116_72_NA1)
+  )
+
+
+lto_total_diverted_final <- lto_total_diverted |>
+  select(starts_with("div_final")) |>
+  rename_with(\(x) str_replace(x, "div_final_", ""))
+
+
 
 # create diversion flows with both 2008-2009 biop and 2018-2019 biop/itp
 total_diverted <- list(biop_2008_2009 = diversion_2008_2009, # has moke
                      biop_itp_2018_2019 = diversion_2019_biop_itp, # missing moke
-                     run_of_river = diversion_run_of_river
+                     run_of_river = diversion_run_of_river,
+                     LTO_12a = lto_total_diverted_final
 )
+
+lto_proportion_diverted <-
+  lto_total_diverted |>
+  transmute(
+    `Upper Sacramento River` = pmin(`div_final_Upper Sacramento River`/C_SAC273, 1),
+    `Antelope Creek` = pmin(`div_final_Antelope Creek`/C_ANT010, 1),
+    `Battle Creek` = 0,
+    `Bear Creek` = 0,
+    `Big Chico Creek` = 0,
+    `Butte Creek` = pmin(`div_final_Butte Creek`/(`div_final_Butte Creek` + C_BTC012), 1),
+    `Clear Creek` = 0,
+    `Cottonwood Creek` = 0,
+    `Cow Creek` = 0,
+    `Deer Creek` = pmin(`div_final_Deer Creek`/C_DRC005, 1),
+    `Elder Creek` = pmin(`div_final_Elder Creek`/C_ELD005, 1),
+    `Mill Creek` = pmin(`div_final_Mill Creek`/C_MLC004, 1),
+    `Paynes Creek` = 0,
+    `Stony Creek` = pmin(`div_final_Stony Creek`/C_STN026, 1),
+    `Thomes Creek` = pmin(`div_final_Thomes Creek`/C_THM005, 1),
+    `Upper-mid Sacramento River` = pmin(`div_final_Upper-mid Sacramento River`/C_SAC247, 1),
+    `Sutter Bypass` = 0,
+    `Bear River` = pmin(`div_final_Bear River`/(`div_final_Bear River` + C_CMPFW), 1),
+    `Feather River` = pmin(`div_final_Feather River`/C_OROVL, 1),
+    `Yuba River` = pmin(`div_final_Yuba River`/(`div_final_Yuba River` + D_YUB011_15S_NA2)),
+    `Lower-mid Sacramento River` = pmin(`div_final_Lower-mid Sacramento River`/(C_SAC120), 1),
+    `Yolo Bypass` = 0,
+    `American River` = pmin(`div_final_American River`/(C_NTOMA), 1),
+    `Lower Sacramento River` = pmin(`div_final_Lower Sacramento River`/(C_SAC063), 1),
+    `Calaveras River` = pmin(`div_final_Calaveras River`/C_NHGAN, 1),
+    `Cosumnes River` = 0,
+    `Mokelumne River` = pmin(`div_final_Mokelumne River`/C_CMCHE, 1),
+    `Merced River` = pmin(`div_final_Merced River`/(C_MCD050), 1),
+    `Stanislaus River` = pmin(`div_final_Stanislaus River`/(C_STS059)),
+    `Tuolumne River` = pmin(`div_final_Tuolumne River`/C_TUO054, 1),
+    `San Joaquin River` = pmin(`div_final_San Joaquin River`/(`div_final_San Joaquin River` + C_SJR072), 1)
+  )
+
 
 usethis::use_data(total_diverted, overwrite = TRUE)
 
@@ -447,10 +642,14 @@ moke_2019 <- read_excel('data-raw/calsim_2019_BiOp_ITP/EBMUDSIM/CVPIA_SIT_Data_R
 
 prop_diverted_run_of_river["Mokelumne River",,] <- as.matrix(moke_2019)
 
+# LTO calsim 3 prop diverted
+lto_12a_proportion_diverted = readr::read_rds("data-raw/calsim3/lto-proportion-diverted.rds")
+
 # create proportion diversion flows with both 2008-2009 biop and 2018-2019 biop/itp and run of river
 proportion_diverted <- list(biop_2008_2009 = prop_diverted_2008_2009,
                        biop_itp_2018_2019 = prop_diverted_2019_biop_itp,
-                       run_of_river = prop_diverted_run_of_river
+                       run_of_river = prop_diverted_run_of_river,
+                       lto_12a = lto_12a_proportion_diverted
 )
 
 usethis::use_data(proportion_diverted, overwrite = TRUE)
@@ -465,7 +664,7 @@ generate_mean_flow <- function(bypass_flow, flow_cfs) {
     left_join(bypass) |>
     filter(between(year(date), 1980, 2000)) |>
     # gather(watershed, flow_cfs, -date)
-    pivot_longer(`Upper Sacramento River`:`Yolo Bypass`,
+    pivot_longer(-date,
                  names_to = "watershed",
                  values_to = "flow_cfs") |>
     filter(watershed != "Lower-mid Sacramento River1") |>
@@ -492,11 +691,13 @@ mean_flow_2008_2009 <- generate_mean_flow(bypass_flows$biop_2008_2009, flows_cfs
 mean_flow_2019_biop_itp <- generate_mean_flow(bypass_flows$biop_itp_2018_2019, flows_cfs$biop_itp_2018_2019) # missing moke
 mean_flow_run_of_river <- generate_mean_flow(bypass_flows$run_of_river, flows_cfs$run_of_river) # missing moke
 mean_flow_eff <- generate_mean_flow(bypass_flows$biop_itp_2018_2019, flows_cfs$eff_sac)
+mean_flow_lto12a <- generate_mean_flow(bypass_flows$LTO_12a, flows_cfs$LTO_12a)
 
 mean_flow <- list(biop_2008_2009 = mean_flow_2008_2009,
                    biop_itp_2018_2019 = mean_flow_2019_biop_itp,
                   run_of_river = mean_flow_run_of_river,
-                  eff_sac = mean_flow_eff)
+                  eff_sac = mean_flow_eff,
+                  lto_12a = mean_flow_lto12a)
 
 usethis::use_data(mean_flow, overwrite = TRUE)
 
@@ -620,10 +821,25 @@ rownames(up_sac_flows_eff_as_matrix) <- month.abb[1:12]
 
 upper_sac_flows_eff <- up_sac_flows_eff_as_matrix # copied code from EFF vignette above
 
+# calsim 3
+lto_12a_upper_sacramento_flows <- calsim_data |>
+  filter(node == "C_SAC257") |>
+  select(-B, -node, upsacQcfs=flow_cfs) |>
+  mutate(upsacQcms = DSMflow::cfs_to_cms(upsacQcfs),
+         year = year(date),
+         month = month(date)) |>
+  filter(year >= 1980, year <= 2000) |>
+  select(-date, -upsacQcfs) |>
+  pivot_wider(names_from = year,
+              values_from = upsacQcms) |>
+  select(-month) |>
+  as.matrix()
+
 upper_sacramento_flows <- list(biop_2008_2009 = upper_sacramento_flows_2008_2009,
                                biop_itp_2018_2019 = upper_sacramento_flows_2019_biop_itp,
                                run_of_river = upper_sacramento_flows_run_of_river,
-                               eff_sac = upper_sac_flows_eff)
+                               eff_sac = upper_sac_flows_eff,
+                               LTO_12a = lto_12a_upper_sacramento_flows)
 
 usethis::use_data(upper_sacramento_flows, overwrite = TRUE)
 
@@ -640,7 +856,7 @@ generate_proportion_flow_natal <- function(flow_cfs, tributary_junctions){
   denominator <- flow_cfs |>
     select(-`Lower-mid Sacramento River1`) |> #Feather river comes in below Fremont Weir use River2 for Lower-mid Sac
     rename(`Lower-mid Sacramento River` = `Lower-mid Sacramento River2`) |>
-    pivot_longer(`Upper Sacramento River`:`San Joaquin River`,
+    pivot_longer(-date,
                  names_to = "watershed",
                  values_to = "flow") |>
     filter(month(date) == 10, watershed %in% unique(tributary_junctions)) |>
@@ -649,7 +865,7 @@ generate_proportion_flow_natal <- function(flow_cfs, tributary_junctions){
   proportion_flow_natal <- flow_cfs |>
     select(-`Lower-mid Sacramento River1`) |> #Feather river comes in below Fremont Weir use River2 for Lower-mid Sac
     rename(`Lower-mid Sacramento River` = `Lower-mid Sacramento River2`) |>
-    pivot_longer(`Upper Sacramento River`:`San Joaquin River`,
+    pivot_longer(-date,
                  names_to = "watershed",
                  values_to = "flow") |>
     filter(month(date) == 10) |>
@@ -682,11 +898,13 @@ proportion_flow_natal_2008_2009 <- generate_proportion_flow_natal(flows_cfs$biop
 proportion_flow_natal_2019_biop_itp <- generate_proportion_flow_natal(flows_cfs$biop_itp_2018_2019, tributary_junctions)
 proportion_flow_natal_run_of_river <- generate_proportion_flow_natal(flows_cfs$run_of_river, tributary_junctions)
 proportion_flow_natal_eff_sac <- generate_proportion_flow_natal(flows_cfs$eff_sac, tributary_junctions)
+proportion_flow_natal_lto12a <- generate_proportion_flow_natal(lto_calsim3_flows, tributary_junctions)
 
 proportion_flow_natal <- list(biop_2008_2009 = proportion_flow_natal_2008_2009,
                               biop_itp_2018_2019 = proportion_flow_natal_2019_biop_itp,
                               run_of_river = proportion_flow_natal_run_of_river,
-                              eff_sac = proportion_flow_natal_eff_sac)
+                              eff_sac = proportion_flow_natal_eff_sac,
+                              LTO12a = proportion_flow_natal_lto12a)
 
 usethis::use_data(proportion_flow_natal, overwrite = TRUE)
 
@@ -697,7 +915,7 @@ generate_proportion_pulse_flows <- function(flow_cfs) {
     filter(between(year(date), 1980, 1999)) |>
     mutate(`Lower-mid Sacramento River` = 35.6/58 * `Lower-mid Sacramento River1` + 22.4/58 *`Lower-mid Sacramento River2`) |>
     select(-`Lower-mid Sacramento River1`, -`Lower-mid Sacramento River2`) |>
-    pivot_longer(`Upper Sacramento River`:`Lower-mid Sacramento River`,
+    pivot_longer(-date,
                  names_to = "watershed",
                  values_to = "flow") |>
     group_by(month = month(date), watershed) |>
@@ -724,14 +942,18 @@ generate_proportion_pulse_flows <- function(flow_cfs) {
 proportion_pulse_flows_2008_2009 <- generate_proportion_pulse_flows(flows_cfs$biop_2008_2009)
 proportion_pulse_flows_2019_biop_itp <- generate_proportion_pulse_flows(flows_cfs$biop_itp_2018_2019)
 proportion_pulse_flows_run_of_river <- generate_proportion_pulse_flows(flows_cfs$run_of_river)
+proportion_pulse_flows_lto_12a <- generate_proportion_pulse_flows(flows_cfs$LTO_12a)
+
 proportion_pulse_flows_run_of_river[is.nan(proportion_pulse_flows_run_of_river)] <- 0
 proportion_pulse_flows_eff_sac <- generate_proportion_pulse_flows(flows_cfs$eff_sac)
 proportion_pulse_flows_eff_sac[is.na(proportion_pulse_flows_eff_sac)] <- 0
+proportion_pulse_flows_lto_12a[is.na(proportion_pulse_flows_lto_12a)] <- 0
 
 proportion_pulse_flows <- list(biop_2008_2009 = proportion_pulse_flows_2008_2009,
                               biop_itp_2018_2019 = proportion_pulse_flows_2019_biop_itp,
                               run_of_river = proportion_pulse_flows_run_of_river,
-                              eff_sac = proportion_pulse_flows_eff_sac)
+                              eff_sac = proportion_pulse_flows_eff_sac,
+                              lto_12a = proportion_pulse_flows_lto_12a)
 
 usethis::use_data(proportion_pulse_flows, overwrite = TRUE)
 
@@ -797,10 +1019,20 @@ delta_cross_channel_closed_run_of_river <- dplyr::tibble(days_closed = days,
 colnames(delta_cross_channel_closed_run_of_river) <- month.abb[1:12]
 rownames(delta_cross_channel_closed_run_of_river) <- c('count', 'proportion')
 
+# lto12a
+# based on their script no changes required
+# TODO: review if we want to pick option 3 instead.
+# Multiple options
+# 1. Use existing values, based on 2009 BiOp
+# 2. Use expected values from 2019 BiOp
+# 3. Use updated CalSim outputs, either averaged across years (A) or year-specific (B)
+
+
 # Combine into named list
 delta_cross_channel_closed <- list(biop_2008_2009 = delta_cross_channel_closed_2008_2009,
                                    biop_itp_2018_2019 = delta_cross_channel_closed_2018_2019,
-                                   run_of_river = delta_cross_channel_closed_run_of_river)
+                                   run_of_river = delta_cross_channel_closed_run_of_river,
+                                   LTO_12a = delta_cross_channel_closed_2018_2019)
 
 usethis::use_data(delta_cross_channel_closed, overwrite = TRUE)
 
@@ -836,9 +1068,63 @@ delta_flows_2008_2009 <- generate_delta_flows(calsim_2008_2009)
 delta_flows_2019_biop_itp <- generate_delta_flows(calsim_2019_biop_itp)
 delta_flows_run_of_river <- generate_delta_flows(calsim_run_of_river)
 
+#calsim 3
+n_dlt_inflow_cfs_nodes <- c("C_SAC041", "C_CSL005")
+s_dlt_inflow_cfs_nodes <- c("C_SAC029B", "D_SAC030_MOK014",
+                            "C_MOK022", "C_CLV004", "C_SJR056")
+n_dlt_div_cfs_nodes <- c("C_CSL004B", "DD_SAC017_SACS")
+s_dlt_div_cfs_nodes <- c("D_OMR028_DMC000", "D_OMR027_CAA000",
+                         "DD_SJR026_SJRE", "DD_SJR013_SJRW",
+                         "DD_MOK004_MOK", "DD_OMR027_OMR",
+                         "D_RSL004_CCC004", "D_OMR021_ORP000",
+                         "D_VCT002_ORP000")
+
+north_delta_inflow <- calsim3_data |>
+  filter(node %in% n_dlt_inflow_cfs_nodes) |>
+  group_by(date = as_date(date)) |>
+  summarise(
+    flow_cfs = sum(flow_cfs)
+  )
+
+south_delta_inflow <- calsim3_data |>
+  filter(node %in% s_dlt_inflow_cfs_nodes)|>
+  group_by(date = as_date(date)) |>
+  summarise(
+    flow_cfs = sum(flow_cfs)
+  )
+
+north_delta_diversions <- calsim3_data |>
+  filter(node %in% n_dlt_div_cfs_nodes)|>
+  group_by(date = as_date(date)) |>
+  summarise(
+    flow_cfs = sum(flow_cfs)
+  )
+
+south_delta_diversions <- calsim3_data |>
+  filter(node %in% s_dlt_div_cfs_nodes)|>
+  group_by(date = as_date(date)) |>
+  summarise(
+    flow_cfs = sum(flow_cfs)
+  )
+
+lto_12a_delta_flows <- tibble(
+  date = north_delta_inflow$date,
+  n_dlt_inflow_cfs = north_delta_inflow$flow_cfs,
+  s_dlt_inflow_cfs = south_delta_inflow$flow_cfs,
+  n_dlt_div_cfs = north_delta_diversions$flow_cfs,
+  s_dlt_div_cfs = south_delta_diversions$flow_cfs,
+  n_dlt_prop_div = n_dlt_div_cfs / n_dlt_inflow_cfs,
+  s_dlt_prop_div = s_dlt_div_cfs / s_dlt_inflow_cfs
+) |>
+  mutate(
+    s_dlt_prop_div = ifelse(s_dlt_prop_div > 1, 1, s_dlt_prop_div)
+  )
+
+
 delta_flows <- list(biop_2008_2009 = delta_flows_2008_2009,
                     biop_itp_2018_2019 = delta_flows_2019_biop_itp,
-                    run_of_river = delta_flows_run_of_river)
+                    run_of_river = delta_flows_run_of_river,
+                    LTO_12a = lto_12a_delta_flows)
 
 usethis::use_data(delta_flows, overwrite = TRUE)
 
@@ -869,11 +1155,13 @@ generate_delta_inflows <- function(delta_flows) {
 delta_inflows_2008_2009 <- generate_delta_inflows(delta_flows$biop_2008_2009)
 delta_inflows_2019_biop_itp <- generate_delta_inflows(delta_flows$biop_itp_2018_2019)
 delta_inflows_run_of_river <- generate_delta_inflows(delta_flows$run_of_river)
+delta_inflows_lto_12a <- generate_delta_inflows(delta_flows$LTO_12a)
 
 
 delta_inflow <- list(biop_2008_2009 = delta_inflows_2008_2009,
                     biop_itp_2018_2019 = delta_inflows_2019_biop_itp,
-                    run_of_river = delta_inflows_run_of_river)
+                    run_of_river = delta_inflows_run_of_river,
+                    LTO_12a = delta_inflows_lto_12a)
 
 usethis::use_data(delta_inflow, overwrite = TRUE)
 
@@ -903,11 +1191,13 @@ generate_delta_proportion_diverted <- function(delta_flows) {
 delta_proportion_diverted_2008_2009 <- generate_delta_proportion_diverted(delta_flows$biop_2008_2009)
 delta_proportion_diverted_2019_biop_itp <- generate_delta_proportion_diverted(delta_flows$biop_itp_2018_2019)
 delta_proportion_diverted_run_of_river <- generate_delta_proportion_diverted(delta_flows$run_of_river)
+delta_proportion_diverted_lto_12a <- generate_delta_proportion_diverted(delta_flows$LTO_12a)
 
 
 delta_proportion_diverted <- list(biop_2008_2009 = delta_proportion_diverted_2008_2009,
                                   biop_itp_2018_2019 = delta_proportion_diverted_2019_biop_itp,
-                                  run_of_river = delta_proportion_diverted_run_of_river)
+                                  run_of_river = delta_proportion_diverted_run_of_river,
+                                  LTO_12a = delta_proportion_diverted_lto_12a)
 
 usethis::use_data(delta_proportion_diverted, overwrite = TRUE)
 
@@ -939,11 +1229,13 @@ generate_delta_total_diverted <- function(delta_flows) {
 delta_total_diverted_2008_2009 <- generate_delta_total_diverted(delta_flows$biop_2008_2009)
 delta_total_diverted_2019_biop_itp <- generate_delta_total_diverted(delta_flows$biop_itp_2018_2019)
 delta_total_diverted_run_of_river <- generate_delta_total_diverted(delta_flows$run_of_river)
+delta_total_diverted_lto_12a <- generate_delta_total_diverted(delta_flows$LTO_12a)
 
 
 delta_total_diverted <- list(biop_2008_2009 = delta_total_diverted_2008_2009,
                              biop_itp_2018_2019 = delta_total_diverted_2019_biop_itp,
-                             run_of_river = delta_total_diverted_run_of_river)
+                             run_of_river = delta_total_diverted_run_of_river,
+                             LTO_12a = delta_total_diverted_lto_12a)
 
 usethis::use_data(delta_total_diverted, overwrite = TRUE)
 
@@ -981,9 +1273,33 @@ proportion_flow_bypasses_2008_2009 <- generate_proportion_flow_bypasses(misc_flo
 proportion_flow_bypasses_2019_biop_itp <- generate_proportion_flow_bypasses(misc_flows$biop_itp_2018_2019)
 proportion_flow_bypasses_run_of_river <- generate_proportion_flow_bypasses(misc_flows$run_of_river)
 
+# lto 12a
+calsim3_prop_q_nodes <- data.frame(inputs=c("D117", "D117", "D117",
+                                            "D124", "D125", "D126",
+                                            "D160",
+                                            "C116", "C134", "C137",
+                                            "C160", "C157"),
+                                   nodes=c("SP_SAC193_BTC003", "SP_SAC188_BTC003", "SP_SAC178_BTC003",
+                                           "SP_SAC159_BTC003", "SP_SAC148_BTC003", "SP_SAC122_SBP021",
+                                           "SP_SAC083_YBP037",
+                                           "C_SAC195", "C_SAC093", "C_SSL001",
+                                           "C_SAC048", "C_CSL005"),
+                                   type=c(rep("RIVER-SPILLS",7),rep("CHANNEL",5)))
+
+lto_propq_data <- calsim3_data |> filter(node %in% calsim3_prop_q_nodes$nodes) |>
+  left_join(select(calsim3_prop_q_nodes, inputs, nodes), by=c("node" = "nodes")) |>
+  group_by(date = as_date(date), inputs) |>
+  summarise(
+    flow_cfs = sum(flow_cfs)
+  ) |> ungroup() |>
+  pivot_wider(names_from = "inputs", values_from = "flow_cfs")
+
+lto_12a_proportion_flow_bypass <- generate_proportion_flow_bypasses(lto_propq_data)
+
 proportion_flow_bypasses <- list(biop_2008_2009 = proportion_flow_bypasses_2008_2009,
                                  biop_itp_2018_2019 = proportion_flow_bypasses_2019_biop_itp,
-                                 run_of_river = proportion_flow_bypasses_run_of_river)
+                                 run_of_river = proportion_flow_bypasses_run_of_river,
+                                 LTO_12a = lto_12a_proportion_flow_bypass)
 
 usethis::use_data(proportion_flow_bypasses, overwrite = TRUE)
 
@@ -1021,15 +1337,25 @@ generate_gates_overtopped <- function(calsim_data) {
 gates_overtopped_2008_2009 <- generate_gates_overtopped(calsim_2008_2009)
 gates_overtopped_2019_biop_itp <- generate_gates_overtopped(calsim_2019_biop_itp)
 gates_overtopped_run_of_river <- generate_gates_overtopped(calsim_run_of_river)
-
+gates_overtopped_lto_12a <- generate_gates_overtopped(lto_propq_data)
 
 gates_overtopped <- list(biop_2008_2009 = gates_overtopped_2008_2009,
                          biop_itp_2018_2019 = gates_overtopped_2019_biop_itp,
-                         run_of_river = gates_overtopped_run_of_river)
+                         run_of_river = gates_overtopped_run_of_river,
+                         LTO_12a = gates_overtopped_lto_12a)
 
 usethis::use_data(gates_overtopped, overwrite = TRUE)
 
 # Delta Routing Flows ----------------------------------------------------------
+
+# calsim3 nodes
+calsim3_delta_routing <- data.frame(input=c("freeport_flows", "vernalis_flows", "stockton_flows",
+                   rep("CVP_exports", 2), rep("SWP_exports",3)),
+           nodes=c("C_SAC041", "C_SJR070", "C_SJR053A",
+                   "DEL_CVP_TOTAL_N", "DEL_CVP_TOTAL_S",
+                   "DEL_SWP_PMI", "DEL_SWP_PAG", "DEL_SWP_PIN"),
+           type=c(rep("CHANNEL",3), rep("DELIVERY-CVP",2),
+                  rep("DELIVERY-SWP",3)))
 
 # wilkins flow -----------------------------------------------------------------
 # Adds wilkins flow node to replace freeport flow
@@ -1060,9 +1386,22 @@ wilkins_flow_2008_2009 <- generate_wilkins_flow(calsim_2008_2009, wilkins_node)
 wilkins_flow_2019_biop_itp <- generate_wilkins_flow(calsim_2019_biop_itp, wilkins_node)
 wilkins_flow_run_of_river <- generate_wilkins_flow(calsim_run_of_river, wilkins_node)
 
+# calsim 3
+wilkins_flow_lto_12a <- calsim3_data |> filter(node == "C_SAC129", year(date) >= 1980, year(date) <= 2000) |>
+  transmute(
+    year = year(date),
+    month = month(date),
+    wilkinsQcms = cfs_to_cms(flow_cfs)
+  ) |>
+  pivot_wider(names_from = year,
+              values_from = wilkinsQcms) |>
+  select(-month) |>
+  as.matrix()
+
 wilkins_flow <- list(biop_2008_2009 = wilkins_flow_2008_2009,
                      biop_itp_2018_2019 = wilkins_flow_2019_biop_itp,
-                     run_of_river = wilkins_flow_run_of_river)
+                     run_of_river = wilkins_flow_run_of_river,
+                     LTO_12a = wilkins_flow_lto_12a)
 
 usethis::use_data(wilkins_flow, overwrite = TRUE)
 
@@ -1095,9 +1434,23 @@ freeport_flow_2008_2009 <- generate_freeport_flow(calsim_2008_2009, freeport_nod
 freeport_flow_2019_biop_itp <- generate_freeport_flow(calsim_2019_biop_itp, freeport_node)
 freeport_flow_run_of_river <- generate_freeport_flow(calsim_run_of_river, freeport_node)
 
+freeport_flow_lto_12a <- calsim3_data |> filter(node == "C_SAC041", year(date) >= 1980, year(date) <= 2000) |>
+  transmute(
+    year = year(date),
+    month = month(date),
+    wilkinsQcms = cfs_to_cms(flow_cfs)
+  ) |>
+  pivot_wider(names_from = year,
+              values_from = wilkinsQcms) |>
+  select(-month) |>
+  as.matrix()
+
+
+
 freeport_flow <- list(biop_2008_2009 = freeport_flow_2008_2009,
                       biop_itp_2018_2019 = freeport_flow_2019_biop_itp,
-                      run_of_river = freeport_flow_run_of_river)
+                      run_of_river = freeport_flow_run_of_river,
+                      LTO_12a = freeport_flow_lto_12a)
 
 usethis::use_data(freeport_flow, overwrite = TRUE)
 
@@ -1130,9 +1483,23 @@ vernalis_flow_2008_2009 <- generate_vernalis_flow(calsim_2008_2009, vernalis_nod
 vernalis_flow_2019_biop_itp <- generate_vernalis_flow(calsim_2019_biop_itp, vernalis_node)
 vernalis_flow_run_of_river <- generate_vernalis_flow(calsim_run_of_river, vernalis_node)
 
+vernalis_flow_lto_12a <- calsim3_data |> filter(node == "C_SJR070", year(date) >= 1980, year(date) <= 2000) |>
+  transmute(
+    year = year(date),
+    month = month(date),
+    wilkinsQcms = cfs_to_cms(flow_cfs)
+  ) |>
+  pivot_wider(names_from = year,
+              values_from = wilkinsQcms) |>
+  select(-month) |>
+  as.matrix()
+
+
+
 vernalis_flow <- list(biop_2008_2009 = vernalis_flow_2008_2009,
                       biop_itp_2018_2019 = vernalis_flow_2019_biop_itp,
-                      run_of_river = vernalis_flow_run_of_river)
+                      run_of_river = vernalis_flow_run_of_river,
+                      LTO_12a = vernalis_flow_lto_12a)
 
 usethis::use_data(vernalis_flow, overwrite = TRUE)
 
@@ -1165,9 +1532,21 @@ stockton_flow_2008_2009 <- generate_stockton_flow(calsim_2008_2009, stockton_nod
 stockton_flow_2019_biop_itp <- generate_stockton_flow(calsim_2019_biop_itp, stockton_node)
 stockton_flow_run_of_river <- generate_stockton_flow(calsim_run_of_river, stockton_node)
 
+stockton_flow_lto_12a <- calsim3_data |> filter(node == "C_SJR053A", year(date) >= 1980, year(date) <= 2000) |>
+  transmute(
+    year = year(date),
+    month = month(date),
+    wilkinsQcms = cfs_to_cms(flow_cfs)
+  ) |>
+  pivot_wider(names_from = year,
+              values_from = wilkinsQcms) |>
+  select(-month) |>
+  as.matrix()
+
 stockton_flow <- list(biop_2008_2009 = stockton_flow_2008_2009,
                       biop_itp_2018_2019 = stockton_flow_2019_biop_itp,
-                      run_of_river = stockton_flow_run_of_river)
+                      run_of_river = stockton_flow_run_of_river,
+                      LTO_12a = stockton_flow_lto_12a)
 
 usethis::use_data(stockton_flow, overwrite = TRUE)
 
@@ -1200,9 +1579,23 @@ cvp_exports_2008_2009 <- generate_cvp_exports(calsim_2008_2009)
 cvp_exports_2019_biop_itp <- generate_cvp_exports(calsim_2019_biop_itp)
 cvp_exports_run_of_river <- generate_cvp_exports(calsim_run_of_river)
 
+# calsim 3
+cvp_exports_lto <- calsim3_data |> filter(node %in% c("DEL_CVP_TOTAL_N", "DEL_CVP_TOTAL_S"),
+                       year(date) >= 1980, year(date) <= 2000) |>
+  group_by(date = as_date(date)) |>
+  summarise(
+    cvpExportsQcms = cfs_to_cms(sum(flow_cfs))
+  ) |> ungroup() |>
+  transmute(year =year(date), month = month(date), cvpExportsQcms) |>
+  pivot_wider(names_from = year,
+              values_from = cvpExportsQcms) |>
+  select(-month) |>
+  as.matrix()
+
 cvp_exports <- list(biop_2008_2009 = cvp_exports_2008_2009,
                     biop_itp_2018_2019 = cvp_exports_2019_biop_itp,
-                    run_of_river = cvp_exports_run_of_river)
+                    run_of_river = cvp_exports_run_of_river,
+                    LTO_12a = cvp_exports_lto)
 
 usethis::use_data(cvp_exports, overwrite = TRUE)
 
@@ -1234,9 +1627,23 @@ swp_exports_2008_2009 <- generate_swp_exports(calsim_2008_2009)
 swp_exports_2019_biop_itp <- generate_swp_exports(calsim_2019_biop_itp)
 swp_exports_run_of_river <- generate_swp_exports(calsim_run_of_river)
 
+swp_exports_lto <- calsim3_data |> filter(node %in% c("DEL_SWP_PMI", "DEL_SWP_PAG", "DEL_SWP_PIN"),
+                                          year(date) >= 1980, year(date) <= 2000) |>
+  group_by(date = as_date(date)) |>
+  summarise(
+    swpExportsQcms = cfs_to_cms(sum(flow_cfs))
+  ) |> ungroup() |>
+  transmute(year =year(date), month = month(date), swpExportsQcms) |>
+  pivot_wider(names_from = year,
+              values_from = swpExportsQcms) |>
+  select(-month) |>
+  as.matrix()
+
+
 swp_exports <- list(biop_2008_2009 = swp_exports_2008_2009,
                     biop_itp_2018_2019 = swp_exports_2019_biop_itp,
-                    run_of_river = swp_exports_run_of_river)
+                    run_of_river = swp_exports_run_of_river,
+                    LTO_12a = swp_exports_lto)
 
 usethis::use_data(swp_exports, overwrite = TRUE)
 
