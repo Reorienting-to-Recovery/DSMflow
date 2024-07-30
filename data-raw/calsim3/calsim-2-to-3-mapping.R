@@ -397,7 +397,70 @@ total_diversion_nodes <- data.frame(input=c(rep("Upper Sacramento River_Div",7),
 
 
 
-map_df()
+# upper sacramento flow ---------------------------------------------
+upper_sacramento_flows <- calsim_data |>
+  filter(node == "C_SAC257") |>
+  select(-B, -node, upsacQcfs=flow_cfs) |>
+  mutate(upsacQcms = DSMflow::cfs_to_cms(upsacQcfs),
+         year = year(date),
+         month = month(date)) |>
+  filter(year >= 1980, year <= 2000) |>
+  select(-date, -upsacQcfs) |>
+  pivot_wider(names_from = year,
+              values_from = upsacQcms) |>
+  select(-month) |>
+  as.matrix()
+
+
+# proportion flow natal --------------------------------------------
+lto_calsim3_flows |>
+  mutate(`Lower-mid Sacramento River` = 35.6/58*`Lower-mid Sacramento River1` + 22.4/58*`Lower-mid Sacramento River2`,
+         `Upper Sacramento River` = `Upper Sacramento River`/`Upper-mid Sacramento River`,
+         `Antelope Creek` = `Antelope Creek`/`Upper-mid Sacramento River`,
+         `Battle Creek` = `Battle Creek`/`Upper-mid Sacramento River`,
+         `Bear Creek` = `Bear Creek`/`Upper-mid Sacramento River`,
+         `Big Chico Creek` = `Big Chico Creek`/`Upper-mid Sacramento River`,
+         `Butte Creek` = `Butte Creek`/`Upper-mid Sacramento River`,
+         `Clear Creek` = `Clear Creek`/`Upper-mid Sacramento River`,
+         `Cottonwood Creek` = `Cottonwood Creek`/`Upper-mid Sacramento River`,
+         `Cow Creek` = `Cow Creek`/`Upper-mid Sacramento River`,
+         `Deer Creek` = `Deer Creek`/`Upper-mid Sacramento River`,
+         `Elder Creek` = `Elder Creek`/`Upper-mid Sacramento River`,
+         `Mill Creek` = `Mill Creek`/`Upper-mid Sacramento River`,
+         `Paynes Creek` = `Paynes Creek`/`Upper-mid Sacramento River`,
+         `Stony Creek` = `Stony Creek`/`Upper-mid Sacramento River`,
+         `Thomes Creek` = `Thomes Creek`/`Upper-mid Sacramento River`,
+         `Upper-mid Sacramento River` = 1,
+         `Sutter Bypass` = 0,
+         `Bear River` = `Bear River`/`Feather River`,
+         `Yuba River` = `Yuba River`/`Feather River`,
+         `Feather River` = `Feather River`/`Lower-mid Sacramento River2`,
+         `Lower-mid Sacramento River` = 1,
+         `Yolo Bypass` = 0,
+         `American River` = `American River`/`Lower Sacramento River`,
+         `Lower Sacramento River` = 1,
+         `Calaveras River` = 1,
+         `Cosumnes River` = 1,
+         `Mokelumne River` = 1,
+         `Merced River` = `Merced River`/`San Joaquin River`,
+         `Stanislaus River` = `Stanislaus River`/`San Joaquin River`,
+         `Tuolumne River` = `Tuolumne River`/`San Joaquin River`,
+         `San Joaquin River` = 1) |>
+  mutate(month=factor(month.abb[month(date)], levels=month.abb[1:12]), year=year(date)) |>
+  filter(year %in% (1979:2000), month == "Oct") |>  # summarize for month of October
+  as.data.frame() |>
+  pivot_longer(cols = `Upper Sacramento River`:`Yolo Bypass`,
+               names_to = "input", values_to = "value") |>
+  mutate(value = pmin(value,1)) |>  # Ensure no proportions exceed 1
+  filter(input %in% inputs) |>
+  ungroup() |>
+  mutate(input2 = factor(input, levels=inputs)) |>  # re-order according to DSMflow object
+  select(year, input2, value) |>
+  melt(id=c("year", "input2")) |>
+  acast(input2~year)
+
+
+
 
 
 
