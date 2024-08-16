@@ -228,9 +228,9 @@ sj_wet_natural_flows_database_eff <- tibble(month = factor(month.abb[1:12],
 #   geom_line() +
 #   geom_vline(aes(xintercept = 300), linetype = "dashed")
 
-# DSMhabitat::upper_san_joaquin_floodplain |> 
-#   ggplot(aes(x = flow_cfs, y = SR_floodplain_acres)) + 
-#   geom_line() + 
+# DSMhabitat::upper_san_joaquin_floodplain |>
+#   ggplot(aes(x = flow_cfs, y = SR_floodplain_acres)) +
+#   geom_line() +
 #   geom_vline(aes(xintercept = 4500), linetype = "dashed")
 
 flow_threshold_50 <- flow_to_survival_thresholds |> 
@@ -240,10 +240,10 @@ flow_threshold_50 <- flow_to_survival_thresholds |>
 sj_functional_flows_for_model_wet <- tibble(month = factor(month.abb[1:12], 
                                                         levels = month.abb[c(10, 11, 12, 1:9)]),
                            # month_name = month.abb[month],
-                           flow_cfs = c(45500, # Jan 
-                                        45500, # March 
-                                        45500, # March 
-                                        45500, # April 
+                           flow_cfs = c(4500, # Jan 
+                                        4500, # March 
+                                        4500, # March 
+                                        4500, # April 
                                         flow_threshold_50, # May Spring recession flow (3,258 for mig surv ~50%)
                                         flow_threshold_50, # June Spring recession flow (3,258 for mig surv ~50%)
                                         flow_threshold_50, # July (3,258 for mig surv ~50%)
