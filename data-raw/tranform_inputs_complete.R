@@ -119,19 +119,27 @@ flow_cfs_2019_biop_itp <- flow_cfs_2019_biop_itp |>
   select(date:`Cosumnes River`, `Mokelumne River`, `Merced River`:`San Joaquin River`) # reorder
 
 # EFF run
+# Sacramento
 # Sometime flow change to eff on upper sac leads to negative flows downstream, set these to bottom out at 100 CFS
+# includes San Joaquin now
 load("data/synthetic_eff_sac.rda")
+load("data/synthetic_eff_sj.rda")
 eff_sac_2019_biop_elsewhere <- flow_cfs_2019_biop_itp |>
   left_join(synthetic_eff_sac) |>
+  left_join(synthetic_eff_sj) |>
+  # sacramento
   mutate(flow_change = `Upper Sacramento River EFF` - `Upper Sacramento River`,
          `Upper Sacramento River` = `Upper Sacramento River EFF`,
          `Upper-mid Sacramento River` = ifelse(`Upper-mid Sacramento River` + flow_change < 0, 100, `Upper-mid Sacramento River` + flow_change),
          `Lower-mid Sacramento River1` = ifelse(`Lower-mid Sacramento River1` + flow_change < 0, 100, `Lower-mid Sacramento River1` + flow_change),
-         `Lower-mid Sacramento River2` = ifelse(`Lower-mid Sacramento River2` + flow_change < 0, 100, `Lower-mid Sacramento River1` + flow_change),
+         `Lower-mid Sacramento River2` = ifelse(`Lower-mid Sacramento River2` + flow_change < 0, 100, `Lower-mid Sacramento River2` + flow_change),
          `Lower Sacramento River` = ifelse(`Lower Sacramento River` + flow_change < 0, 100, `Lower Sacramento River` + flow_change)) |>
-  select(-`Upper Sacramento River EFF`, -flow_change) |> glimpse()
+  # TODO check to make sure nothing downstream of San Joaquin + flow change is negative
+  mutate(`San Joaquin River` = `Lower San Joaquin EFF`) |>
+  select(-c(`Upper Sacramento River EFF`, flow_change, `Lower San Joaquin EFF`))
 
 View(eff_sac_2019_biop_elsewhere)
+
 # Add run of river
 calsim_run_of_river <- read_rds('data-raw/calsim_run_of_river/run_of_river_r2r_calsim.rds')
 
@@ -694,7 +702,7 @@ mean_flow_eff <- generate_mean_flow(bypass_flows$biop_itp_2018_2019, flows_cfs$e
 mean_flow_lto12a <- generate_mean_flow(bypass_flows$LTO_12a, flows_cfs$LTO_12a)
 
 mean_flow <- list(biop_2008_2009 = mean_flow_2008_2009,
-                   biop_itp_2018_2019 = mean_flow_2019_biop_itp,
+                  biop_itp_2018_2019 = mean_flow_2019_biop_itp,
                   run_of_river = mean_flow_run_of_river,
                   eff_sac = mean_flow_eff,
                   lto_12a = mean_flow_lto12a)

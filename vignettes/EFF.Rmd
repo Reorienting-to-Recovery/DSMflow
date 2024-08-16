@@ -1,27 +1,26 @@
 ---
-title: "Functional Flow Analysis"
+title: "Functional Flow Analysis for the Sacramento River"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
-
 ```
 
 ## Incorperating Effective Functional Flows into R2R
 
-The Reorienting to Recovery Structured Decision Making group proposed a effective functional flow (EFF) scenario. To this date, there is no available CalSIM EFF run so we cannot model full EFF on the entire system. This document outlines our approach to piloting a EFF on the Sacramento River.
+The Reorienting to Recovery Structured Decision Making group proposed an effective functional flow (EFF) scenario. To date, there is no available CalSIM EFF run so we cannot model full EFF on the entire system. This document outlines our approach to piloting an EFF on the Sacramento River constructed to maximize salmonid survival, which differs from the California EFF.
 
 **Pilot EFF Approach on the Sacramento River**
 
-The R2R technical team is working collaboratively with a flow sub group to develop a EFF hydrograph for the Sacramento River. We are building off of the Nature Conservancy's Natural Flows Database to develop a wet and dry year monthly EFF hydrographs. We will compile these wet and dry year EFF into a 20 year synthetic timeserries based on the historical water year types between 1980 and 2000, the current R2R model timeframe.
+The R2R technical team met with a flow subgroup to determine the best way to model EFFs. The team started by looking at the Nature Conservancy's Natural Flows Database to understand dynamics in the Upper Sacramento system. Acknowledging that modifying flows will only affect parts of the decision support model (DSM) that use flow-based relationships, we decided to use flow-to-habitat and flow-to-survival relationships to determine when and how much flow we wanted in the Sacramento river. We compared this to the Natural Flows tool and the Calsim 2019 BiOp to provide some comparison of total flow volumes in these scenarios. This produced a wet and dry year monthly EFF hydrograph, compiled into a 20-year synthetic time series based on the historical water year types represented in the R2R model time frame (1980-2000).
 
 **Planned Improvements and Next Steps**
 
 -   The technical team is working to review existing literature on pulse flows and expand pulse flow routing logic in the model. This will increase the granularity of flow related model effects despite the monthly timestep of our CalSim flow input data and the model.
 
--   The technical team is also working with MBK to incoperate EFF logic into a CalSIM Run that we can use directly in the model.
+-  The technical team is working with the COllaboratory for EQuity in Water ALlocations (COEQWAL) to incorporate EFF logic into a CalSIM run.
 
 ### What is an EFF
 
@@ -35,19 +34,20 @@ For more information on EFF please refer to additional sources:
 
 -   [California Environmental Flows Framework](https://ceff.ucdavis.edu/sites/g/files/dgvnsk5566/files/media/documents/CEFF%20Technical%20Report%20Ver%201.0%20Mar_31_2021_DRAFT_FINAL%20for%20web.pdf)
 
--   [Natural Flows Database](https://ceff.ucdavis.edu/sites/g/files/dgvnsk5566/files/media/documents/CEFF%20Technical%20Report%20Ver%201.0%20Mar_31_2021_DRAFT_FINAL%20for%20web.pdf)
+-   [Natural Flows Database](https://rivers.codefornature.org/#/map)
 
-### How can we tailor EFF to our system
+### Tailoring EFF to our system
 
-EFF are hypothesized to be the best flows for salmon in our historical system. However, our system is highly managed so we may need to alter EFF slightly from their historical values to maximize benefit to salmon.
+EFF are hypothesized to be the best flows for salmon in our historical system. However, our system is highly managed so we needed to alter the salmonid EFF to maximize benefit to salmon.
 
-The R2R techncial team developed proposed EFF monthly flows by combining the [Natural Flows Database](https://ceff.ucdavis.edu/sites/g/files/dgvnsk5566/files/media/documents/CEFF%20Technical%20Report%20Ver%201.0%20Mar_31_2021_DRAFT_FINAL%20for%20web.pdf) values with critical flow to survival migratory thresholds on the Sacramento River (from [Michel 2021](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.3498)). This original attempt did not maximize habitat so the technical team revised their approach to maximize modeled habitat and survival using the following principles: 
+The R2R techncial team developed proposed EFF monthly flows by combining characteristics of the [Natural Flows Database](https://ceff.ucdavis.edu/sites/g/files/dgvnsk5566/files/media/documents/CEFF%20Technical%20Report%20Ver%201.0%20Mar_31_2021_DRAFT_FINAL%20for%20web.pdf) with critical flow to survival migratory thresholds on the Sacramento River (from [Michel 2021](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.3498)). 
 
-1) Optimize spawning habitat during full spawning timeframe (October, November, and December)
+This original attempt did not maximize habitat so the technical team revised their approach to maximize modeled habitat and survival using the following principles: 
+
+1) Optimize spawning habitat during full spawning time frame (October, November, and December) based on the Upper-mid Sacramento flow-to-suitable-habitat curves documented [here](https://reorienting-to-recovery.github.io/DSMhabitat/reference/sacramento_habitat.html).
 2) Fix dry season base flow at a low value to maximize water for Juveniles, use Natural Flows Database as a guide (August, September)
 3) Optimize outmigration survival in last 3 model outmigration months (May, June, July). If water volume allows set migratory survival above 50%. If volume of water limited, set migratory survival above 20% (based on migratory survival flow survival thresholds on the Sacramento River (from [Michel 2021](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.3498)). 
 4) Utilize additional flows for maximizing FP habitat in (January, February, March & April)
-
 
 ```{r, echo=FALSE}
 # Helper / Set Up Code
@@ -94,11 +94,11 @@ represenative_dry_years <- water_year_types |>
 
 ```
 
-### Proposed Model EFF {.tabset}
+### Proposed Model EFFs {.tabset}
 
 #### Wet Year EFF
 
-The table below shows monthly flow CFS for a wet year model EFF on the Sacramento River. This table was constructed using the Natural Flows database and model survival thresholds.
+The table below shows monthly flow EFF for a wet year model EFF on the Sacramento River. This table was constructed using the Natural Flows database and model survival thresholds.
 
 ```{r, echo = FALSE}
 # WET YEAR EFF 
@@ -145,15 +145,15 @@ sac_functional_flows_for_model_wet <- tibble(month = factor(month.abb[1:12],
                                         4750, # Nov 
                                         4750 # Dec  
                                          ),
-                           description = c("Utalize remaining water for FP habitat", # Try for fp rearing hab, less important - dependent on acre ft 
-                                           "Utalize remaining water for FP habitat", # Optimize for  fp rearing habitat 
-                                           "Utalize remaining water for FP habitat", # Optimize for  fp rearing habitat 
-                                           "Utalize remaining water for FP habitat", # Optimize for fp rearing habitat 
+                           description = c("Utilize remaining water for FP habitat", # Try for fp rearing hab, less important - dependent on acre ft 
+                                           "Utilize remaining water for FP habitat", # Optimize for  fp rearing habitat 
+                                           "Utilize remaining water for FP habitat", # Optimize for  fp rearing habitat 
+                                           "Utilize remaining water for FP habitat", # Optimize for fp rearing habitat 
                                            "Optimize for migratory survival (10,700 for mig surv ~50%)", # 
                                            "Optimize for migratory survival (10,700 for mig surv ~50%)", # Optimize for migratory survival (keep as high as possible but above mig surv thresholds)
                                            "Optimize for migratory survival (10,700 for mig surv ~50%)", # Optimize for migratory survival (keep as high as possible but above mig surv thresholds)
-                                           "Set at 1000 to incrase acerage for avaliable for Juv flows", # set at 1000 to 
-                                           "Set at 1000 to incrase acerage for avaliable for Juv flows",
+                                           "Set at 1000 to incrase acreage for avaliable for Juv flows", # set at 1000 to 
+                                           "Set at 1000 to incrase acreage for avaliable for Juv flows",
                                            "Optimize for spawning habitat based on flow area WUA ", # Optimize for spawning habitat based on flow area WUA 
                                            "Optimize for spawning habitat based on flow area WUA ", # Optimize for spawning habitat 
                                            "Optimize for spawning habitat based on flow area WUA ")) # Optimize for spawning habitat 
@@ -175,7 +175,7 @@ combined_data |>
   scale_color_manual(values = c("black", "lightblue", "gray")) +
   labs(x = "Month", 
        y = "Flow CFS", 
-       title = "Wet Year - Model Functional Montly Flows")
+       title = "Wet Year - Model Constructed Salmonid Monthly Flows")
 ```
 
 The table below shows the annual total volume of water needed for each flow scenario. The wet year EFF uses more water than the Natural Flows database EFF and then the representative CalSIM year. 
@@ -230,15 +230,15 @@ sac_functional_flows_for_model_dry <- tibble(month = factor(month.abb[1:12],
                                         4750, # Nov add fall pulse flow, based on dry year monthly Natural Flows
                                         4750 # Dec Begin dry season baseflow and medium flow, based on dry year monthly Natural Flows
                                          ),
-                            description = c("Utalize remaining water for FP habitat", # Try for fp rearing hab, less important - dependent on acre ft 
-                                           "Utalize remaining water for FP habitat", # Optimize for  fp rearing habitat 
-                                           "Utalize remaining water for FP habitat", # Optimize for  fp rearing habitat 
-                                           "Utalize remaining water for FP habitat", # Optimize for fp rearing habitat 
+                            description = c("Utilize remaining water for FP habitat", # Try for fp rearing hab, less important - dependent on acre ft 
+                                           "Utilize remaining water for FP habitat", # Optimize for  fp rearing habitat 
+                                           "Utilize remaining water for FP habitat", # Optimize for  fp rearing habitat 
+                                           "Utilize remaining water for FP habitat", # Optimize for fp rearing habitat 
                                            "Keep high for migratory survival (4,350 for mig surv ~20%)", # 
                                            "Keep high for migratory survival (4,350 for mig surv ~20%)", # Optimize for migratory survival (keep as high as possible but above mig surv thresholds)
                                            "Keep high for migratory survival (4,350 for mig surv ~20%)", # Optimize for migratory survival (keep as high as possible but above mig surv thresholds)
-                                           "Set summer base flow to 550 based on Natural flows tool and to incrase acerage for avaliable for Juv flows", # set at 1000 to 
-                                           "Set summer base flow to 550 based on Natural flows tool and to incrase acerage for avaliable for Juv flows",
+                                           "Set summer base flow to 550 based on Natural flows tool and to incrase acreage for avaliable for Juv flows", # set at 1000 to 
+                                           "Set summer base flow to 550 based on Natural flows tool and to incrase acreage for avaliable for Juv flows",
                                            "Optimize for spawning habitat based on flow area WUA ", # Optimize for spawning habitat based on flow area WUA 
                                            "Optimize for spawning habitat based on flow area WUA ", # Optimize for spawning habitat 
                                            "Optimize for spawning habitat based on flow area WUA ")) # Optimize for spawning habitat 
@@ -247,11 +247,11 @@ knitr::kable(sac_functional_flows_for_model_dry)
 
 ```
 
-The plot below shows the CalSIM modeled flows for the Sacramento River of an existing representative dry year: 1987 1987 has the median water year index as provided by DWR out of all the "Critical", "Dry", and "Below Normal" years within our model time frame.
+The plot below shows the CalSIM modeled flows for the Sacramento River of an existing representative dry year: 1987. 1987 has the median water year index as provided by DWR out of all the "Critical", "Dry", and "Below Normal" years within our model time frame.
 
 
 ```{r, echo = FALSE}
-combined_data_dry <- bind_rows((sac_functional_flows_for_model_dry |> mutate(Type = "Model EFF Wet Year")), 
+combined_data_dry <- bind_rows((sac_functional_flows_for_model_dry |> mutate(Type = "Model EFF Dry Year")), 
                   (sac_dry_natural_flows_database_eff |> mutate(Type = "Natural Flows EFF")),
                   (dry_year |> mutate(Type = "CalSim")))
 combined_data_dry |> 
@@ -261,10 +261,10 @@ combined_data_dry |>
   scale_color_manual(values = c("black", "lightblue", "gray")) +
   labs(x = "Month", 
        y = "Flow CFS", 
-       title = "Dry Year - Model Functional Montly Flows")
+       title = "Dry Year - Model Constructed Salmonid Monthly Flows")
 ```
 
-The table below shows the annual total volume of water needed for each flow scenario. The dry year EFF uses less water than the Natural Flows database EFF and then the representative CalSIM year. 
+The table below shows the annual total volume of water needed for each flow scenario. The dry year EFF uses less water than the Natural Flows database EFF and than the representative CalSIM year. 
 
 ```{r, echo = FALSE}
 compare_total_flow_volumne(dry_year, 
@@ -275,9 +275,9 @@ compare_total_flow_volumne(dry_year,
 
 ### Creating a synthetic flow timeserries
 
-In order to incorporate these EFF into the model data inputs we combined wet and dry years to make a synthetic timeserries over the full 20 year period. We started by classifying years as "Dry" or "Wet" based on DWR water year type classifications. All "Dry", "Critical", or "Below Normal" years fall into the "Dry" category and all "Wet" or "Above Normal" years fall into the "Wet" category. 
+In order to incorporate these EFF into the model data inputs we combined wet and dry years to make a synthetic time series over the full 20 year period. We started by classifying years as "Dry" or "Wet" based on DWR water year type classifications. All "Dry", "Critical", or "Below Normal" years fall into the "Dry" category and all "Wet" or "Above Normal" years fall into the "Wet" category. 
 
-The plot below shows this synthetic timeserries for the Sacramento River over the 20 year simmulation period.
+The plot below shows this synthetic time series for the Sacramento River over the 20 year simulation period.
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE}
 # Wet dry sequence 
@@ -326,9 +326,9 @@ synthetic_eff_sac |>
   ggplot(aes(x = date, y = `Upper Sacramento River EFF`)) +
   geom_line(color = "blue4") + 
   theme_minimal() +
-  labs(x = "Flow CFS", 
-       y = "", 
-       title = "Synthetic Model Effective Functional Flows for Sacramento River") 
+  labs(y = "Flow CFS", 
+       x = "", 
+       title = "Synthetic Model Constructed Salmonid Flows for Sacramento River") 
 ```
 ```{r, echo = FALSE}
 # Process data objects for use in modeling, data then used to create a scenario in transform_inputs_complete.R, source this file in transform_inputs_complete.R
