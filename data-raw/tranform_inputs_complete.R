@@ -175,7 +175,7 @@ nodes_to_watershed <- names(watershed_to_nodes)
 names(nodes_to_watershed) <- as.character(watershed_to_nodes)
 
 
-lto_calsim3_flows <- calsim_data |> filter(node %in% watershed_to_nodes) |>
+lto_calsim3_flows <- calsim3_data |> filter(node %in% watershed_to_nodes) |>
   mutate(watershed = nodes_to_watershed[node]) |>
   select(-B, -node) |>
   pivot_wider(names_from = "watershed", values_from = "flow_cfs") |>
@@ -236,7 +236,7 @@ calsim3_bypass_nodes <- data.frame(inputs=c("sutter1",
 bypass_nodes <- calsim3_bypass_nodes$inputs
 names(bypass_nodes) <- calsim3_bypass_nodes$nodes
 
-lto_calsim3_bypass_flows <- calsim_data |> filter(node %in% names(bypass_nodes)) |>
+lto_calsim3_bypass_flows <- calsim3_data |> filter(node %in% names(bypass_nodes)) |>
   mutate(bypass = bypass_nodes[node]) |>
   select(-B, -node) |>
   group_by(date, bypass) |>
@@ -433,7 +433,7 @@ calsim3_diversion_nodes <- c("D_SAC296_WTPFTH", "D_SAC296_02_SA", "D_SAC294_WTPB
 )
 
 
-calsim_diversions_wide <- calsim_data |> filter(node %in% calsim3_diversion_nodes) |>
+calsim_diversions_wide <- calsim3_data |> filter(node %in% calsim3_diversion_nodes) |>
   select(-B) |>
   pivot_wider(names_from = node, values_from = flow_cfs)
 
@@ -830,7 +830,7 @@ rownames(up_sac_flows_eff_as_matrix) <- month.abb[1:12]
 upper_sac_flows_eff <- up_sac_flows_eff_as_matrix # copied code from EFF vignette above
 
 # calsim 3
-lto_12a_upper_sacramento_flows <- calsim_data |>
+lto_12a_upper_sacramento_flows <- calsim3_data |>
   filter(node == "C_SAC257") |>
   select(-B, -node, upsacQcfs=flow_cfs) |>
   mutate(upsacQcms = DSMflow::cfs_to_cms(upsacQcfs),
