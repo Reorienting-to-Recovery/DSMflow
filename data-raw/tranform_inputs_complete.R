@@ -851,6 +851,26 @@ upper_sacramento_flows <- list(biop_2008_2009 = upper_sacramento_flows_2008_2009
 
 usethis::use_data(upper_sacramento_flows, overwrite = TRUE)
 
+# create SJ object - quick and dirty approach, just only available for use in EFF scenario
+sj_flows_eff_as_matrix <- synthetic_eff_sj |>
+  mutate(sjQcms = DSMflow::cfs_to_cms(`Lower San Joaquin EFF`),
+         year = year(date),
+         month = month(date)) |>
+  filter(year >= 1980, year <= 2000) |>
+  arrange(date, ascending = TRUE) |>
+  select(-date, -`Lower San Joaquin EFF`) |>
+  pivot_wider(names_from = year,
+              values_from = sjQcms) |>
+  select(-month) |>
+  as.matrix()
+rownames(sj_flows_eff_as_matrix) <- month.abb[1:12]
+
+san_joaquin_flows_eff <- sj_flows_eff_as_matrix # copied code from EFF vignette above
+
+san_joaquin_flows <- list(eff_sac = san_joaquin_flows_eff)
+
+usethis::use_data(san_joaquin_flows, overwrite = TRUE)
+
 # prop flow natal --------------------------------------------------------------
 # Replaces retQ
 # proportion flows at tributary junction coming from natal watershed using october average flow
