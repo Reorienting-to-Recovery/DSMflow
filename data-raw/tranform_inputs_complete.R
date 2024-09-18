@@ -657,7 +657,7 @@ lto_12a_proportion_diverted = readr::read_rds("data-raw/calsim3/lto-proportion-d
 proportion_diverted <- list(biop_2008_2009 = prop_diverted_2008_2009,
                        biop_itp_2018_2019 = prop_diverted_2019_biop_itp,
                        run_of_river = prop_diverted_run_of_river,
-                       lto_12a = lto_12a_proportion_diverted
+                       LTO_12a = lto_12a_proportion_diverted
 )
 
 usethis::use_data(proportion_diverted, overwrite = TRUE)
@@ -705,7 +705,7 @@ mean_flow <- list(biop_2008_2009 = mean_flow_2008_2009,
                   biop_itp_2018_2019 = mean_flow_2019_biop_itp,
                   run_of_river = mean_flow_run_of_river,
                   eff_sac = mean_flow_eff,
-                  lto_12a = mean_flow_lto12a)
+                  LTO_12a = mean_flow_lto12a)
 
 usethis::use_data(mean_flow, overwrite = TRUE)
 
@@ -981,7 +981,7 @@ proportion_pulse_flows <- list(biop_2008_2009 = proportion_pulse_flows_2008_2009
                               biop_itp_2018_2019 = proportion_pulse_flows_2019_biop_itp,
                               run_of_river = proportion_pulse_flows_run_of_river,
                               eff_sac = proportion_pulse_flows_eff_sac,
-                              lto_12a = proportion_pulse_flows_lto_12a)
+                              LTO_12a = proportion_pulse_flows_lto_12a)
 
 usethis::use_data(proportion_pulse_flows, overwrite = TRUE)
 
