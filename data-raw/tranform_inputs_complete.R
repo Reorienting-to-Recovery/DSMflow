@@ -14,6 +14,17 @@ source('R/utils.R')
 watershed_ordering <- read_csv('data-raw/watershed_ordering.csv')
 usethis::use_data(watershed_ordering, overwrite = TRUE)
 
+
+# dry years for model timeframe -------------------------------------------
+dry_years <- waterYearType::water_year_indices |>
+  filter(location == "Sacramento Valley") |>
+  rename(water_year = WY) |>
+  mutate(year_type = ifelse(Yr_type %in% c("Wet", "Above Normal"), "wet", "dry")) |>
+  filter(#water_year %in% 1980:2000,
+         water_year %in% 1921:2002,
+         year_type == "dry") |>
+  pull(water_year)
+
 # calsim prep (all versions) ---------------------------------------------------
 cvpia_nodes <- read_csv('data-raw/calsim_2008_2009/MikeWrightCalSimOct2017/cvpia_calsim_nodes.csv', skip = 1)
 watersheds <- cvpia_nodes$watershed
@@ -181,12 +192,20 @@ lto_calsim3_flows <- calsim3_data |> filter(node %in% watershed_to_nodes) |>
   pivot_wider(names_from = "watershed", values_from = "flow_cfs") |>
   mutate(date = as_date(date))
 
+# combine eff in dry years to HRL (lto) flows
+LTO_12a_eff_dy <- bind_rows(eff_sac_2019_biop_elsewhere |>
+                              filter(year(date) %in% dry_years),
+                            lto_calsim3_flows |>
+                              filter(!year(date) %in% dry_years)) |>
+  arrange(date)
+
 # create flow_cfs with both 2008-2009 biop and 2018-2019 biop/itp and run of river ---------------
 flows_cfs <- list(biop_2008_2009 = flows_cfs_2008_2009,
                   biop_itp_2018_2019 = flow_cfs_2019_biop_itp,
                   run_of_river = flow_cfs_run_of_river,
                   eff_sac = eff_sac_2019_biop_elsewhere,
-                  LTO_12a = lto_calsim3_flows
+                  LTO_12a = lto_calsim3_flows,
+                  LTO_12a_eff_dy = LTO_12a_eff_dy
 )
 
 # Write flow cfs data object
@@ -700,12 +719,14 @@ mean_flow_2019_biop_itp <- generate_mean_flow(bypass_flows$biop_itp_2018_2019, f
 mean_flow_run_of_river <- generate_mean_flow(bypass_flows$run_of_river, flows_cfs$run_of_river) # missing moke
 mean_flow_eff <- generate_mean_flow(bypass_flows$biop_itp_2018_2019, flows_cfs$eff_sac)
 mean_flow_lto12a <- generate_mean_flow(bypass_flows$LTO_12a, flows_cfs$LTO_12a)
+mean_flow_LTO_12a_eff_dy <- generate_mean_flow(bypass_flows$biop_itp_2018_2019, flows_cfs$LTO_12a_eff_dy)
 
 mean_flow <- list(biop_2008_2009 = mean_flow_2008_2009,
                   biop_itp_2018_2019 = mean_flow_2019_biop_itp,
                   run_of_river = mean_flow_run_of_river,
                   eff_sac = mean_flow_eff,
-                  LTO_12a = mean_flow_lto12a)
+                  LTO_12a = mean_flow_lto12a,
+                  LTO_12a_eff_dy = mean_flow_LTO_12a_eff_dy)
 
 usethis::use_data(mean_flow, overwrite = TRUE)
 
@@ -843,11 +864,20 @@ lto_12a_upper_sacramento_flows <- calsim3_data |>
   select(-month) |>
   as.matrix()
 
+# add in EFF flows for dry years to HRL
+dry_years_model <- dry_years[dry_years %in% 1980:2000]
+dry_years_index <- which(1980:2000 %in%dry_years_model)
+upper_sacramento_flows_LTO_12a_eff_dy <- lto_12a_upper_sacramento_flows
+upper_sacramento_flows_LTO_12a_eff_dy[, dry_years_index] <- upper_sac_flows_eff[, dry_years_index]
+
 upper_sacramento_flows <- list(biop_2008_2009 = upper_sacramento_flows_2008_2009,
                                biop_itp_2018_2019 = upper_sacramento_flows_2019_biop_itp,
                                run_of_river = upper_sacramento_flows_run_of_river,
                                eff_sac = upper_sac_flows_eff,
-                               LTO_12a = lto_12a_upper_sacramento_flows)
+                               LTO_12a = lto_12a_upper_sacramento_flows,
+                               LTO_12a_eff_dy = upper_sacramento_flows_LTO_12a_eff_dy)
+
+
 
 usethis::use_data(upper_sacramento_flows, overwrite = TRUE)
 
@@ -867,7 +897,26 @@ rownames(sj_flows_eff_as_matrix) <- month.abb[1:12]
 
 san_joaquin_flows_eff <- sj_flows_eff_as_matrix # copied code from EFF vignette above
 
-san_joaquin_flows <- list(eff_sac = san_joaquin_flows_eff)
+# create HRL/EFF combo for dry years
+san_joaquin_flows_LTO_12a <- flows_cfs$LTO_12a |>
+  select(date, `San Joaquin River`) |>
+  mutate(sjQcms = DSMflow::cfs_to_cms(`San Joaquin River`),
+         year = year(date),
+         month = month(date)) |>
+  filter(year >= 1980, year <= 2000) |>
+  arrange(date, ascending = TRUE) |>
+  select(-date, -`San Joaquin River`) |>
+  pivot_wider(names_from = year,
+              values_from = sjQcms) |>
+  select(-month) |>
+  as.matrix()
+
+san_joaquin_flows_LTO_12a_eff_dy <- san_joaquin_flows_LTO_12a
+san_joaquin_flows_LTO_12a_eff_dy[, dry_years_index] <- san_joaquin_flows_eff[, dry_years_index]
+rownames(san_joaquin_flows_LTO_12a_eff_dy) <- month.abb
+
+san_joaquin_flows <- list(eff_sac = san_joaquin_flows_eff,
+                          LTO_12a_eff_dy = san_joaquin_flows_LTO_12a_eff_dy)
 
 usethis::use_data(san_joaquin_flows, overwrite = TRUE)
 
@@ -927,6 +976,7 @@ proportion_flow_natal_2019_biop_itp <- generate_proportion_flow_natal(flows_cfs$
 proportion_flow_natal_run_of_river <- generate_proportion_flow_natal(flows_cfs$run_of_river, tributary_junctions)
 proportion_flow_natal_eff_sac <- generate_proportion_flow_natal(flows_cfs$eff_sac, tributary_junctions)
 proportion_flow_natal_lto12a <- generate_proportion_flow_natal(lto_calsim3_flows, tributary_junctions)
+proportion_flow_natal_lto12a_eff_dy <- generate_proportion_flow_natal(flows_cfs$LTO_12a_eff_dy, tributary_junctions)
 
 proportion_flow_natal <- list(biop_2008_2009 = proportion_flow_natal_2008_2009,
                               biop_itp_2018_2019 = proportion_flow_natal_2019_biop_itp,
@@ -971,17 +1021,20 @@ proportion_pulse_flows_2008_2009 <- generate_proportion_pulse_flows(flows_cfs$bi
 proportion_pulse_flows_2019_biop_itp <- generate_proportion_pulse_flows(flows_cfs$biop_itp_2018_2019)
 proportion_pulse_flows_run_of_river <- generate_proportion_pulse_flows(flows_cfs$run_of_river)
 proportion_pulse_flows_lto_12a <- generate_proportion_pulse_flows(flows_cfs$LTO_12a)
+proportion_pulse_flows_eff_sac <- generate_proportion_pulse_flows(flows_cfs$eff_sac)
+proportion_pulse_flows_lto_12a_eff_dy <- generate_proportion_pulse_flows(flows_cfs$LTO_12a_eff_dy)
 
 proportion_pulse_flows_run_of_river[is.nan(proportion_pulse_flows_run_of_river)] <- 0
-proportion_pulse_flows_eff_sac <- generate_proportion_pulse_flows(flows_cfs$eff_sac)
 proportion_pulse_flows_eff_sac[is.na(proportion_pulse_flows_eff_sac)] <- 0
 proportion_pulse_flows_lto_12a[is.na(proportion_pulse_flows_lto_12a)] <- 0
+proportion_pulse_flows_lto_12a_eff_dy[is.na(proportion_pulse_flows_lto_12a_eff_dy)] <- 0
 
 proportion_pulse_flows <- list(biop_2008_2009 = proportion_pulse_flows_2008_2009,
                               biop_itp_2018_2019 = proportion_pulse_flows_2019_biop_itp,
                               run_of_river = proportion_pulse_flows_run_of_river,
                               eff_sac = proportion_pulse_flows_eff_sac,
-                              LTO_12a = proportion_pulse_flows_lto_12a)
+                              LTO_12a = proportion_pulse_flows_lto_12a,
+                              LTO_12a_eff_dy = proportion_pulse_flows_lto_12a_eff_dy)
 
 usethis::use_data(proportion_pulse_flows, overwrite = TRUE)
 
