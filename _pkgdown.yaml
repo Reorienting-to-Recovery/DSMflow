@@ -54,8 +54,10 @@ navbar:
     href: reference/index.html
   - text: 'Articles'
     menu:
-    - text: "Effective Functional Flows"
+    - text: "Sacramento Functional Flows"
       href: articles/EFF.html
+    - text: "San Joaquin Functional Flows"
+      href: articles/EFF_SJ.html
 
 
 repo:

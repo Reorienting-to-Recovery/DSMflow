@@ -44,8 +44,11 @@ We added in an additional node (`C620`, below the Merced confluence) for compari
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 # try node right above merced confluence
 # Node C620
-names <- read_csv("data-raw/calsim_2019_BiOp_ITP/C422_C843.csv", skip = 1) |> names()
-C620 <- read_csv("data-raw/calsim_2019_BiOp_ITP/C422_C843.csv", skip = 7, 
+names <- read_csv(here::here("data-raw", "calsim_2019_BiOp_ITP", "C422_C843.csv"), 
+                  skip = 1) |> 
+  names()
+C620 <- read_csv(here::here("data-raw", "calsim_2019_BiOp_ITP", "C422_C843.csv"), 
+                 skip = 7, 
                  col_names = names) |> 
   rename(date = `...2`) |> 
   mutate(date = dmy(date)) |> 
