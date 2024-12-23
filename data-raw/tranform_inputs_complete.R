@@ -462,7 +462,7 @@ lto_total_diverted <-
   mutate(
     `div_final_Upper Sacramento River` = sum(D_SAC296_WTPFTH, D_SAC296_02_SA, D_SAC294_WTPBLV, D_SAC294_03_PA, D_SAC289_03_SA, D_SAC281_02_NA, D_SAC273_03_NA),
     `div_final_Antelope Creek` = D_ANT010_05_NA,
-    `div_final_Battle Cree` = 0,
+    `div_final_Battle Creek` = 0,
     `div_final_Bear Creek` = 0,
     `div_final_Big Chico Creek` = 0,
     `div_final_Butte Creek` = (D_BTC045_ESL008 + D_BTC043_10_NA + D_BTC036_10_NA + D_BTC012_09_SA2 + D_BTC012_CRK005),
@@ -476,10 +476,12 @@ lto_total_diverted <-
     `div_final_Stony Creek` = D_STN021_06_PA,
     `div_final_Thomes Creek` = D_THM012_04_NA,
     `div_final_Upper-mid Sacramento River` = (D_SAC240_TCC001 + D_SAC240_05_NA + D_SAC224_04_NA + D_SAC196_MTC000 + D_SAC185_08N_NA + D_SAC185_09_NA + D_SAC178_08N_SA1 + D_SAC162_09_SA2 + D_SAC159_08S_SA1 + D_SAC159_08N_SA1 + D_SAC146_08S_NA1 + D_SAC136_18_NA + D_SAC136_18_SA + D_SAC129_08S_NA2 + D_SAC122_19_SA),
+    `div_final_Sutter Bypass` = NA_real_,
     `div_final_Bear River` = D_BRR017_23_NA,
     `div_final_Feather River` = (D_THRMF_12_NU1 + D_THRMF_11_NU1 + D_THRMA_WEC000 + D_THRMA_RVC000 + D_THRMA_JBC000),
     `div_final_Yuba River` = D_YUB011_15S_NA2,
     `div_final_Lower-mid Sacramento River` = (D_SAC121_08S_SA3 + D_SAC115_19_SA + D_SAC109_08S_SA3 + D_SAC109_19_SA + D_SAC099_19_SA + D_SAC091_19_SA + D_SAC083_21_SA + D_SAC082_22_SA1 + D_SAC081_21_NA + D_SAC078_22_SA1 + D_SAC075_22_NA + D_SAC074_21_SA + D_SAC065_WTPBTB),
+    `div_final_Yolo Bypass` = NA_real_,
     `div_final_American River` = D_AMR007_WTPFBN,
     `div_final_Lower Sacramento River` = (D_SAC050_FPT013 + D_SAC062_WTPSAC),
     `div_final_Calaveras River` = (D_LJC022_60S_PA1 + D_CLV037_CACWD + D_CLV026_60S_PA1 + D_CLV026_WTPWDH),
@@ -493,8 +495,26 @@ lto_total_diverted <-
 
 
 lto_total_diverted_final <- lto_total_diverted |>
-  select(starts_with("div_final")) |>
-  rename_with(\(x) str_replace(x, "div_final_", ""))
+  select(date, starts_with("div_final")) |>
+  rename_with(\(x) str_replace(x, "div_final_", "")) |>
+# turn into array for total_diversion
+  filter(year(date) >= 1980, year(date) <= 2000) |>
+  pivot_longer(`Upper Sacramento River`:`San Joaquin River`,
+               names_to = "watershed",
+               values_to = "tot_diver") |>
+  mutate(tot_diver = DSMflow::cfs_to_cms(tot_diver)) |>
+  pivot_wider(names_from = date,
+              values_from = tot_diver) |>
+  left_join(DSMflow::watershed_ordering) |>
+  select(-watershed) |>
+  mutate_all( ~ replace_na(., 0)) |>
+  arrange(order) |>
+  select(-order) |>
+  create_model_array()
+
+dimnames(lto_total_diverted_final) <- list(watershed_ordering$watershed,
+                                           month.abb[1:12],
+                                           1980:2000)
 
 
 
@@ -504,42 +524,6 @@ total_diverted <- list(biop_2008_2009 = diversion_2008_2009, # has moke
                      run_of_river = diversion_run_of_river,
                      LTO_12a = lto_total_diverted_final
 )
-
-lto_proportion_diverted <-
-  lto_total_diverted |>
-  transmute(
-    `Upper Sacramento River` = pmin(`div_final_Upper Sacramento River`/C_SAC273, 1),
-    `Antelope Creek` = pmin(`div_final_Antelope Creek`/C_ANT010, 1),
-    `Battle Creek` = 0,
-    `Bear Creek` = 0,
-    `Big Chico Creek` = 0,
-    `Butte Creek` = pmin(`div_final_Butte Creek`/(`div_final_Butte Creek` + C_BTC012), 1),
-    `Clear Creek` = 0,
-    `Cottonwood Creek` = 0,
-    `Cow Creek` = 0,
-    `Deer Creek` = pmin(`div_final_Deer Creek`/C_DRC005, 1),
-    `Elder Creek` = pmin(`div_final_Elder Creek`/C_ELD005, 1),
-    `Mill Creek` = pmin(`div_final_Mill Creek`/C_MLC004, 1),
-    `Paynes Creek` = 0,
-    `Stony Creek` = pmin(`div_final_Stony Creek`/C_STN026, 1),
-    `Thomes Creek` = pmin(`div_final_Thomes Creek`/C_THM005, 1),
-    `Upper-mid Sacramento River` = pmin(`div_final_Upper-mid Sacramento River`/C_SAC247, 1),
-    `Sutter Bypass` = 0,
-    `Bear River` = pmin(`div_final_Bear River`/(`div_final_Bear River` + C_CMPFW), 1),
-    `Feather River` = pmin(`div_final_Feather River`/C_OROVL, 1),
-    `Yuba River` = pmin(`div_final_Yuba River`/(`div_final_Yuba River` + D_YUB011_15S_NA2)),
-    `Lower-mid Sacramento River` = pmin(`div_final_Lower-mid Sacramento River`/(C_SAC120), 1),
-    `Yolo Bypass` = 0,
-    `American River` = pmin(`div_final_American River`/(C_NTOMA), 1),
-    `Lower Sacramento River` = pmin(`div_final_Lower Sacramento River`/(C_SAC063), 1),
-    `Calaveras River` = pmin(`div_final_Calaveras River`/C_NHGAN, 1),
-    `Cosumnes River` = 0,
-    `Mokelumne River` = pmin(`div_final_Mokelumne River`/C_CMCHE, 1),
-    `Merced River` = pmin(`div_final_Merced River`/(C_MCD050), 1),
-    `Stanislaus River` = pmin(`div_final_Stanislaus River`/(C_STS059)),
-    `Tuolumne River` = pmin(`div_final_Tuolumne River`/C_TUO054, 1),
-    `San Joaquin River` = pmin(`div_final_San Joaquin River`/(`div_final_San Joaquin River` + C_SJR072), 1)
-  )
 
 
 usethis::use_data(total_diverted, overwrite = TRUE)
@@ -670,13 +654,69 @@ moke_2019 <- read_excel('data-raw/calsim_2019_BiOp_ITP/EBMUDSIM/CVPIA_SIT_Data_R
 prop_diverted_run_of_river["Mokelumne River",,] <- as.matrix(moke_2019)
 
 # LTO calsim 3 prop diverted
-lto_12a_proportion_diverted = readr::read_rds("data-raw/calsim3/lto-proportion-diverted.rds")
+lto_proportion_diverted <-
+  lto_total_diverted |>
+  transmute(
+    date,
+    `Upper Sacramento River` = pmin(`div_final_Upper Sacramento River`/C_SAC273, 1),
+    `Antelope Creek` = pmin(`div_final_Antelope Creek`/C_ANT010, 1),
+    `Battle Creek` = 0,
+    `Bear Creek` = 0,
+    `Big Chico Creek` = 0,
+    `Butte Creek` = pmin(`div_final_Butte Creek`/(`div_final_Butte Creek` + C_BTC012), 1),
+    `Clear Creek` = 0,
+    `Cottonwood Creek` = 0,
+    `Cow Creek` = 0,
+    `Deer Creek` = pmin(`div_final_Deer Creek`/C_DRC005, 1),
+    `Elder Creek` = pmin(`div_final_Elder Creek`/C_ELD005, 1),
+    `Mill Creek` = pmin(`div_final_Mill Creek`/C_MLC004, 1),
+    `Paynes Creek` = 0,
+    `Stony Creek` = pmin(`div_final_Stony Creek`/C_STN026, 1),
+    `Thomes Creek` = pmin(`div_final_Thomes Creek`/C_THM005, 1),
+    `Upper-mid Sacramento River` = pmin(`div_final_Upper-mid Sacramento River`/C_SAC247, 1),
+    `Sutter Bypass` = 0,
+    `Bear River` = pmin(`div_final_Bear River`/(`div_final_Bear River` + C_CMPFW), 1),
+    `Feather River` = pmin(`div_final_Feather River`/C_OROVL, 1),
+    `Yuba River` = pmin(`div_final_Yuba River`/(`div_final_Yuba River` + D_YUB011_15S_NA2)),
+    `Lower-mid Sacramento River` = pmin(`div_final_Lower-mid Sacramento River`/(C_SAC120), 1),
+    `Yolo Bypass` = 0,
+    `American River` = pmin(`div_final_American River`/(C_NTOMA), 1),
+    `Lower Sacramento River` = pmin(`div_final_Lower Sacramento River`/(C_SAC063), 1),
+    `Calaveras River` = pmin(`div_final_Calaveras River`/C_NHGAN, 1),
+    `Cosumnes River` = 0,
+    `Mokelumne River` = pmin(`div_final_Mokelumne River`/C_CMCHE, 1),
+    `Merced River` = pmin(`div_final_Merced River`/(C_MCD050), 1),
+    `Stanislaus River` = pmin(`div_final_Stanislaus River`/(C_STS059)),
+    `Tuolumne River` = pmin(`div_final_Tuolumne River`/C_TUO054, 1),
+    `San Joaquin River` = pmin(`div_final_San Joaquin River`/(`div_final_San Joaquin River` + C_SJR072), 1)
+  )
+
+# convert to array
+lto_proportion_diverted_final <- lto_proportion_diverted |>
+  # turn into array for total_diversion
+  filter(year(date) >= 1980, year(date) <= 2000) |>
+  pivot_longer(`Upper Sacramento River`:`San Joaquin River`,
+               names_to = "watershed",
+               values_to = "prop_diver") |>
+  mutate(prop_diver = DSMflow::cfs_to_cms(prop_diver)) |>
+  pivot_wider(names_from = date,
+              values_from = prop_diver) |>
+  left_join(DSMflow::watershed_ordering) |>
+  select(-watershed) |>
+  mutate_all( ~ replace_na(., 0)) |>
+  arrange(order) |>
+  select(-order) |>
+  create_model_array()
+
+dimnames(lto_proportion_diverted_final) <- list(watershed_ordering$watershed,
+                                           month.abb[1:12],
+                                           1980:2000)
 
 # create proportion diversion flows with both 2008-2009 biop and 2018-2019 biop/itp and run of river
 proportion_diverted <- list(biop_2008_2009 = prop_diverted_2008_2009,
-                       biop_itp_2018_2019 = prop_diverted_2019_biop_itp,
-                       run_of_river = prop_diverted_run_of_river,
-                       LTO_12a = lto_12a_proportion_diverted
+                            biop_itp_2018_2019 = prop_diverted_2019_biop_itp,
+                            run_of_river = prop_diverted_run_of_river,
+                            LTO_12a = lto_proportion_diverted_final
 )
 
 usethis::use_data(proportion_diverted, overwrite = TRUE)

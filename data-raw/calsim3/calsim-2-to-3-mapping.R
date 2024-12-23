@@ -212,46 +212,47 @@ lto_total_diverted_final <- lto_total_diverted |>
   rename_with(\(x) str_replace(x, "div_final_", ""))
 
 
-write_rds(lto_total_diverted, "data-raw/calsim3/lto-total-diverted.rds")
+#write_rds(lto_total_diverted, "data-raw/calsim3/lto-total-diverted.rds")
 
-lto_proportion_diverted <-
-  lto_total_diverted |>
-  transmute(
-    `Upper Sacramento River` = pmin(`div_final_Upper Sacramento River`/C_SAC273, 1),
-    `Antelope Creek` = pmin(`div_final_Antelope Creek`/C_ANT010, 1),
-    `Battle Creek` = 0,
-    `Bear Creek` = 0,
-    `Big Chico Creek` = 0,
-    `Butte Creek` = pmin(`div_final_Butte Creek`/(`div_final_Butte Creek` + C_BTC012), 1),
-    `Clear Creek` = 0,
-    `Cottonwood Creek` = 0,
-    `Cow Creek` = 0,
-    `Deer Creek` = pmin(`div_final_Deer Creek`/C_DRC005, 1),
-    `Elder Creek` = pmin(`div_final_Elder Creek`/C_ELD005, 1),
-    `Mill Creek` = pmin(`div_final_Mill Creek`/C_MLC004, 1),
-    `Paynes Creek` = 0,
-    `Stony Creek` = pmin(`div_final_Stony Creek`/C_STN026, 1),
-    `Thomes Creek` = pmin(`div_final_Thomes Creek`/C_THM005, 1),
-    `Upper-mid Sacramento River` = pmin(`div_final_Upper-mid Sacramento River`/C_SAC247, 1),
-    `Sutter Bypass` = 0,
-    `Bear River` = pmin(`div_final_Bear River`/(`div_final_Bear River` + C_CMPFW), 1),
-    `Feather River` = pmin(`div_final_Feather River`/C_OROVL, 1),
-    `Yuba River` = pmin(`div_final_Yuba River`/(`div_final_Yuba River` + D_YUB011_15S_NA2)),
-    `Lower-mid Sacramento River` = pmin(`div_final_Lower-mid Sacramento River`/(C_SAC120), 1),
-    `Yolo Bypass` = 0,
-    `American River` = pmin(`div_final_American River`/(C_NTOMA), 1),
-    `Lower Sacramento River` = pmin(`div_final_Lower Sacramento River`/(C_SAC063), 1),
-    `Calaveras River` = pmin(`div_final_Calaveras River`/C_NHGAN, 1),
-    `Cosumnes River` = 0,
-    `Mokelumne River` = pmin(`div_final_Mokelumne River`/C_CMCHE, 1),
-    `Merced River` = pmin(`div_final_Merced River`/(C_MCD050), 1),
-    `Stanislaus River` = pmin(`div_final_Stanislaus River`/(C_STS059)),
-    `Tuolumne River` = pmin(`div_final_Tuolumne River`/C_TUO054, 1),
-    `San Joaquin River` = pmin(`div_final_San Joaquin River`/(`div_final_San Joaquin River` + C_SJR072), 1)
-  )
+# lto_proportion_diverted <-
+#   lto_total_diverted |>
+#   transmute(
+#     date,
+#     `Upper Sacramento River` = pmin(`div_final_Upper Sacramento River`/C_SAC273, 1),
+#     `Antelope Creek` = pmin(`div_final_Antelope Creek`/C_ANT010, 1),
+#     `Battle Creek` = 0,
+#     `Bear Creek` = 0,
+#     `Big Chico Creek` = 0,
+#     `Butte Creek` = pmin(`div_final_Butte Creek`/(`div_final_Butte Creek` + C_BTC012), 1),
+#     `Clear Creek` = 0,
+#     `Cottonwood Creek` = 0,
+#     `Cow Creek` = 0,
+#     `Deer Creek` = pmin(`div_final_Deer Creek`/C_DRC005, 1),
+#     `Elder Creek` = pmin(`div_final_Elder Creek`/C_ELD005, 1),
+#     `Mill Creek` = pmin(`div_final_Mill Creek`/C_MLC004, 1),
+#     `Paynes Creek` = 0,
+#     `Stony Creek` = pmin(`div_final_Stony Creek`/C_STN026, 1),
+#     `Thomes Creek` = pmin(`div_final_Thomes Creek`/C_THM005, 1),
+#     `Upper-mid Sacramento River` = pmin(`div_final_Upper-mid Sacramento River`/C_SAC247, 1),
+#     `Sutter Bypass` = 0,
+#     `Bear River` = pmin(`div_final_Bear River`/(`div_final_Bear River` + C_CMPFW), 1),
+#     `Feather River` = pmin(`div_final_Feather River`/C_OROVL, 1),
+#     `Yuba River` = pmin(`div_final_Yuba River`/(`div_final_Yuba River` + D_YUB011_15S_NA2)),
+#     `Lower-mid Sacramento River` = pmin(`div_final_Lower-mid Sacramento River`/(C_SAC120), 1),
+#     `Yolo Bypass` = 0,
+#     `American River` = pmin(`div_final_American River`/(C_NTOMA), 1),
+#     `Lower Sacramento River` = pmin(`div_final_Lower Sacramento River`/(C_SAC063), 1),
+#     `Calaveras River` = pmin(`div_final_Calaveras River`/C_NHGAN, 1),
+#     `Cosumnes River` = 0,
+#     `Mokelumne River` = pmin(`div_final_Mokelumne River`/C_CMCHE, 1),
+#     `Merced River` = pmin(`div_final_Merced River`/(C_MCD050), 1),
+#     `Stanislaus River` = pmin(`div_final_Stanislaus River`/(C_STS059)),
+#     `Tuolumne River` = pmin(`div_final_Tuolumne River`/C_TUO054, 1),
+#     `San Joaquin River` = pmin(`div_final_San Joaquin River`/(`div_final_San Joaquin River` + C_SJR072), 1)
+#   )
 
 
-write_rds(lto_proportion_diverted, "data-raw/calsim3/lto-proportion-diverted.rds")
+#write_rds(lto_proportion_diverted, "data-raw/calsim3/lto-proportion-diverted.rds")
 
 # Mean flows -------------------------------------------
 generate_mean_flow <- function(bypass_flow, flow_cfs) {
