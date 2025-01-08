@@ -274,6 +274,8 @@ bypass_flows <- list(biop_2008_2009 = bypass_2008_2009,
                      LTO_12a = lto_calsim3_bypass_flows
 )
 
+assertthat::are_equal(names(run_of_river), names(lto_calsim3_bypass_flows))
+
 usethis::use_data(bypass_flows, overwrite = TRUE)
 
 # diversions -------------------------------------------------------------------
@@ -525,6 +527,7 @@ total_diverted <- list(biop_2008_2009 = diversion_2008_2009, # has moke
                      LTO_12a = lto_total_diverted_final
 )
 
+assertthat::are_equal(dimnames(diversion_run_of_river), dimnames(lto_total_diverted_final))
 
 usethis::use_data(total_diverted, overwrite = TRUE)
 
@@ -719,6 +722,8 @@ proportion_diverted <- list(biop_2008_2009 = prop_diverted_2008_2009,
                             LTO_12a = lto_proportion_diverted_final
 )
 
+assertthat::are_equal(dimnames(prop_diverted_run_of_river), dimnames(lto_proportion_diverted_final))
+
 usethis::use_data(proportion_diverted, overwrite = TRUE)
 
 # tributary --------------
@@ -767,6 +772,8 @@ mean_flow <- list(biop_2008_2009 = mean_flow_2008_2009,
                   eff_sac = mean_flow_eff,
                   LTO_12a = mean_flow_lto12a,
                   LTO_12a_eff_dy = mean_flow_LTO_12a_eff_dy)
+
+assertthat::are_equal(dimnames(mean_flow_eff), dimnames(mean_flow_lto12a))
 
 usethis::use_data(mean_flow, overwrite = TRUE)
 
@@ -904,6 +911,8 @@ lto_12a_upper_sacramento_flows <- calsim3_data |>
   select(-month) |>
   as.matrix()
 
+rownames(lto_12a_upper_sacramento_flows) <- month.abb
+
 # add in EFF flows for dry years to HRL
 dry_years_model <- dry_years[dry_years %in% 1980:2000]
 dry_years_index <- which(1980:2000 %in%dry_years_model)
@@ -918,6 +927,7 @@ upper_sacramento_flows <- list(biop_2008_2009 = upper_sacramento_flows_2008_2009
                                LTO_12a_eff_dy = upper_sacramento_flows_LTO_12a_eff_dy)
 
 
+assertthat::are_equal(dimnames(lto_12a_upper_sacramento_flows), dimnames(upper_sac_flows_eff))
 
 usethis::use_data(upper_sacramento_flows, overwrite = TRUE)
 
@@ -1024,6 +1034,8 @@ proportion_flow_natal <- list(biop_2008_2009 = proportion_flow_natal_2008_2009,
                               eff_sac = proportion_flow_natal_eff_sac,
                               LTO12a = proportion_flow_natal_lto12a)
 
+assertthat::are_equal(dimnames(proportion_flow_natal_2008_2009), dimnames(proportion_flow_natal_eff_sac))
+
 usethis::use_data(proportion_flow_natal, overwrite = TRUE)
 
 # proportion pulse flows -------------------------------------------------------
@@ -1075,6 +1087,8 @@ proportion_pulse_flows <- list(biop_2008_2009 = proportion_pulse_flows_2008_2009
                               eff_sac = proportion_pulse_flows_eff_sac,
                               LTO_12a = proportion_pulse_flows_lto_12a,
                               LTO_12a_eff_dy = proportion_pulse_flows_lto_12a_eff_dy)
+
+assertthat::are_equal(dimnames(proportion_pulse_flows_2008_2009), dimnames(proportion_pulse_flows_lto_12a))
 
 usethis::use_data(proportion_pulse_flows, overwrite = TRUE)
 
@@ -1239,13 +1253,18 @@ lto_12a_delta_flows <- tibble(
 ) |>
   mutate(
     s_dlt_prop_div = ifelse(s_dlt_prop_div > 1, 1, s_dlt_prop_div)
-  )
+  ) |>
+  filter(between(date,
+                 range(delta_flows_run_of_river$date)[1],
+                 range(delta_flows_run_of_river$date)[2]))
 
 
 delta_flows <- list(biop_2008_2009 = delta_flows_2008_2009,
                     biop_itp_2018_2019 = delta_flows_2019_biop_itp,
                     run_of_river = delta_flows_run_of_river,
                     LTO_12a = lto_12a_delta_flows)
+
+assertthat::are_equal(dimnames(lto_12a_delta_flows), dimnames(delta_flows_run_of_river))
 
 usethis::use_data(delta_flows, overwrite = TRUE)
 
@@ -1283,6 +1302,8 @@ delta_inflow <- list(biop_2008_2009 = delta_inflows_2008_2009,
                     biop_itp_2018_2019 = delta_inflows_2019_biop_itp,
                     run_of_river = delta_inflows_run_of_river,
                     LTO_12a = delta_inflows_lto_12a)
+
+assertthat::are_equal(dimnames(delta_inflows_lto_12a), dimnames(delta_inflows_run_of_river))
 
 usethis::use_data(delta_inflow, overwrite = TRUE)
 
@@ -1519,10 +1540,15 @@ wilkins_flow_lto_12a <- calsim3_data |> filter(node == "C_SAC129", year(date) >=
   select(-month) |>
   as.matrix()
 
+
+rownames(wilkins_flow_lto_12a) <- month.abb
+
+
 wilkins_flow <- list(biop_2008_2009 = wilkins_flow_2008_2009,
                      biop_itp_2018_2019 = wilkins_flow_2019_biop_itp,
                      run_of_river = wilkins_flow_run_of_river,
                      LTO_12a = wilkins_flow_lto_12a)
+
 
 usethis::use_data(wilkins_flow, overwrite = TRUE)
 
@@ -1566,7 +1592,7 @@ freeport_flow_lto_12a <- calsim3_data |> filter(node == "C_SAC041", year(date) >
   select(-month) |>
   as.matrix()
 
-
+rownames(freeport_flow_lto_12a) <- month.abb
 
 freeport_flow <- list(biop_2008_2009 = freeport_flow_2008_2009,
                       biop_itp_2018_2019 = freeport_flow_2019_biop_itp,
@@ -1615,6 +1641,7 @@ vernalis_flow_lto_12a <- calsim3_data |> filter(node == "C_SJR070", year(date) >
   select(-month) |>
   as.matrix()
 
+rownames(vernalis_flow_lto_12a) <- month.abb
 
 
 vernalis_flow <- list(biop_2008_2009 = vernalis_flow_2008_2009,
@@ -1663,6 +1690,8 @@ stockton_flow_lto_12a <- calsim3_data |> filter(node == "C_SJR053A", year(date) 
               values_from = wilkinsQcms) |>
   select(-month) |>
   as.matrix()
+
+rownames(stockton_flow_lto_12a) <- month.abb
 
 stockton_flow <- list(biop_2008_2009 = stockton_flow_2008_2009,
                       biop_itp_2018_2019 = stockton_flow_2019_biop_itp,
@@ -1713,6 +1742,8 @@ cvp_exports_lto <- calsim3_data |> filter(node %in% c("DEL_CVP_TOTAL_N", "DEL_CV
   select(-month) |>
   as.matrix()
 
+rownames(cvp_exports_lto) <- month.abb
+
 cvp_exports <- list(biop_2008_2009 = cvp_exports_2008_2009,
                     biop_itp_2018_2019 = cvp_exports_2019_biop_itp,
                     run_of_river = cvp_exports_run_of_river,
@@ -1760,6 +1791,7 @@ swp_exports_lto <- calsim3_data |> filter(node %in% c("DEL_SWP_PMI", "DEL_SWP_PA
   select(-month) |>
   as.matrix()
 
+rownames(swp_exports_lto) <- month.abb
 
 swp_exports <- list(biop_2008_2009 = swp_exports_2008_2009,
                     biop_itp_2018_2019 = swp_exports_2019_biop_itp,
