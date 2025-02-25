@@ -60,7 +60,7 @@ The named list components are:
 \item biop_2008_2009: flow in cubic feet per second within watersheds from the 2008-2009 Calsim II BiOp run.
 \item biop_itp_2018_2019: flow in cubic feet per second within watersheds from the 2018-2019 Calsim II BiOp run.
 \item calsim_run_of_river: flow in cubic feet per second within watersheds from the Calsim Run of River run.
-\item eff_sac: flow in cubic feet per second within watersheds with a synthetic hydrograph for the Upper Sacramento River and San Joaquin River
+\item eff: flow in cubic feet per second within watersheds with a synthetic hydrograph for the Upper Sacramento River and San Joaquin River
 \item LTO_12a: flow in cubic feet per second within watersheds from the Calsim III LTO-12a run.
 \item LTO_12a_eff_dy: flow in cubic feet per second within watersheds from the Calsim III LTO-12a run, with the functional flow
 synthetic hydrograph spliced in for model dry years.

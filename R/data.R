@@ -7,7 +7,7 @@
 #' * biop_2008_2009: flow in cubic feet per second within watersheds from the 2008-2009 Calsim II BiOp run.
 #' * biop_itp_2018_2019: flow in cubic feet per second within watersheds from the 2018-2019 Calsim II BiOp run.
 #' * calsim_run_of_river: flow in cubic feet per second within watersheds from the Calsim Run of River run.
-#' * eff_sac: flow in cubic feet per second within watersheds with a synthetic hydrograph for the Upper Sacramento River and San Joaquin River
+#' * eff: flow in cubic feet per second within watersheds with a synthetic hydrograph for the Upper Sacramento River and San Joaquin River
 #' * LTO_12a: flow in cubic feet per second within watersheds from the Calsim III LTO-12a run.
 #' * LTO_12a_eff_dy: flow in cubic feet per second within watersheds from the Calsim III LTO-12a run, with the functional flow
 #' synthetic hydrograph spliced in for model dry years.
@@ -87,7 +87,7 @@
 #' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
 #' * calsim_run_of_river: output from the Calsim Run of River run.
-#' * eff_sac: synthetic functional flow hydrograph on the Upper Sacramento River and San Joaquin River.
+#' * eff: synthetic functional flow hydrograph on the Upper Sacramento River and San Joaquin River.
 #' * LTO-12a: output from the LTO-12a Calsim III run
 #' * LTO_12a_eff_dy: output from the LTO-12a Calsim III run with synthetic functional flow hydrographs spliced in
 #' on the Upper Sacramento River and San Joaquin River for dry years.
@@ -242,7 +242,7 @@
 #' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
 #' * calsim_run_of_river: output from the Calsim Run of River run.
-#' * eff_sac: synthetic functional flow hydrograph on the Upper Sacramento River and San Joaquin River.
+#' * eff: synthetic functional flow hydrograph on the Upper Sacramento River and San Joaquin River.
 #' * LTO-12a: output from the LTO-12a Calsim III run
 #' * LTO_12a_eff_dy: output from the LTO-12a Calsim III run with synthetic functional flow hydrographs spliced in
 #' on the Upper Sacramento River and San Joaquin River for dry years.
