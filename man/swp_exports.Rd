@@ -19,12 +19,13 @@ swp_exports
 }
 \description{
 Total exports for SWP in cms from three separate Calsim runs. Values are
-obtained using CALSIM variable DEL_SWP_EXP. Data from each Calsim run are stored as separate elements
-in a named list, named for the Calsim  run they came from:
+obtained using CALSIM variable DEL_SWP_EXP. The components of the list contain output from
+four different Calsim runs:
 \itemize{
 \item biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 \item biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
 \item calsim_run_of_river: output from the Calsim Run of River run.
+\item LTO-12a: output from the LTO-12a Calsim III run.
 }
 }
 \details{

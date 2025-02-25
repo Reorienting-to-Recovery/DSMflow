@@ -1,15 +1,21 @@
 # Tributaries and Mainstems -----
 #' Flow in cfs
-#' @description A named list containing datasets from the 2008-2009, 2018-2019 Calsim II BiOp, and Calsim Run of River runs for
-#' use with the CVPIA SIT Salmon Population Model to develop habitat inputs.
+#' @description A named list containing datasets from the 2008-2009, 2018-2019 BiOp, and Calsim Run of River Calsim II runs and
+#' the LTO-12a Calsim III runs for use with the CVPIA SIT Salmon Population Model to develop habitat inputs. This data object
+#' also contains synthetic hydrographs for functional flows designed to optimize salmonid survival.
 #' The named list components are:
 #' * biop_2008_2009: flow in cubic feet per second within watersheds from the 2008-2009 Calsim II BiOp run.
 #' * biop_itp_2018_2019: flow in cubic feet per second within watersheds from the 2018-2019 Calsim II BiOp run.
 #' * calsim_run_of_river: flow in cubic feet per second within watersheds from the Calsim Run of River run.
+#' * eff_sac: flow in cubic feet per second within watersheds with a synthetic hydrograph for the Upper Sacramento River and San Joaquin River
+#' * LTO_12a: flow in cubic feet per second within watersheds from the Calsim III LTO-12a run.
+#' * LTO_12a_eff_dy: flow in cubic feet per second within watersheds from the Calsim III LTO-12a run, with the functional flow
+#' synthetic hydrograph spliced in for model dry years.
 
 #' @md
 #'
-#' @format named list with two components, each containing a dataframe with 985 rows and 33 variables:
+#' @format named list with five components, each containing a dataframe with 972 rows and 31 variables for Calsim II runs and
+#' 1200 rows and 31 variables for Calsim II runs:
 #' \describe{
 #' \item{date}{CALSIM II date}
 #' \item{Upper Sacramento River}{C104}
@@ -77,13 +83,17 @@
 #' Monthly Mean Flow (cms)
 #' @description A named list containing the mean flow in cubic meters per second for each watershed every
 #' month of every year in the simulation (1980-2000). The components of the list contain output from
-#' three different Calsim runs:
+#' four different Calsim runs and two runs incorporating synthetic functional flow hydrographs:
 #' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
 #' * calsim_run_of_river: output from the Calsim Run of River run.
+#' * eff_sac: synthetic functional flow hydrograph on the Upper Sacramento River and San Joaquin River.
+#' * LTO-12a: output from the LTO-12a Calsim III run
+#' * LTO_12a_eff_dy: output from the LTO-12a Calsim III run with synthetic functional flow hydrographs spliced in
+#' on the Upper Sacramento River and San Joaquin River for dry years.
 #' @md
 #'
-#' @format a named list of two components, each containing a 3 dimensional array [31 watersheds, 12 months, 21 years]
+#' @format a named list of five components, each containing a 3 dimensional array [31 watersheds, 12 months, 21 years]
 #' @source
 #' Calculated using \code{\link{flows_cfs}}
 #'
@@ -91,14 +101,15 @@
 
 #' Total Flow Diverted
 #' @description A named list with datasets containing the diverted flow in cms within watersheds for
-#' use with the CVPIA SIT Salmon Population Model. The components of the list contain output from three
-#' different Calsim runs:
+#' use with the CVPIA SIT Salmon Population Model. The components of the list contain output from
+#' four different Calsim runs:
 #' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
 #' * calsim_run_of_river: output from the Calsim Run of River run.
+#' * LTO-12a: output from the LTO-12a Calsim III run.
 #' @md
 #'
-#' @format a named list of two components, each containing a 31 by 12 by 21 array [watershed, month, year (1980-2000)]
+#' @format a named list of four components, each containing a 31 by 12 by 21 array [watershed, month, year (1980-2000)]
 #'
 #' @details The proportion diverted was calculated using 'FLOW-CHANNEL' and 'FLOW-DELIVERY' nodes from CALSIM II.
 #' The nodes and calculation for each watershed are outlined below
@@ -157,14 +168,15 @@
 
 #' Proportion of Flow Diverted
 #' @description A named list where each component contains a dataset with the proportion of flow diverted within watersheds for
-#' use with the CVPIA SIT Salmon Population Model. The components of the list contain output from three
-#' different Calsim runs:
+#' use with the CVPIA SIT Salmon Population Model. The components of the list contain output from
+#' four different Calsim runs:
 #' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
-#' * calsim_run_of_river: output from the Calsim Run of River run
+#' * calsim_run_of_river: output from the Calsim Run of River run.
+#' * LTO-12a: output from the LTO-12a Calsim III run.
 #' @md
 #'
-#' @format a named list of two components, each containing a 31 by 12 by 21 array [watershed, month, year (1980-2000)]
+#' @format a named list of four components, each containing a 31 by 12 by 21 array [watershed, month, year (1980-2000)]
 #'
 #' @details The proportion diverted was calculated using 'FLOW-CHANNEL' and 'FLOW-DELIVERY' nodes from CALSIM II.
 #' The nodes and calculation for each watershed are outlined below
@@ -225,14 +237,18 @@
 
 #' Upper Sacramento River Flow
 #' @description A named list where each component contains a dataset with the Upper Sacramento
-#' River flow in cubic meters per second. The components of the list contain output from three
-#' different Calsim runs:
+#' River flow in cubic meters per second. The components of the list contain output from
+#' four different Calsim runs and two runs incorporating synthetic functional flow hydrographs:
 #' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
 #' * calsim_run_of_river: output from the Calsim Run of River run.
+#' * eff_sac: synthetic functional flow hydrograph on the Upper Sacramento River and San Joaquin River.
+#' * LTO-12a: output from the LTO-12a Calsim III run
+#' * LTO_12a_eff_dy: output from the LTO-12a Calsim III run with synthetic functional flow hydrographs spliced in
+#' on the Upper Sacramento River and San Joaquin River for dry years.
 #' @md
 #'
-#' @format a named list of two components, each containing a 12 by 21 matrix (month by year)
+#' @format a named list of six components, each containing a 12 by 21 matrix (month by year)
 #'
 #' @details The Upper Sacramento River is represented using node CALSIM II 'FLOW-CHANNEL' C109 node at Bend.
 #' Each row represents a month, each column a year from 1980-2000.
@@ -328,11 +344,12 @@
 
 # replaces prop.pulse
 #' Proportion Pulse Flow
-#' @description A named list with estimated monthly proportion of flow that is a pulse. Each component
-#' of the list contains output from a different Calsim run:
+#' @description A named list with estimated monthly proportion of flow that is a pulse. The components of the list contain output from
+#' four different Calsim runs:
 #' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
 #' * calsim_run_of_river: output from the Calsim Run of River run.
+#' * LTO-12a: output from the LTO-12a Calsim III run.
 #' @md
 #'
 #' @format a named list where each component is a 31 by 12 matrix (watersheds by months)
@@ -347,14 +364,15 @@
 # Bypasses ------
 #' Flow through the Sutter and Yolo Bypasses
 #' @description A named list containing datasets with the flow within the bypasses for
-#' estimating available rearing habitat within the bypasses. Each component of the list
-#' contains this output from a different Calsim run:
+#' estimating available rearing habitat within the bypasses. The components of the list contain output from
+#' four different Calsim runs:
 #' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
 #' * calsim_run_of_river: output from the Calsim Run of River run.
+#' * LTO-12a: output from the LTO-12a Calsim III run.
 #' @md
 #'
-#' @format a named list where each component contains a dataframe with 972 rows and 7 variables:
+#' @format a named list where each component contains a dataframe with 972 rows and 7 variables (Calsim II) or 1200 rows and 7 variables (Calsim III):
 #' \describe{
 #' \item{date}{CALSIM II date}
 #' \item{sutter1}{D117}
@@ -388,11 +406,12 @@
 #' Proportion of Sacramento River Flow through the Sutter and Yolo Bypasses
 #' @description The monthly proportion of Sacramento River flow within the bypasses
 #' (years 1980-2000) for use with the CVPIA SIT Salmon Population Model to
-#' apportion fish onto the bypasses. Contains these data modeled with three Calsim
-#' model outputs stored as elements of a named list:
+#' apportion fish onto the bypasses. The components of the list contain output from
+#' four different Calsim runs:
 #' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
 #' * calsim_run_of_river: output from the Calsim Run of River run.
+#' * LTO-12a: output from the LTO-12a Calsim III run.
 #' @md
 #'
 #' @format a named list where each element contains a 12 by 21 by 2 array (month, year, bypass):
@@ -421,11 +440,12 @@
 #' If gates are overtopped at the Sutter and Yolo Bypasses
 #' @description A monthly TRUE or FALSE value to describe if the gates are overtopped to the bypasses
 #' (years 1980-2000) for use with the CVPIA SIT Salmon Population Model to
-#' apportion fish onto the bypasses. Contains these data for three different Calsim runs, stored
-#' as elements of a named list:
+#' apportion fish onto the bypasses. The components of the list contain output from
+#' four different Calsim runs:
 #' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
 #' * calsim_run_of_river: output from the Calsim Run of River run.
+#' * LTO-12a: output from the LTO-12a Calsim III run.
 #' @md
 #'
 #' @format a named list where each element contains a 12 by 21 by 2 array (month, year, bypass):
@@ -443,11 +463,12 @@
 # Delta -----
 #' Delta Cross Channel Operations
 #' @description The number of days and proportion of days the Delta Cross Channel
-#' gates are typically closed for each month. Contains these data for three different Calsim
-#' runs stored as elements of a named list:
+#' gates are typically closed for each month. The components of the list contain output from
+#' four different Calsim runs:
 #' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
 #' * calsim_run_of_river: output from the Calsim Run of River run.
+#' * LTO-12a: output from the LTO-12a Calsim III run.
 #' @md
 #'
 #' @format a named list where each element is a 2 by 12 matrix, row one and two are the count and proportion of days
@@ -472,11 +493,12 @@
 
 #' Delta Flows and Diversions
 #' @description A named list with datasets containing the inflow, total diversions, and proportion
-#' diverted for the North and South Deltas from three different Calsim  runs. Each dataset
-#' is stored as an element named by the Calsim run it came from:
+#' diverted for the North and South Deltas from three different Calsim  runs. The components of the list contain output from
+#' four different Calsim runs:
 #' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
 #' * calsim_run_of_river: output from the Calsim Run of River run.
+#' * LTO-12a: output from the LTO-12a Calsim III run.
 #' @md
 #'
 #' @format a named list where each element contains a dataframe with 972 rows and 7 variables:
@@ -514,11 +536,12 @@
 
 #' Delta Inflow
 #' @description A named list containing delta inflow in cubic meters per second from 1980-1999
-#' from three different Calsim runs. These are stored as elements in a list and named by the
-#' Calsim run they came from:
+#' from three different Calsim runs. The components of the list contain output from
+#' four different Calsim runs:
 #' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
 #' * calsim_run_of_river: output from the Calsim Run of River run.
+#' * LTO-12a: output from the LTO-12a Calsim III run.
 #' @md
 #'
 #' @format A named list where each element contains a 3 dimensional array: 12 by 20 by 2 (months, years, deltas)
@@ -540,10 +563,12 @@
 
 #' Delta Proportion Diverted
 #' @description A named list containing the proportion of delta inflow diverted from 1980-2000 from
-#' three different Calsim runs. These are stored as elements named by the Calsim run they came from:
+#' three different Calsim runs. The components of the list contain output from
+#' four different Calsim runs:
 #' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
 #' * calsim_run_of_river: output from the Calsim Run of River run.
+#' * LTO-12a: output from the LTO-12a Calsim III run.
 #' @md
 #'
 #' @format A named list where each component contains a 3 dimensional array: 12 by 21 by 2 [months, years, deltas]
@@ -564,11 +589,12 @@
 
 #' Delta Total Diverted
 #' @description The total diverted of delta inflow in cubic meters per second from 1980-2000 from
-#' three different Calsim runs. These can be accessed as separate elements of a named list named after
-#' the Calsim run they came from:
+#' three different Calsim runs. The components of the list contain output from
+#' four different Calsim runs:
 #' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
 #' * calsim_run_of_river: output from the Calsim Run of River run.
+#' * LTO-12a: output from the LTO-12a Calsim III run.
 #' @md
 #'
 #' @format A named list where each element contains a 3 dimensional array: 12 by 21 by 2 (months, years, deltas)
@@ -588,12 +614,12 @@
 "delta_total_diverted"
 
 #' @title Flow at Wilkins
-#' @description flow in cms at Wilkins (CALSIM node C129) from three different Calsim runs. Data from
-#' each Calsim run are stored as a separate element of a named list, named after the Calsim run
-#' it came from:
+#' @description flow in cms at Wilkins (CALSIM node C129) from three different Calsim runs. The components of the list contain output from
+#' four different Calsim runs:
 #' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
 #' * calsim_run_of_river: output from the Calsim Run of River run.
+#' * LTO-12a: output from the LTO-12a Calsim III run.
 #' @md
 #' @format A named list where each element contains a matrix with months (1-12) as rows and years
 #' (1980-1999) as columns
@@ -610,11 +636,12 @@
 "wilkins_flow"
 
 #' @title Flow at Freeport
-#' @description flow in cms at Freeport (CALSIM node C400) from three separate Calsim runs. Data from
-#' each Calsim run are stored as an element of a named list, named after the Calsim run it came from:
+#' @description flow in cms at Freeport (CALSIM node C400) from three separate Calsim runs. The components of the list contain output from
+#' four different Calsim runs:
 #' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
 #' * calsim_run_of_river: output from the Calsim Run of River run.
+#' * LTO-12a: output from the LTO-12a Calsim III run.
 #' @md
 #' @format A named list where each element contains a matrix with months (1-12) as rows and years (1980-1999) as columns
 #' @details \code{freeport_flow} was calculated using a 'FLOW-CHANNEL' node from CALSIM II.
@@ -629,12 +656,12 @@
 "freeport_flow"
 
 #' @title Flow at Vernalis
-#' @description flow in cms at Vernalis (CALSIM node C639) from three different Calsim runs. Data
-#' from each Calsim run are stored as elements in a named list, named after the Calsim run
-#' they came from:
+#' @description flow in cms at Vernalis (CALSIM node C639) from three different Calsim runs. The components of the list contain output from
+#' four different Calsim runs:
 #' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
 #' * calsim_run_of_river: output from the Calsim Run of River run.
+#' * LTO-12a: output from the LTO-12a Calsim III run.
 #' @md
 #' @format A named list where each element contains a matrix with months (1-12) as rows and years (1980-1999) as columns
 #' @details \code{vernalis_flow} was calculated using a 'FLOW-CHANNEL' node from CALSIM II.
@@ -649,11 +676,12 @@
 "vernalis_flow"
 
 #' @title Flow at Stockton
-#' @description flow in cms at Stockton (CALSIM node C417A) from three Calsim  runs. Data from each
-#' Calsim run are stored as elements in a named list, named after the Calsim run they came from:
+#' @description flow in cms at Stockton (CALSIM node C417A) from three Calsim  runs. The components of the list contain output from
+#' four different Calsim runs:
 #' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
 #' * calsim_run_of_river: output from the Calsim Run of River run.
+#' * LTO-12a: output from the LTO-12a Calsim III run.
 #' @md
 #' @format A named list where each element contains a matrix with months (1-12) as rows and years (1980-1999) as columns
 #' @details \code{vernalis_flow} was calculated using a 'FLOW-CHANNEL' node from CALSIM II.
@@ -669,11 +697,12 @@
 
 #' @title CVP Exports
 #' @description Total exports for CVP in cms from three separate Calsim runs. Values are obtained
-#' using CALSIM variable DEL_CVP_EXP. Data from each Calsim  run are stored as separate elements
-#' in a named list, named for the Calsim run they came from:
+#' using CALSIM variable DEL_CVP_EXP. The components of the list contain output from
+#' four different Calsim runs:
 #' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
 #' * calsim_run_of_river: output from the Calsim Run of River run.
+#' * LTO-12a: output from the LTO-12a Calsim III run.
 #' @md
 #' @format A named list where each element contains a matrix with months (1-12) as rows and
 #' years (1980-1999) as columns
@@ -692,11 +721,12 @@
 
 #' @title SWP Exports
 #' @description Total exports for SWP in cms from three separate Calsim runs. Values are
-#' obtained using CALSIM variable DEL_SWP_EXP. Data from each Calsim run are stored as separate elements
-#' in a named list, named for the Calsim  run they came from:
+#' obtained using CALSIM variable DEL_SWP_EXP. The components of the list contain output from
+#' four different Calsim runs:
 #' * biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 #' * biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
 #' * calsim_run_of_river: output from the Calsim Run of River run.
+#' * LTO-12a: output from the LTO-12a Calsim III run.
 #' @md
 #' @format A named list where each element contains a matrix with months (1-12) as rows and
 #' years (1980-1999) as columns

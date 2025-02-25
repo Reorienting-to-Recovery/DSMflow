@@ -28,12 +28,13 @@ delta_flows
 }
 \description{
 A named list with datasets containing the inflow, total diversions, and proportion
-diverted for the North and South Deltas from three different Calsim  runs. Each dataset
-is stored as an element named by the Calsim run it came from:
+diverted for the North and South Deltas from three different Calsim  runs. The components of the list contain output from
+four different Calsim runs:
 \itemize{
 \item biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 \item biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
 \item calsim_run_of_river: output from the Calsim Run of River run.
+\item LTO-12a: output from the LTO-12a Calsim III run.
 }
 }
 \details{

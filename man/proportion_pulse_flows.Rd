@@ -11,12 +11,13 @@ a named list where each component is a 31 by 12 matrix (watersheds by months)
 proportion_pulse_flows
 }
 \description{
-A named list with estimated monthly proportion of flow that is a pulse. Each component
-of the list contains output from a different Calsim run:
+A named list with estimated monthly proportion of flow that is a pulse. The components of the list contain output from
+four different Calsim runs:
 \itemize{
 \item biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 \item biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
 \item calsim_run_of_river: output from the Calsim Run of River run.
+\item LTO-12a: output from the LTO-12a Calsim III run.
 }
 }
 \details{

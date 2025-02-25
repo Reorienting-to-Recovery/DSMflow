@@ -5,7 +5,7 @@
 \alias{bypass_flows}
 \title{Flow through the Sutter and Yolo Bypasses}
 \format{
-a named list where each component contains a dataframe with 972 rows and 7 variables:
+a named list where each component contains a dataframe with 972 rows and 7 variables (Calsim II) or 1200 rows and 7 variables (Calsim III):
 \describe{
 \item{date}{CALSIM II date}
 \item{sutter1}{D117}
@@ -28,12 +28,13 @@ bypass_flows
 }
 \description{
 A named list containing datasets with the flow within the bypasses for
-estimating available rearing habitat within the bypasses. Each component of the list
-contains this output from a different Calsim run:
+estimating available rearing habitat within the bypasses. The components of the list contain output from
+four different Calsim runs:
 \itemize{
 \item biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 \item biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
 \item calsim_run_of_river: output from the Calsim Run of River run.
+\item LTO-12a: output from the LTO-12a Calsim III run.
 }
 }
 \details{

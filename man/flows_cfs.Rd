@@ -5,7 +5,8 @@
 \alias{flows_cfs}
 \title{Flow in cfs}
 \format{
-named list with two components, each containing a dataframe with 985 rows and 33 variables:
+named list with five components, each containing a dataframe with 972 rows and 31 variables for Calsim II runs and
+1200 rows and 31 variables for Calsim II runs:
 \describe{
 \item{date}{CALSIM II date}
 \item{Upper Sacramento River}{C104}
@@ -51,13 +52,18 @@ named list with two components, each containing a dataframe with 985 rows and 33
 flows_cfs
 }
 \description{
-A named list containing datasets from the 2008-2009, 2018-2019 Calsim II BiOp, and Calsim Run of River runs for
-use with the CVPIA SIT Salmon Population Model to develop habitat inputs.
+A named list containing datasets from the 2008-2009, 2018-2019 BiOp, and Calsim Run of River Calsim II runs and
+the LTO-12a Calsim III runs for use with the CVPIA SIT Salmon Population Model to develop habitat inputs. This data object
+also contains synthetic hydrographs for functional flows designed to optimize salmonid survival.
 The named list components are:
 \itemize{
 \item biop_2008_2009: flow in cubic feet per second within watersheds from the 2008-2009 Calsim II BiOp run.
 \item biop_itp_2018_2019: flow in cubic feet per second within watersheds from the 2018-2019 Calsim II BiOp run.
 \item calsim_run_of_river: flow in cubic feet per second within watersheds from the Calsim Run of River run.
+\item eff_sac: flow in cubic feet per second within watersheds with a synthetic hydrograph for the Upper Sacramento River and San Joaquin River
+\item LTO_12a: flow in cubic feet per second within watersheds from the Calsim III LTO-12a run.
+\item LTO_12a_eff_dy: flow in cubic feet per second within watersheds from the Calsim III LTO-12a run, with the functional flow
+synthetic hydrograph spliced in for model dry years.
 }
 }
 \details{
