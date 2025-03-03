@@ -16,11 +16,13 @@ delta_proportion_diverted
 }
 \description{
 A named list containing the proportion of delta inflow diverted from 1980-2000 from
-three different Calsim runs. These are stored as elements named by the Calsim run they came from:
+three different Calsim runs. The components of the list contain output from
+four different Calsim runs:
 \itemize{
 \item biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 \item biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
 \item calsim_run_of_river: output from the Calsim Run of River run.
+\item LTO-12a: output from the LTO-12a Calsim III run.
 }
 }
 \details{

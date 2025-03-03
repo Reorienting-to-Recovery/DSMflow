@@ -1,0 +1,247 @@
+---
+title: "Functional Flow Analysis for the San Joaquin River"
+output: html_document
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+library(DSMflow)
+library(tidyverse)
+library(tibble)
+```
+
+# Calsim node mapping
+
+Calsim II node mapping provided by [Michael Wright](mwright@@usbr.gov), USBR. Calsim III node mapping provided by [Steve Micko](SMicko@mwdh2o.com), MWD. 
+
+## Flow in cfs
+
+Also produces the `mean_flow` object.
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+flow_cfs <- c(`Upper Sacramento River` = "C104",
+              `Antelope Creek` = "C11307",
+              `Battle Creek` = "C10803",
+              `Bear Creek` = "C11001",
+              `Big Chico Creek` = "C11501",
+              `Butte Creek` = "C217A",
+              `Clear Creek` = "C3",
+              `Cottonwood Creek` = "C10802",
+              `Cow Creek` = "C10801",
+              `Deer Creek` = "C11309",
+              `Elder Creek` = "C11303",
+              `Mill Creek` = "C11308",
+              `Paynes Creek` = "C11001",
+              `Stony Creek` = "C142A",
+              `Thomes Creek` = "C11304",
+              `Upper-mid Sacramento River` = "C115",
+              `Bear River` = "C285",
+              `Feather River` = "C203",
+              `Yuba River` = "C230",
+              `Lower-mid Sacramento River1` = "C134", # low-mid habitat = 35.6/58*habitat(C134) + 22.4/58*habitat(C160),
+              `Lower-mid Sacramento River2` = "C160",
+              `American River` = "C9",
+              `Lower Sacramento River` = "C166",
+              `Calaveras River` = "C92",
+              `Cosumnes River` = "C501",
+              `Mokelumne River` = NA,
+              `Merced River` = "C561",
+              `Stanislaus River` = "C520",
+              `Tuolumne River` = "C540",
+              `San Joaquin River` = "C630") |> 
+  cbind() |> 
+  as.data.frame() |> 
+  rownames_to_column("Watershed") |> 
+  rename(`Calsim II` = V1)
+
+calsim3_flow_cfs <- c(`Upper Sacramento River` = "C_SAC273", `Antelope Creek` = "C_ANT010",
+                        `Battle Creek` = "C_BTL006", `Bear Creek` = "C_BCN005", `Big Chico Creek` = "C_BCC004",
+                        `Butte Creek` = "C_BTC012", `Clear Creek` = "C_CLR009", `Cottonwood Creek` = "C_CWD003",
+                        `Cow Creek` = "C_COW003", `Deer Creek` = "C_DRC005", `Elder Creek` = "C_ELD005",
+                        `Mill Creek` = "C_MLC004", `Paynes Creek` = "C_PYN001", `Stony Creek` = "C_STN004",
+                        `Thomes Creek` = "C_THM005", `Upper-mid Sacramento River` = "C_SAC193",
+                        `Bear River` = "C_CMPFW", `Feather River` = "C_FTR059", `Yuba River` = "C_YUB002",
+                        `Lower-mid Sacramento River1` = "C_SAC093", `Lower-mid Sacramento River2` = "C_SAC048",
+                        `American River` = "C_NTOMA", `Lower Sacramento River` = "C_SAC063",
+                        `Calaveras River` = "C_NHGAN", `Cosumnes River` = "C_CSM005",
+                        `Mokelumne River` = "C_CMCHE", `Merced River` = "C_MCD050", `Stanislaus River` = "C_STS059",
+                        `Tuolumne River` = "C_TUO054", `San Joaquin River` = "C_SJR081") |> 
+  cbind() |> 
+  as.data.frame() |> 
+  rownames_to_column("Watershed") |> 
+  rename(`Calsim III` = V1)
+
+all_nodes_flow_cfs <- full_join(flow_cfs, calsim3_flow_cfs, by = "Watershed")
+
+knitr::kable(all_nodes_flow_cfs)
+```
+
+## Diversions
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+calsim2_diversion_nodes <- c(`Upper Sacramento River` = "D104",
+                             `Antelope Creek` = "C11307 / (C11307 + C11308 + C11309) * D11305",
+                             `Battle Creek` = NA,
+                             `Bear Creek` = NA,
+                             `Big Chico Creek` = NA,
+                             `Butte Creek` = "C217B + D217",
+                             `Clear Creek` = NA,
+                             `Cottonwood Creek` = NA,
+                             `Cow Creek` = NA,
+                             `Deer Creek` = "C11309 / (C11307 + C11308 + C11309) * D11305",
+                             `Elder Creek` = "C11303 / (C11303 + C11304) * D11301",
+                             `Mill Creek` = "C11308 / (C11307 + C11308 + C11309) * D11305",
+                             `Paynes Creek` = NA,
+                             `Stony Creek` = "D17301",
+                             `Thomes Creek` = "C11304 / (C11303 + C11304) * D11301",
+                             `Upper-mid Sacramento River` = "D109 + D112 + D113A + D113B + D114 + D118 + D122A + D122B + D123 + D124A + D128_WTS + D128",
+                             `Sutter Bypass` = NA,
+                             `Bear River` = "D285",
+                             `Feather River` = "D201 + D202 + D7A + D7B",
+                             `Yuba River` = "D230",
+                             `Lower-mid Sacramento River` = "D129A + D134 + D162 + D165",
+                             `Yolo Bypass` = NA,
+                             `American River` = "D302",
+                             `Lower Sacramento River` = "D167 + D168 + D168A_WTS",
+                             `Calaveras River` = "D506A + D506B + D506C + D507",
+                             `Cosumnes River` = NA,
+                             `Mokelumne River` = NA, # other run from mike U ebmud
+                             `Merced River` = "D562 + D566",
+                             `Stanislaus River` = "D528",
+                             `Tuolumne River` = "D545",
+                             `San Joaquin River` = "D637 + D630B + D630A + D620B") |> 
+  cbind() |> 
+  as.data.frame() |> 
+  rownames_to_column("Watershed") |> 
+  rename(`Calsim II` = V1)
+
+calsim3_diversion_nodes <- c(`Upper Sacramento River` = "D_SAC296_WTPFTH + D_SAC296_02_SA + D_SAC294_WTPBLV + D_SAC294_03_PA + D_SAC289_03_SA + D_SAC281_02_NA + D_SAC273_03_NA",
+                            `Antelope Creek` = "D_ANT010_05_NA",
+                            `Battle Creek` = NA,
+                            `Bear Creek` = NA,
+                            `Big Chico Creek` = NA,
+                            `Butte Creek` = "D_BTC045_ESL008 + D_BTC043_10_NA + D_BTC036_10_NA + D_BTC012_09_SA2 + D_BTC012_CRK005",
+                            `Clear Creek` = NA,
+                            `Cottonwood Creek` = NA,
+                            `Cow Creek` = NA,
+                            `Deer Creek` = "D_DRC010_05_NA + D_DRC005_05_NA",
+                            `Elder Creek` = "D_ELD012_04_NA",
+                            `Mill Creek` = "D_MLC006_05_NA",
+                            `Paynes Creek` = NA,
+                            `Stony Creek` = "D_STN021_06_PA",
+                            `Thomes Creek` = "D_THM012_04_NA",
+                            `Upper-mid Sacramento River` = "D_SAC240_TCC001 + D_SAC240_05_NA + D_SAC224_04_NA + D_SAC196_MTC000 + D_SAC185_08N_NA + D_SAC185_09_NA + D_SAC178_08N_SA1 + D_SAC162_09_SA2 + D_SAC159_08S_SA1 + D_SAC159_08N_SA1 + D_SAC146_08S_NA1 + D_SAC136_18_NA + D_SAC136_18_SA + D_SAC129_08S_NA2 + D_SAC122_19_SA",
+                            `Sutter Bypass` = NA,
+                            `Bear River` = "D_BRR017_23_NA",
+                            `Feather River` = "D_THRMF_12_NU1 + D_THRMF_11_NU1 + D_THRMA_WEC000 + D_THRMA_RVC000 + D_THRMA_JBC000",
+                            `Yuba River` = "D_YUB011_15S_NA2",
+                            `Lower-mid Sacramento River` = "D_SAC121_08S_SA3 + D_SAC115_19_SA + D_SAC109_08S_SA3 + D_SAC109_19_SA + D_SAC099_19_SA + D_SAC091_19_SA + D_SAC083_21_SA + D_SAC082_22_SA1 + D_SAC081_21_NA + D_SAC078_22_SA1 + D_SAC075_22_NA + D_SAC074_21_SA + D_SAC065_WTPBTB",
+                            `Yolo Bypass` = NA,
+                            `American River` = "D_AMR007_WTPFBN",
+                            `Lower Sacramento River` = "D_SAC050_FPT013 + D_SAC062_WTPSAC",
+                            `Calaveras River` = "D_LJC022_60S_PA1 + D_CLV037_CACWD + D_CLV026_60S_PA1 + D_CLV026_WTPWDH",
+                            `Cosumnes River` = NA,
+                            `Mokelumne River` = "D_MOK050_60N_NA3 + D_MOK050_60N_NA5 + D_MOK039_60N_NA5 + D_MOK035_60N_NA4 + D_MOK035_60N_NU1 + D_MOK035_WTPDWS + D_MOK033_60N_NA5",
+                            `Merced River` = "D_MCD042_63_NA2 + D_MCD021_63_NA4",
+                            `Stanislaus River` = "D_STS030_61_NA4 + D_STS004_61_NA6",
+                            `Tuolumne River` = "D_TUO047_61_NA3 + D_TUO047_62_NA4 + D_TUO015_61_NA3 + D_TUO015_62_NA4",
+                            `San Joaquin River` = "D_SJR062_50_PA1 + D_SJR090_71_NA2 + D_SJR081_61_NA5 + D_SJR116_72_NA1") |> 
+  cbind() |> 
+  as.data.frame() |> 
+  rownames_to_column("Watershed") |> 
+  rename(`Calsim III` = V1)
+
+all_diversion_nodes <- full_join(calsim2_diversion_nodes, calsim3_diversion_nodes, by = "Watershed") 
+
+knitr::kable(all_diversion_nodes)
+```
+
+
+## Upper Sacramento flows
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+upper_sacramento_flows_all_nodes <- tibble("Watershed" = "Upper Sacramento River",
+                                           "Calsim II" = "C109",
+                                           "Calsim III" = "C_SAC257")
+
+knitr::kable(upper_sacramento_flows_all_nodes)
+```
+
+
+## Bypass flows
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+calsim2_bypass_nodes <- data.frame("Watershed" = c("Sutter 1", "Sutter 2", "Sutter 3", "Sutter 4", 
+                                                   "Yolo 1", "Yolo 2"),
+                                   "Calsim II" = c("D117", "C135", "C136A", "C137", "D160", "C157"))
+
+calsim3_bypass_nodes <- data.frame("Watershed" = c("Sutter 1", "Sutter 2", "Sutter 3", "Sutter 4", 
+                                                   "Yolo 1", "Yolo 2"),
+                                   "Calsim III" = c("SP_SAC193_BTC003, SP_SAC188_BTC003, SP_SAC178_BTC003", 
+                                                   "C_BTC003", "C_SBP024", "C_SSL001", "SP_SAC083_YBP037", "C_CSL005"))
+
+bypass_nodes_all <- full_join(calsim2_bypass_nodes, calsim3_bypass_nodes,
+                              by = "Watershed")
+
+knitr::kable(bypass_nodes_all)
+```
+
+
+## Delta flows
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+calsim2_delta_flows <- c(`North Delta Inflow` = "C400 + C157",
+                         `South Delta inflow` = "C401B + C504 + C508 + C644",
+                         `North Delta Total Diverted` =  "D403A + D403B + D403C + D403D + D404",
+                         `South Delta Total Diverted` = "D418 + D419 + D412 + D410 + D413 + D409B + D416 + D408_OR + D408_VC",
+                         `North Delta Proportion Diverted` = "North Delta Total Diverted / North Delta Inflow",
+                         `South Delta Proportion Diverted` = "South Delta Total Diverted / South Delta Inflow") |> 
+  cbind() |> 
+  as.data.frame() |> 
+  rownames_to_column("Type") |> 
+  rename(`Calsim II` = V1)
+
+calsim3_delta_flows <- c(`North Delta Inflow` = "C_SAC041 + C_CSL005",
+                         `South Delta inflow` = "C_SAC029B + D_SAC030_MOK014 + C_MOK022 + C_CLV004 + C_SJR056",
+                         `North Delta Total Diverted` = "C_CSL004B + DD_SAC017_SACS",
+                         `South Delta Total Diverted` = "D_OMR028_DMC000 + D_OMR027_CAA000 + DD_SJR026_SJRE + DD_SJR013_SJRW + DD_MOK004_MOK + DD_OMR027_OMR + D_RSL004_CCC004 + D_OMR021_ORP000 + D_VCT002_ORP000",
+                         `North Delta Proportion Diverted` = "North Delta Total Diverted / North Delta Inflow",
+                         `South Delta Proportion Diverted` = "South Delta Total Diverted / South Delta Inflow") |> 
+  cbind() |> 
+  as.data.frame() |> 
+  rownames_to_column("Type") |> 
+  rename(`Calsim III` = V1)
+
+all_delta_flows_nodes <- full_join(calsim2_delta_flows, calsim3_delta_flows, by = "Type")
+
+knitr::kable(all_delta_flows_nodes)
+  
+```
+
+
+
+## Delta routing flows
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+calsim3_delta_routing <- data.frame("Type" = c("Freeport", "Vernalis", "Stockton", "Wilkins",
+                                               "CVP Exports", "SWP Exports"),
+                                    "Calsim III" = c("C_SAC041", "C_SJR070", "C_SJR053A", "C_SAC129",
+                                                     "DEL_CVP_TOTAL_N + DEL_CVP_TOTAL_S", "DEL_SWP_PMI + DEL_SWP_PAG + DEL_SWP_PIN"))
+calsim2_delta_routing <- data.frame("Type" = c("Freeport", "Vernalis", "Stockton", "Wilkins",
+                                               "CVP Exports", "SWP Exports"),
+                                    "Calsim II" = c("C400", "C639", "C417A", "C129",
+                                                     "DEL_CVP_TOTAL", "DEL_SWP_TOTAL"))
+
+all_delta_routing_nodes <- full_join(calsim3_delta_routing, calsim2_delta_routing, by = "Type") 
+
+knitr::kable(all_delta_routing_nodes)
+
+```
+
+

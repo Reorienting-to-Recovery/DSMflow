@@ -2,9 +2,10 @@ pandoc: '3.2'
 pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
+  calsim-3-mapping: calsim-3-mapping.html
   EFF_SJ: EFF_SJ.html
   EFF: EFF.html
-last_built: 2024-11-13T00:42Z
+last_built: 2025-02-25T19:09Z
 urls:
   reference: https://reorienting-to-recovery.github.io/DSMflow/reference
   article: https://reorienting-to-recovery.github.io/DSMflow/articles

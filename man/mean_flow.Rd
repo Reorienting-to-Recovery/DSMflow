@@ -5,7 +5,7 @@
 \alias{mean_flow}
 \title{Monthly Mean Flow (cms)}
 \format{
-a named list of two components, each containing a 3 dimensional array \link{31 watersheds, 12 months, 21 years}
+a named list of five components, each containing a 3 dimensional array \link{31 watersheds, 12 months, 21 years}
 }
 \source{
 Calculated using \code{\link{flows_cfs}}
@@ -16,11 +16,15 @@ mean_flow
 \description{
 A named list containing the mean flow in cubic meters per second for each watershed every
 month of every year in the simulation (1980-2000). The components of the list contain output from
-three different Calsim runs:
+four different Calsim runs and two runs incorporating synthetic functional flow hydrographs:
 \itemize{
 \item biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 \item biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
 \item calsim_run_of_river: output from the Calsim Run of River run.
+\item eff: synthetic functional flow hydrograph on the Upper Sacramento River and San Joaquin River.
+\item LTO-12a: output from the LTO-12a Calsim III run
+\item LTO_12a_eff_dy: output from the LTO-12a Calsim III run with synthetic functional flow hydrographs spliced in
+on the Upper Sacramento River and San Joaquin River for dry years.
 }
 }
 \keyword{datasets}

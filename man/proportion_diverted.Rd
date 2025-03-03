@@ -5,7 +5,7 @@
 \alias{proportion_diverted}
 \title{Proportion of Flow Diverted}
 \format{
-a named list of two components, each containing a 31 by 12 by 21 array \link{watershed, month, year (1980-2000)}
+a named list of four components, each containing a 31 by 12 by 21 array \link{watershed, month, year (1980-2000)}
 }
 \source{
 \itemize{
@@ -19,12 +19,13 @@ proportion_diverted
 }
 \description{
 A named list where each component contains a dataset with the proportion of flow diverted within watersheds for
-use with the CVPIA SIT Salmon Population Model. The components of the list contain output from three
-different Calsim runs:
+use with the CVPIA SIT Salmon Population Model. The components of the list contain output from
+four different Calsim runs:
 \itemize{
 \item biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 \item biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
-\item calsim_run_of_river: output from the Calsim Run of River run
+\item calsim_run_of_river: output from the Calsim Run of River run.
+\item LTO-12a: output from the LTO-12a Calsim III run.
 }
 }
 \details{

@@ -5,7 +5,7 @@
 \alias{upper_sacramento_flows}
 \title{Upper Sacramento River Flow}
 \format{
-a named list of two components, each containing a 12 by 21 matrix (month by year)
+a named list of six components, each containing a 12 by 21 matrix (month by year)
 }
 \source{
 \itemize{
@@ -19,12 +19,16 @@ upper_sacramento_flows
 }
 \description{
 A named list where each component contains a dataset with the Upper Sacramento
-River flow in cubic meters per second. The components of the list contain output from three
-different Calsim runs:
+River flow in cubic meters per second. The components of the list contain output from
+four different Calsim runs and two runs incorporating synthetic functional flow hydrographs:
 \itemize{
 \item biop_2008_2009: output from the 2008-2009 Calsim II BiOp run.
 \item biop_itp_2018_2019: output from the 2018-2019 Calsim II BiOp run.
 \item calsim_run_of_river: output from the Calsim Run of River run.
+\item eff: synthetic functional flow hydrograph on the Upper Sacramento River and San Joaquin River.
+\item LTO-12a: output from the LTO-12a Calsim III run
+\item LTO_12a_eff_dy: output from the LTO-12a Calsim III run with synthetic functional flow hydrographs spliced in
+on the Upper Sacramento River and San Joaquin River for dry years.
 }
 }
 \details{

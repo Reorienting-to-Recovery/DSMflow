@@ -58,7 +58,8 @@ navbar:
       href: articles/EFF.html
     - text: "San Joaquin Functional Flows"
       href: articles/EFF_SJ.html
-
+    - text: "Calsim Node Mapping"
+      href: articles/calsim-3-mapping.html
 
 repo:
  url:
