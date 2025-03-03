@@ -145,7 +145,6 @@ eff_2019_biop_elsewhere <- flow_cfs_2019_biop_itp |>
          `Lower-mid Sacramento River1` = ifelse(`Lower-mid Sacramento River1` + flow_change < 0, 100, `Lower-mid Sacramento River1` + flow_change),
          `Lower-mid Sacramento River2` = ifelse(`Lower-mid Sacramento River2` + flow_change < 0, 100, `Lower-mid Sacramento River2` + flow_change),
          `Lower Sacramento River` = ifelse(`Lower Sacramento River` + flow_change < 0, 100, `Lower Sacramento River` + flow_change)) |>
-  # TODO check to make sure nothing downstream of San Joaquin + flow change is negative
   mutate(`San Joaquin River` = `Lower San Joaquin EFF`) |>
   select(-c(`Upper Sacramento River EFF`, flow_change, `Lower San Joaquin EFF`))
 
