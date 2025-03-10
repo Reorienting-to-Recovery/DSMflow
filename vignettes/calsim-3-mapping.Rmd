@@ -1,5 +1,5 @@
 ---
-title: "Functional Flow Analysis for the San Joaquin River"
+title: "CalSim Node Mapping"
 output: html_document
 ---
 
@@ -16,7 +16,7 @@ library(tidyverse)
 library(tibble)
 ```
 
-# Calsim node mapping
+# Node mapping
 
 Calsim II node mapping provided by [Michael Wright](mwright@@usbr.gov), USBR. Calsim III node mapping provided by [Steve Micko](SMicko@mwdh2o.com), MWD. 
 
