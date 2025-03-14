@@ -23,16 +23,16 @@ data(package = 'DSMflow')
 
 #### About the Models
 
-Output from the CALSIM II operational model is used to generate hydrologic inputs for the CVPIA Decision Support Model (DSM). CALSIM II is the model used to simulate California State Water Project (SWP) / Central Valley Project (CVP) operations. CALSIM II was developed in the Water Resource Integrated Modeling System (WRIMS model engine or WRIMS), a generalized water resources modeling system for evaluating operational alternatives of large, complex river basins.
+Output from the CalSim II & CalSim 3 operational models are used to generate hydrologic inputs for the R2R Salmon Life Cycle Model. CalSim 3 is the most up to date model used to simulate California State Water Project (SWP) / Central Valley Project (CVP) operations. CalSim 3 was developed in the Water Resource Integrated Modeling System (WRIMS model engine or WRIMS), a generalized water resources modeling system for evaluating operational alternatives of large, complex river basins.
 
-Data objects in this package contain information from a CalSim II run from 2009 and a CalSim II 
-run from 2019, and an exploratory Run of River CalSim run. All datasets produced using CalSim outputs are filtered to the years 1980-2000 to match the timeserries of the Life Cycle Models. See documentation for more information how to 
-access data objects from each run.
 
-This CalSim II run was used as the basis of comparison for other potential operations that could offset impacts to listed species.
+[More information on CalSim 3 II](https://water.ca.gov/Library/Modeling-and-Analysis/Central-Valley-models-and-tools/CalSim-3)
 
-[More information on CALSIM II](https://water.ca.gov/Library/Modeling-and-Analysis/Central-Valley-models-and-tools/CalSim-II)\
-[CALSIM II Schematic](https://s3-us-west-2.amazonaws.com/cvpiaflow-r-package/BST_CALSIMII_schematic_040110.jpg)
+[CalSim 3 Schematic](https://data.cnra.ca.gov/dataset/2395530a-5421-487e-921e-d6e594f23ac6/resource/3ec8338e-31d9-4dd3-93df-8d60ee6ec3d2/download/cs3_networkschematic_integrated_10_11_2022.pdf)
+
+[More information on CalSim II](https://water.ca.gov/Library/Modeling-and-Analysis/Central-Valley-models-and-tools/CalSim-II)
+
+[CalSim II Schematic](https://s3-us-west-2.amazonaws.com/cvpiaflow-r-package/BST_CALSIMII_schematic_040110.jpg)
 
 ### Dependencies
 
@@ -41,5 +41,6 @@ The `DSMFlow` package provides data for several other packages within the [Reori
 <img src="man/figures/dependencyChain.svg" width="100%"/>
 
 ::: {style="margin-top: 40px;"}
-Data Assembled and Maintained by <a href = "http://www.flowwest.com/" target = "_blank"> <img src="man/figures/TransLogoTreb.png" width="150px"/>
+Data Assembled and Maintained by <a href = "http://www.flowwest.com/" target = "_blank"> 
+<img src="man/figures/TransLogoTreb.png" width="150px"/>
 :::
