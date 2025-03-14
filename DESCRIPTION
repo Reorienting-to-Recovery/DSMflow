@@ -3,7 +3,8 @@ Type: Package
 Title: Modeled Flow Data for the R2R Salmonid Life Cycle Models
 Version: 2.0
 Authors@R: c(
-    person("Erin", "Cain", email = "ecain@flowwest.com", role = c("aut", "cre")), 
+    person("Liz", "Stebbins", email = "lstebbins@flowwest.com", role = c("aut", "cre")), 
+    person("Erin", "Cain", email = "ecain@flowwest.com", role = "aut"), 
     person("Mark", "Tompkins", email = "mtompkins@flowwest.com", role = "aut"),
     person("Emanuel", "Rodriguez", email = "erodriguez@flowwest.com", role = "aut"))
 Description: This data package contains modeled flows and diversions for each of the watersheds 
@@ -14,7 +15,7 @@ LazyData: true
 RoxygenNote: 7.3.2
 URL: https://reorienting-to-recovery.github.io/DSMflow/
 Depends: 
-    R (>= 2.10)
+    R (>= 3.5)
 Suggests: 
     knitr,
     rmarkdown
